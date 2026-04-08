@@ -1,0 +1,11 @@
+---
+title: "Willkommen zur Data Analysis Vorlesung"
+---
+
+## Über diesen Kurs
+Hier lernst du, wie man Daten mit **Python** und **R** bändigt.
+
+```{python}
+#| echo: true
+import pandas as pd
+print("Python ist bereit!")

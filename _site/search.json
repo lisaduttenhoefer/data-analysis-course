@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Willkommen zur Data Analysis Vorlesung",
+    "section": "",
+    "text": "Hier lernst du, wie man Daten mit Python und R bändigt.\n#| echo: true import pandas as pd print(“Python ist bereit!”)"
+  },
+  {
+    "objectID": "index.html#über-diesen-kurs",
+    "href": "index.html#über-diesen-kurs",
+    "title": "Willkommen zur Data Analysis Vorlesung",
+    "section": "",
+    "text": "Hier lernst du, wie man Daten mit Python und R bändigt.\n#| echo: true import pandas as pd print(“Python ist bereit!”)"
+  }
+]
