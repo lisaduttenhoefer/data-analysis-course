@@ -1,0 +1,57 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const pyBtn = document.getElementById('nav-menu-lang-switch-python') || document.getElementById('lang-switch-python');
+      const rBtn = document.getElementById('nav-menu-lang-switch-r') || document.getElementById('lang-switch-r');
+    
+      function switchLang(lang) {
+        // Blöcke umschalten
+        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+        
+        // Style umschalten
+        if (lang === 'python') {
+          pyBtn.classList.add('active-lang');
+          rBtn.classList.remove('active-lang');
+        } else {
+          rBtn.classList.add('active-lang');
+          pyBtn.classList.remove('active-lang');
+        }
+        localStorage.setItem('da_course_lang', lang);
+      }
+    
+      if (pyBtn && rBtn) {
+        // Standard-Link-Verhalten deaktivieren
+        [pyBtn, rBtn].forEach(btn => {
+          btn.href = "javascript:void(0)";
+          btn.classList.add('lang-btn'); // Klasse für das CSS hinzufügen
+        });
+    
+        pyBtn.onclick = (e) => { e.preventDefault(); switchLang('python'); };
+        rBtn.onclick = (e) => { e.preventDefault(); switchLang('r'); };
+      }
+    
+      switchLang(localStorage.getItem('da_course_lang') || 'python');
+    });
+    </script>
+    
+    <style>
+    /* Wir packen das CSS für die Buttons direkt hier rein, um sicherzugehen */
+    .lang-btn {
+      background: #e9ecef !important;
+      border-radius: 50px !important;
+      padding: 5px 20px !important;
+      margin: 5px !important;
+      color: #67748e !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      display: inline-block !important;
+      line-height: 1.5 !important;
+      transition: all 0.2s ease;
+    }
+    
+    .active-lang {
+      background: linear-gradient(310deg, #1a4d1a, #2d7a2d) !important;
+      color: white !important;
+      box-shadow: 0 4px 7px -1px rgba(0,0,0,0.11);
+    }
+    </style>

@@ -1,0 +1,45 @@
+/*-- scss:defaults --*/
+$dark-green: #1a4d1a;
+$primary: $dark-green;
+
+/*-- scss:rules --*/
+
+// Fix für die Navbar-Buttons (Pillen-Design erzwingen)
+#lang-switch-python, #lang-switch-r {
+  background: #e9ecef !important;
+  border-radius: 50px !important;
+  padding: 5px 20px !important;
+  margin: 5px !important;
+  color: #67748e !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.active-lang {
+  background: linear-gradient(310deg, #1a4d1a, #2d7a2d) !important;
+  color: white !important;
+}
+
+// Karten-Layout fixen
+.card {
+  border: none !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+  background-color: white;
+  margin-bottom: 20px;
+  height: 100%; // Damit alle Karten in einer Reihe gleich hoch sind
+}
+
+// Das Grid auf der Startseite zentrieren
+.column-screen-inset {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Sidebar optisch trennen
+#quarto-sidebar {
+  border-right: none !important;
+}

@@ -1,0 +1,16 @@
+---
+title: "Woche 1: Einführung"
+---
+
+Hier ist der Einführungstext, den jeder Student liest, egal welche Sprache er gewählt hat. Wir klären heute die absoluten Grundlagen.
+
+::: {.lang-python}
+# Python-Inhalte
+
+Dieser Block wird nur angezeigt, wenn oben "Python" ausgewählt ist.
+
+Hier ist das erste Python-Beispiel:
+
+```{python}
+import pandas as pd
+print("Python ist bereit für Woche 1!")

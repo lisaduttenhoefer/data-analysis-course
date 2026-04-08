@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Kurs-Dashboard – Data Analysis 2026</title>
+<title>Woche 1: Einführung – Data Analysis 2026</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,7 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./woche1.html" rel="next">
+<link href="./woche2.qmd" rel="next">
+<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -73,61 +74,45 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const pyBtn = document.getElementById('nav-menu-lang-switch-python') || document.getElementById('lang-switch-python');
-      const rBtn = document.getElementById('nav-menu-lang-switch-r') || document.getElementById('lang-switch-r');
-    
       function switchLang(lang) {
-        // Blöcke umschalten
-        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
-        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+        // 1. Blöcke umschalten
+        document.querySelectorAll('.lang-python').forEach(el => {
+            el.style.display = (lang === 'python' ? 'block' : 'none');
+        });
+        document.querySelectorAll('.lang-r').forEach(el => {
+            el.style.display = (lang === 'r' ? 'block' : 'none');
+        });
         
-        // Style umschalten
-        if (lang === 'python') {
-          pyBtn.classList.add('active-lang');
-          rBtn.classList.remove('active-lang');
-        } else {
-          rBtn.classList.add('active-lang');
-          pyBtn.classList.remove('active-lang');
+        // 2. Button-Styling umschalten
+        const pyBtn = document.getElementById('lang-switch-python');
+        const rBtn = document.getElementById('lang-switch-r');
+        
+        if (pyBtn && rBtn) {
+          if (lang === 'python') {
+            pyBtn.classList.add('active-lang');
+            rBtn.classList.remove('active-lang');
+          } else {
+            rBtn.classList.add('active-lang');
+            pyBtn.classList.remove('active-lang');
+          }
         }
+        
         localStorage.setItem('da_course_lang', lang);
       }
     
+      // Event Listener
+      const pyBtn = document.getElementById('lang-switch-python');
+      const rBtn = document.getElementById('lang-switch-r');
+      
       if (pyBtn && rBtn) {
-        // Standard-Link-Verhalten deaktivieren
-        [pyBtn, rBtn].forEach(btn => {
-          btn.href = "javascript:void(0)";
-          btn.classList.add('lang-btn'); // Klasse für das CSS hinzufügen
-        });
-    
-        pyBtn.onclick = (e) => { e.preventDefault(); switchLang('python'); };
-        rBtn.onclick = (e) => { e.preventDefault(); switchLang('r'); };
+        pyBtn.onclick = () => switchLang('python');
+        rBtn.onclick = () => switchLang('r');
       }
     
+      // Initiale Wahl laden
       switchLang(localStorage.getItem('da_course_lang') || 'python');
     });
     </script>
-    
-    <style>
-    /* Wir packen das CSS für die Buttons direkt hier rein, um sicherzugehen */
-    .lang-btn {
-      background: #e9ecef !important;
-      border-radius: 50px !important;
-      padding: 5px 20px !important;
-      margin: 5px !important;
-      color: #67748e !important;
-      font-weight: 600 !important;
-      text-decoration: none !important;
-      display: inline-block !important;
-      line-height: 1.5 !important;
-      transition: all 0.2s ease;
-    }
-    
-    .active-lang {
-      background: linear-gradient(310deg, #1a4d1a, #2d7a2d) !important;
-      color: white !important;
-      box-shadow: 0 4px 7px -1px rgba(0,0,0,0.11);
-    }
-    </style>
 
 
 </head>
@@ -151,11 +136,15 @@ ul.task-list li input[type="checkbox"] {
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <span class="nav-link">
+    <i class="bi bi-python" role="img">
+</i> 
 <span class="menu-text">Python</span>
     </span>
   </li>  
   <li class="nav-item">
     <span class="nav-link">
+    <i class="bi bi-r-circle" role="img">
+</i> 
 <span class="menu-text">R</span>
     </span>
   </li>  
@@ -170,7 +159,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Überblick</a></li><li class="breadcrumb-item"><a href="./index.html">Dashboard</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./woche1.html">Vorlesungen</a></li><li class="breadcrumb-item"><a href="./woche1.html">Woche 1: Einführung</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -184,16 +173,16 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
  <span class="menu-text">Überblick</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dashboard</span></a>
   </div>
 </li>
@@ -201,16 +190,16 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">Vorlesungen</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./woche1.html" class="sidebar-item-text sidebar-link">
+  <a href="./woche1.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Woche 1: Einführung</span></a>
   </div>
 </li>
@@ -232,16 +221,16 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#vorlesungsinhalte" id="toc-vorlesungsinhalte" class="nav-link active" data-scroll-target="#vorlesungsinhalte">Vorlesungsinhalte</a></li>
+  <li><a href="#python-inhalte" id="toc-python-inhalte" class="nav-link active" data-scroll-target="#python-inhalte">Python-Inhalte</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Überblick</a></li><li class="breadcrumb-item"><a href="./index.html">Dashboard</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./woche1.html">Vorlesungen</a></li><li class="breadcrumb-item"><a href="./woche1.html">Woche 1: Einführung</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Kurs-Dashboard</h1>
+<h1 class="title">Woche 1: Einführung</h1>
 </div>
 
 
@@ -258,53 +247,12 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="grid">
-<div class="g-col-12 g-col-md-4">
-<section id="aktuelle-woche" class="level4 card p-3 text-center">
-<h4 class="anchored" data-anchor-id="aktuelle-woche">📅 Aktuelle Woche</h4>
-<p><strong>Woche 1</strong> <a href="./woche1.html" class="btn btn-primary btn-sm mt-2">ZUR VORLESUNG →</a></p>
-</section>
-</div>
-<div class="g-col-12 g-col-md-4">
-<section id="setup-status" class="level4 card p-3 text-center">
-<h4 class="anchored" data-anchor-id="setup-status">🛠️ Setup Status</h4>
-<p>Python &amp; R bereit <a href="setup.qmd" class="text-muted small">Installationshilfe</a></p>
-</section>
-</div>
-<div class="g-col-12 g-col-md-4">
-<section id="dein-fortschritt" class="level4 card p-3 text-center">
-<h4 class="anchored" data-anchor-id="dein-fortschritt">📈 Dein Fortschritt</h4>
-<p><strong>10% abgeschlossen</strong></p>
-</section>
-</div>
-</div>
-<section id="vorlesungsinhalte" class="level2">
-<h2 class="anchored" data-anchor-id="vorlesungsinhalte">Vorlesungsinhalte</h2>
-<div class="grid">
-<div class="g-col-12 g-col-md-6">
-<section id="woche-1-einführung" class="level4 card p-4 shadow-sm">
-<h4 class="anchored" data-anchor-id="woche-1-einführung">📝 Woche 1: Einführung</h4>
-<p>In dieser Woche lernst du die Grundlagen von Data Analysis. Wir schauen uns die ersten Schritte in Python und R an.</p>
-<ul>
-<li><strong>Inhalte:</strong> Syntax, Variablen, erste Plots</li>
-<li><strong>Dateien:</strong> <a href="#">Slides.pdf</a>, <a href="#">Daten.csv</a></li>
-<li><strong>Status:</strong> [O] Noch nicht gestartet</li>
-</ul>
-</section>
-</div>
-<div class="g-col-12 g-col-md-6">
-<section id="woche-2-datenreinigung" class="level4 card p-4 shadow-sm">
-<h4 class="anchored" data-anchor-id="woche-2-datenreinigung">🧹 Woche 2: Datenreinigung</h4>
-<p>Wie geht man mit fehlenden Werten um? (Tidy Data Prinzipien).</p>
-<ul>
-<li><strong>Inhalte:</strong> Pandas, Tidyverse, Regex</li>
-<li><strong>Dateien:</strong> <a href="#">Übung.ipynb</a></li>
-<li><strong>Status:</strong> [O] Gesperrt</li>
-</ul>
-</section>
-</div>
-</div>
-<p>:::</p>
+<p>Hier ist der Einführungstext, den jeder Student liest, egal welche Sprache er gewählt hat. Wir klären heute die absoluten Grundlagen.</p>
+<section id="python-inhalte" class="level1 lang-python">
+<h1>Python-Inhalte</h1>
+<p>Dieser Block wird nur angezeigt, wenn oben “Python” ausgewählt ist.</p>
+<p>Hier ist das erste Python-Beispiel:</p>
+<p>import pandas as pd print(“Python ist bereit für Woche 1!”)</p>
 
 
 </section>
@@ -712,10 +660,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Dashboard">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Dashboard</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./woche1.html" class="pagination-link" aria-label="Woche 1: Einführung">
-        <span class="nav-page-text">Woche 1: Einführung</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./woche2.qmd" class="pagination-link" aria-label="Woche 2: Datenreinigung">
+        <span class="nav-page-text">Woche 2: Datenreinigung</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

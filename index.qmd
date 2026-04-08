@@ -1,11 +1,61 @@
 ---
-title: "Willkommen zur Data Analysis Vorlesung"
+title: "Kurs-Dashboard"
 ---
 
-## Über diesen Kurs
-Hier lernst du, wie man Daten mit **Python** und **R** bändigt.
+::: {.grid}
 
-```{python}
-#| echo: true
-import pandas as pd
-print("Python ist bereit!")
+::: {.g-col-12 .g-col-md-4}
+::: {.card .p-3 .text-center}
+#### 📅 Aktuelle Woche
+**Woche 1**
+[ZUR VORLESUNG →](woche1.qmd){.btn .btn-primary .btn-sm .mt-2}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.card .p-3 .text-center}
+#### 🛠️ Setup Status
+Python & R bereit
+[Installationshilfe](setup.qmd){.text-muted .small}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.card .p-3 .text-center}
+#### 📈 Dein Fortschritt
+**10% abgeschlossen**
+:::
+:::
+
+:::
+
+## Vorlesungsinhalte
+
+::: {.grid}
+
+
+::: {.g-col-12 .g-col-md-6}
+::: {.card .p-4 .shadow-sm}
+#### 📝 Woche 1: Einführung
+In dieser Woche lernst du die Grundlagen von Data Analysis. Wir schauen uns die ersten Schritte in Python und R an.
+
+* **Inhalte:** Syntax, Variablen, erste Plots
+* **Dateien:** [Slides.pdf](#), [Daten.csv](#)
+* **Status:** [O] Noch nicht gestartet
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.card .p-4 .shadow-sm}
+#### 🧹 Woche 2: Datenreinigung
+Wie geht man mit fehlenden Werten um? (Tidy Data Prinzipien).
+
+* **Inhalte:** Pandas, Tidyverse, Regex
+* **Dateien:** [Übung.ipynb](#)
+* **Status:** [O] Gesperrt
+:::
+:::
+
+:::
+
+:::

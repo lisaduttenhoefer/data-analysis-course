@@ -2,15 +2,45 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Willkommen zur Data Analysis Vorlesung",
+    "title": "Kurs-Dashboard",
     "section": "",
-    "text": "Hier lernst du, wie man Daten mit Python und R bändigt.\n#| echo: true import pandas as pd print(“Python ist bereit!”)"
+    "text": "Woche 1 ZUR VORLESUNG →\n\n\n\n\n\nPython & R bereit Installationshilfe\n\n\n\n\n\n10% abgeschlossen",
+    "crumbs": [
+      "Überblick",
+      "Dashboard"
+    ]
   },
   {
     "objectID": "index.html#über-diesen-kurs",
     "href": "index.html#über-diesen-kurs",
     "title": "Willkommen zur Data Analysis Vorlesung",
     "section": "",
-    "text": "Hier lernst du, wie man Daten mit Python und R bändigt.\n#| echo: true import pandas as pd print(“Python ist bereit!”)"
+    "text": "Hier lernst du, wie man Daten mit Python und R bändigt.\n#| echo: true import pandas as pd print(“Python ist bereit!”)",
+    "crumbs": [
+      "Überblick",
+      "Dashboard"
+    ]
+  },
+  {
+    "objectID": "woche1.html",
+    "href": "woche1.html",
+    "title": "Woche 1: Einführung",
+    "section": "",
+    "text": "Hier ist der Einführungstext, den jeder Student liest, egal welche Sprache er gewählt hat. Wir klären heute die absoluten Grundlagen.\n\nPython-Inhalte\nDieser Block wird nur angezeigt, wenn oben “Python” ausgewählt ist.\nHier ist das erste Python-Beispiel:\nimport pandas as pd print(“Python ist bereit für Woche 1!”)",
+    "crumbs": [
+      "Vorlesungen",
+      "Woche 1: Einführung"
+    ]
+  },
+  {
+    "objectID": "index.html#vorlesungsinhalte",
+    "href": "index.html#vorlesungsinhalte",
+    "title": "Kurs-Dashboard",
+    "section": "Vorlesungsinhalte",
+    "text": "Vorlesungsinhalte\n\n\n\n📝 Woche 1: Einführung\nIn dieser Woche lernst du die Grundlagen von Data Analysis. Wir schauen uns die ersten Schritte in Python und R an.\n\nInhalte: Syntax, Variablen, erste Plots\nDateien: Slides.pdf, Daten.csv\nStatus: [O] Noch nicht gestartet\n\n\n\n\n\n🧹 Woche 2: Datenreinigung\nWie geht man mit fehlenden Werten um? (Tidy Data Prinzipien).\n\nInhalte: Pandas, Tidyverse, Regex\nDateien: Übung.ipynb\nStatus: [O] Gesperrt\n\n\n\n\n:::",
+    "crumbs": [
+      "Überblick",
+      "Dashboard"
+    ]
   }
 ]

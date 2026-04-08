@@ -2,19 +2,40 @@ project:
   type: website
 
 website:
-  title: "Data Analysis Vorlesung"
+  title: "Data Analysis 2026"
+  page-navigation: true # Wichtig für die Sidebar-Navigation
+
+  # Die Sidebar links (ähnlich wie im Bild, aber für die Wochen)
+  sidebar:
+    style: "floating"
+    collapse-level: 1
+    contents:
+      - section: "Überblick"
+        contents:
+          - href: index.qmd
+            text: "Dashboard"
+      - section: "Vorlesungen"
+        contents:
+          - href: woche1.qmd
+            text: "Woche 1: Einführung"
+          - href: woche2.qmd
+            text: "Woche 2: Datenreinigung"
+
+  # Die Header-Leiste (Navbar) - Hier kommt der Sprachschalter hin!
   navbar:
-    background: primary # Das gibt uns das kräftige Blau/Lila aus Soft UI
-    left:
-      - href: index.qmd
-        text: Home
-      - href: vorlesung1.qmd
-        text: Einführung Python/R
+    background: "#fff"
+    right:
+      - text: "Python"
+        id: lang-switch-python
+      - text: "R"
+        id: lang-switch-r
 
 format:
   html:
-    theme:
-      light: [cosmo, custom.scss] # Cosmo ist nah am Soft UI Stil
-    toc: true # Inhaltsverzeichnis rechts
-    code-copy: true
-    code-fold: show # Studenten können den Code ein/ausklappen
+    theme: 
+      - cosmo
+      - custom.scss
+    toc: true
+    fontsize: 0.95rem
+    mainfont: "Open Sans"
+    include-in-header: language-switch.html # Hier laden wir die externe Datei
