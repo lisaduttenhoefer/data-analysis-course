@@ -4,42 +4,54 @@ $primary: $dark-green;
 
 /*-- scss:rules --*/
 
-// Fix für die Navbar-Buttons (Pillen-Design erzwingen)
-#lang-switch-python, #lang-switch-r {
-  background: #e9ecef !important;
-  border-radius: 50px !important;
-  padding: 5px 20px !important;
-  margin: 5px !important;
-  color: #67748e !important;
-  font-weight: 600 !important;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.active-lang {
-  background: linear-gradient(310deg, #1a4d1a, #2d7a2d) !important;
-  color: white !important;
-}
-
-// Karten-Layout fixen
-.card {
-  border: none !important;
-  border-radius: 1rem !important;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
-  background-color: white;
-  margin-bottom: 20px;
-  height: 100%; // Damit alle Karten in einer Reihe gleich hoch sind
-}
-
-// Das Grid auf der Startseite zentrieren
-.column-screen-inset {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-// Sidebar optisch trennen
+// Sidebar Design: Ganz links, Dunkelgrün, Weiße fette Schrift
 #quarto-sidebar {
+  background-color: $dark-green !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding-top: 20px;
   border-right: none !important;
+
+  // Hier erzwingen wir Weiß für alle Link-Zustände
+  .sidebar-item-text, 
+  .sidebar-link, 
+  .sidebar-navigation, 
+  .sidebar-title,
+  a {
+    color: #ffffff !important;
+    font-weight: 800 !important; // Extra fett für die Deutlichkeit
+    text-decoration: none !important;
+    opacity: 1 !important; // Sicherstellen, dass nichts ausgegraut ist
+  }
+
+  // Aktive Seite in der Sidebar (optional: etwas heller hinterlegen)
+  .sidebar-item-text.active,
+  .sidebar-link.active {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 0.5rem;
+  }
+}
+
+// Damit der Hauptinhalt nicht unter der fixierten Sidebar verschwindet
+@media (min-width: 992px) {
+  #quarto-content {
+    margin-left: 20px; // Abstand zur Sidebar justieren
+  }
+}
+
+.progress {
+  background-color: #e9ecef;
+  border-radius: 50px;
+  overflow: hidden;
+  border: 1px solid #ced4da;
+}
+
+.progress-bar {
+  transition: width 0.6s ease;
+  font-weight: 800;
+  font-size: 0.75rem;
 }

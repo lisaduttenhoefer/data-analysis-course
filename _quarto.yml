@@ -1,41 +1,59 @@
 project:
   type: website
 
-website:
-  title: "Data Analysis 2026"
-  page-navigation: true # Wichtig für die Sidebar-Navigation
+filters:
+  - shinylive
 
-  # Die Sidebar links (ähnlich wie im Bild, aber für die Wochen)
+engine: knitr # Oder jupyter, falls du nur Python nutzt. knitr kann beides.
+
+website:
+  # Titel mit HTML für Fettdruck und Umbruch
+  title: "<b>METHODEN DER BIOINFORMATIK</b><br>Einführung Datenanalyse"
+  
   sidebar:
     style: "floating"
     collapse-level: 1
     contents:
-      - section: "Überblick"
-        contents:
-          - href: index.qmd
-            text: "Dashboard"
-      - section: "Vorlesungen"
+      - text: "WELCOME"
+        href: index.qmd
+      - section: "VORLESUNGEN"
         contents:
           - href: woche1.qmd
-            text: "Woche 1: Einführung"
+            text: "Einführung"
           - href: woche2.qmd
-            text: "Woche 2: Datenreinigung"
+            text: "Datentypen"
+          - href: woche3.qmd
+            text: "Graphische Darstellung"
+          - href: woche4.qmd
+            text: "Beschreibende Statistik"
+          - href: woche5.qmd
+            text: "Hierarchisches Clustering"
+          - href: woche6.qmd
+            text: "Hauptkomponentenanalyse"
+          - href: woche7.qmd
+            text: "Wahrscheinlichkeitsverteilungen"
+          - href: woche8.qmd
+            text: "Konfidenzintervalle"
+          - href: woche9.qmd
+            text: "t-Test & Wilcoxon-Test"
+          - href: woche10.qmd
+            text: "Proportionstests"
+          - href: woche11.qmd
+            text: "Power & Multiples Testen"
+          - href: woche12.qmd
+            text: "Regressionsanalyse"
 
-  # Die Header-Leiste (Navbar) - Hier kommt der Sprachschalter hin!
   navbar:
-    background: "#fff"
+    background: "#ffffff"
     right:
-      - text: "Python"
-        id: lang-switch-python
+      - text: "PYTHON"
+        href: "#"
       - text: "R"
-        id: lang-switch-r
+        href: "#"
 
 format:
   html:
     theme: 
       - cosmo
       - custom.scss
-    toc: true
-    fontsize: 0.95rem
-    mainfont: "Open Sans"
-    include-in-header: language-switch.html # Hier laden wir die externe Datei
+    include-in-header: language-switch.html

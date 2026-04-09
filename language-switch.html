@@ -1,57 +1,71 @@
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const pyBtn = document.getElementById('nav-menu-lang-switch-python') || document.getElementById('lang-switch-python');
-      const rBtn = document.getElementById('nav-menu-lang-switch-r') || document.getElementById('lang-switch-r');
-    
-      function switchLang(lang) {
-        // Blöcke umschalten
+  document.addEventListener('DOMContentLoaded', function() {
+    function applyFinalStyle() {
+      // Wir suchen alle Links in der Navbar
+      const links = document.querySelectorAll('.navbar-nav .nav-link');
+      let pyBtn, rBtn;
+  
+      links.forEach(link => {
+        if (link.textContent.trim() === 'PYTHON') pyBtn = link;
+        if (link.textContent.trim() === 'R') rBtn = link;
+      });
+  
+      if (!pyBtn || !rBtn) {
+        setTimeout(applyFinalStyle, 200);
+        return;
+      }
+  
+      const darkGreen = "#1a4d1a";
+  
+      function updateView(lang) {
         document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
         document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
         
-        // Style umschalten
-        if (lang === 'python') {
-          pyBtn.classList.add('active-lang');
-          rBtn.classList.remove('active-lang');
-        } else {
-          rBtn.classList.add('active-lang');
-          pyBtn.classList.remove('active-lang');
-        }
+        // Style Python
+        pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+        
+        // Style R
+        rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+        
         localStorage.setItem('da_course_lang', lang);
       }
-    
-      if (pyBtn && rBtn) {
-        // Standard-Link-Verhalten deaktivieren
-        [pyBtn, rBtn].forEach(btn => {
-          btn.href = "javascript:void(0)";
-          btn.classList.add('lang-btn'); // Klasse für das CSS hinzufügen
-        });
-    
-        pyBtn.onclick = (e) => { e.preventDefault(); switchLang('python'); };
-        rBtn.onclick = (e) => { e.preventDefault(); switchLang('r'); };
+  
+      pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
+      rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
+  
+      updateView(localStorage.getItem('da_course_lang') || 'python');
+    }
+    applyFinalStyle();
+  });
+
+  // Funktion zum Markieren einer Aufgabe als erledigt
+  function markTaskDone(taskId) {
+      localStorage.setItem('task_' + taskId, 'true');
+      updateGlobalProgress();
+  }
+
+  // Berechnet den Gesamtfortschritt und aktualisiert den Balken
+  function updateGlobalProgress() {
+      const totalWeeks = 12; // Deine Anzahl an Wochen
+      let doneCount = 0;
+      
+      for (let i = 1; i <= totalWeeks; i++) {
+          if (localStorage.getItem('task_woche' + i) === 'true') {
+              doneCount++;
+          }
       }
-    
-      switchLang(localStorage.getItem('da_course_lang') || 'python');
-    });
-    </script>
-    
-    <style>
-    /* Wir packen das CSS für die Buttons direkt hier rein, um sicherzugehen */
-    .lang-btn {
-      background: #e9ecef !important;
-      border-radius: 50px !important;
-      padding: 5px 20px !important;
-      margin: 5px !important;
-      color: #67748e !important;
-      font-weight: 600 !important;
-      text-decoration: none !important;
-      display: inline-block !important;
-      line-height: 1.5 !important;
-      transition: all 0.2s ease;
-    }
-    
-    .active-lang {
-      background: linear-gradient(310deg, #1a4d1a, #2d7a2d) !important;
-      color: white !important;
-      box-shadow: 0 4px 7px -1px rgba(0,0,0,0.11);
-    }
-    </style>
+      
+      const percent = Math.round((doneCount / totalWeeks) * 100);
+      const bar = document.getElementById('course-progress-bar');
+      const text = document.getElementById('progress-text');
+      
+      if (bar && text) {
+          bar.style.width = percent + '%';
+          bar.innerText = percent + '%';
+          text.innerText = doneCount + ' von ' + totalWeeks + ' Wochen bearbeitet';
+      }
+  }
+
+  // Beim Laden der Seite den Balken initialisieren
+  document.addEventListener('DOMContentLoaded', updateGlobalProgress);
+  </script>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Woche 1: Einführung – Data Analysis 2026</title>
+<title>Woche 1: Einführung – METHODEN DER BIOINFORMATIKEinführung Datenanalyse</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,8 +33,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./woche2.qmd" rel="next">
-<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -44,7 +42,12 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-b3dcacab6e52f22fe8a8bd1cbc0acf52.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-224df184316e4af193b04b5f77b39f4f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/run-python-blocks.js" type="module"></script>
+<link href="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/shinylive.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -73,51 +76,81 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      function switchLang(lang) {
-        // 1. Blöcke umschalten
-        document.querySelectorAll('.lang-python').forEach(el => {
-            el.style.display = (lang === 'python' ? 'block' : 'none');
-        });
-        document.querySelectorAll('.lang-r').forEach(el => {
-            el.style.display = (lang === 'r' ? 'block' : 'none');
-        });
+  document.addEventListener('DOMContentLoaded', function() {
+    function applyFinalStyle() {
+      // Wir suchen alle Links in der Navbar
+      const links = document.querySelectorAll('.navbar-nav .nav-link');
+      let pyBtn, rBtn;
+  
+      links.forEach(link => {
+        if (link.textContent.trim() === 'PYTHON') pyBtn = link;
+        if (link.textContent.trim() === 'R') rBtn = link;
+      });
+  
+      if (!pyBtn || !rBtn) {
+        setTimeout(applyFinalStyle, 200);
+        return;
+      }
+  
+      const darkGreen = "#1a4d1a";
+  
+      function updateView(lang) {
+        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
         
-        // 2. Button-Styling umschalten
-        const pyBtn = document.getElementById('lang-switch-python');
-        const rBtn = document.getElementById('lang-switch-r');
+        // Style Python
+        pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
         
-        if (pyBtn && rBtn) {
-          if (lang === 'python') {
-            pyBtn.classList.add('active-lang');
-            rBtn.classList.remove('active-lang');
-          } else {
-            rBtn.classList.add('active-lang');
-            pyBtn.classList.remove('active-lang');
-          }
-        }
+        // Style R
+        rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
         
         localStorage.setItem('da_course_lang', lang);
       }
-    
-      // Event Listener
-      const pyBtn = document.getElementById('lang-switch-python');
-      const rBtn = document.getElementById('lang-switch-r');
+  
+      pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
+      rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
+  
+      updateView(localStorage.getItem('da_course_lang') || 'python');
+    }
+    applyFinalStyle();
+  });
+
+  // Funktion zum Markieren einer Aufgabe als erledigt
+  function markTaskDone(taskId) {
+      localStorage.setItem('task_' + taskId, 'true');
+      updateGlobalProgress();
+  }
+
+  // Berechnet den Gesamtfortschritt und aktualisiert den Balken
+  function updateGlobalProgress() {
+      const totalWeeks = 12; // Deine Anzahl an Wochen
+      let doneCount = 0;
       
-      if (pyBtn && rBtn) {
-        pyBtn.onclick = () => switchLang('python');
-        rBtn.onclick = () => switchLang('r');
+      for (let i = 1; i <= totalWeeks; i++) {
+          if (localStorage.getItem('task_woche' + i) === 'true') {
+              doneCount++;
+          }
       }
-    
-      // Initiale Wahl laden
-      switchLang(localStorage.getItem('da_course_lang') || 'python');
-    });
-    </script>
+      
+      const percent = Math.round((doneCount / totalWeeks) * 100);
+      const bar = document.getElementById('course-progress-bar');
+      const text = document.getElementById('progress-text');
+      
+      if (bar && text) {
+          bar.style.width = percent + '%';
+          bar.innerText = percent + '%';
+          text.innerText = doneCount + ' von ' + totalWeeks + ' Wochen bearbeitet';
+      }
+  }
+
+  // Beim Laden der Seite den Balken initialisieren
+  document.addEventListener('DOMContentLoaded', updateGlobalProgress);
+  </script>
 
 
 </head>
 
-<body class="nav-sidebar floating nav-fixed quarto-light">
+<body class="nav-sidebar floating nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -125,7 +158,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Data Analysis 2026</span>
+    <span class="navbar-title"><b>METHODEN DER BIOINFORMATIK</b><br>Einführung Datenanalyse</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -135,18 +168,12 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <span class="nav-link">
-    <i class="bi bi-python" role="img">
-</i> 
-<span class="menu-text">Python</span>
-    </span>
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">PYTHON</span></a>
   </li>  
   <li class="nav-item">
-    <span class="nav-link">
-    <i class="bi bi-r-circle" role="img">
-</i> 
-<span class="menu-text">R</span>
-    </span>
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">R</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -159,7 +186,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./woche1.html">Vorlesungen</a></li><li class="breadcrumb-item"><a href="./woche1.html">Woche 1: Einführung</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./woche1.html">VORLESUNGEN</a></li><li class="breadcrumb-item"><a href="./woche1.html">Einführung</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -171,42 +198,91 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
- <span class="menu-text">Überblick</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dashboard</span></a>
+ <span class="menu-text">WELCOME</span></a>
   </div>
 </li>
-      </ul>
-  </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Vorlesungen</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">VORLESUNGEN</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./woche1.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Woche 1: Einführung</span></a>
+ <span class="menu-text">Einführung</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./woche2.qmd" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Woche 2: Datenreinigung</span></a>
+ <span class="menu-text">Datentypen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche3.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graphische Darstellung</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche4.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Beschreibende Statistik</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche5.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchisches Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche6.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hauptkomponentenanalyse</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche7.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wahrscheinlichkeitsverteilungen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche8.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Konfidenzintervalle</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche9.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">t-Test &amp; Wilcoxon-Test</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche10.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Proportionstests</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche11.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Power &amp; Multiples Testen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woche12.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Regressionsanalyse</span></a>
   </div>
 </li>
       </ul>
@@ -216,19 +292,11 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#python-inhalte" id="toc-python-inhalte" class="nav-link active" data-scroll-target="#python-inhalte">Python-Inhalte</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./woche1.html">Vorlesungen</a></li><li class="breadcrumb-item"><a href="./woche1.html">Woche 1: Einführung</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./woche1.html">VORLESUNGEN</a></li><li class="breadcrumb-item"><a href="./woche1.html">Einführung</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Woche 1: Einführung</h1>
 </div>
@@ -247,12 +315,149 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Hier ist der Einführungstext, den jeder Student liest, egal welche Sprache er gewählt hat. Wir klären heute die absoluten Grundlagen.</p>
-<section id="python-inhalte" class="level1 lang-python">
-<h1>Python-Inhalte</h1>
-<p>Dieser Block wird nur angezeigt, wenn oben “Python” ausgewählt ist.</p>
-<p>Hier ist das erste Python-Beispiel:</p>
-<p>import pandas as pd print(“Python ist bereit für Woche 1!”)</p>
+<p>Hier ist der Einführungstext, den jeder Student liest. Wir klären heute die absoluten Grundlagen der Bioinformatik-Datenanalyse.</p>
+<section id="python-inhalte" class="level3 lang-python">
+<h3 class="anchored" data-anchor-id="python-inhalte">Python-Inhalte</h3>
+<p>Dieser Block wird nur angezeigt, wenn oben <strong>PYTHON</strong> ausgewählt ist.</p>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 500
+
+## file: requirements.txt
+pandas
+shiny
+
+## file: app.py
+import pandas as pd
+from shiny import App, render, ui, reactive
+
+app_ui = ui.page_fluid(
+    ui.h4("Interaktiver Python-Code"),
+    # Das Textareafeld enthält den Code
+    ui.input_text_area("code_input", "Code bearbeiten:", 
+        value="""# Ändere die Werte im Datensatz!
+data = {
+    'Gen': ['BRCA1', 'TP53', 'EGFR', 'MYC'],
+    'Expression': [12.5, 8.2, 15.1, 9.4]
+}
+df = pd.DataFrame(data)
+print(f'Durchschnitt: {df["Expression"].mean():.2f}')
+print(df)""", 
+        width="100%", height="200px"),
+    
+    # Der "Play"-Button
+    ui.input_action_button("run_code", "CODE AUSFÜHREN", class_="btn-success"),
+    
+    ui.hr(),
+    ui.h5("Ergebnis:"),
+    ui.output_code("console_output")
+)
+
+def server(input, output, session):
+    @render.code
+    @reactive.event(input.run_code) # Reagiert nur auf den Button-Klick
+    def console_output():
+        # Achtung: exec() führt den String als Python-Code aus
+        # Wir fangen den Print-Output ab
+        import sys
+        from io import StringIO
+        
+        old_stdout = sys.stdout
+        redirected_output = StringIO()
+        sys.stdout = redirected_output
+        
+        try:
+            # Führt den Code aus dem Textfeld aus
+            exec(input.code_input(), {"pd": pd})
+        except Exception as e:
+            print(f"Fehler im Code: {e}")
+        
+        sys.stdout = old_stdout
+        return redirected_output.getvalue()
+
+app = App(app_ui, server)</code></pre>
+</section>
+<section id="r-inhalte" class="level3 lang-r">
+<h3 class="anchored" data-anchor-id="r-inhalte">R-Inhalte</h3>
+<p>Dieser Block wird nur angezeigt, wenn oben <strong>R</strong> ausgewählt ist.</p>
+<p>Hier ist das interaktive R-Beispiel für deine erste Analyse:</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 500
+library(shiny)
+
+ui &lt;- fluidPage(
+  h4("Interaktiver R-Code"),
+  textAreaInput("code_input", "Code bearbeiten:", 
+    value = "genes &lt;- c('BRCA1', 'TP53', 'EGFR', 'MYC')\nexpression &lt;- c(12.5, 8.2, 15.1, 9.4)\ndf &lt;- data.frame(genes, expression)\n\nprint('Willkommen zur Datenanalyse mit R!')\nprint(df)\ncat('\\nDurchschnitt:', mean(df$expression))", 
+    width = "100%", height = "200px"),
+  
+  actionButton("run_code", "CODE AUSFÜHREN", class = "btn-success"),
+  
+  hr(),
+  h5("Ergebnis:"),
+  verbatimTextOutput("console_output")
+)
+
+server &lt;- function(input, output, session) {
+  # Reagiert nur auf den Button
+  observeEvent(input$run_code, {
+    output$console_output &lt;- renderPrint({
+      # Führt den Text als R-Code aus
+      tryCatch({
+        eval(parse(text = input$code_input))
+      }, error = function(e) {
+        cat("Fehler im Code:\n", e$message)
+      })
+    })
+  })
+}
+
+shinyApp(ui, server)</code></pre>
+</section>
+<section id="wissenstest" class="level2">
+<h2 class="anchored" data-anchor-id="wissenstest">Wissenstest</h2>
+<p>Beantworte die Frage korrekt, um deinen Fortschritt für diese Woche auf dem Dashboard zu speichern.</p>
+<div class="card p-4 shadow-sm">
+<h5 style="color: #1a4d1a; font-weight: 800;" class="anchored">
+QUIZ: GRUNDLAGEN WOCHE 1
+</h5>
+<p>
+Welche Programmiersprachen sind im Kurs für statistische Tests vorgesehen?
+</p>
+<div class="form-check mb-2">
+  <input class="form-check-input" type="radio" name="q1" id="q1a">
+  <label class="form-check-label" for="q1a">Nur HTML und CSS</label>
+</div>
+<div class="form-check mb-3">
+  <input class="form-check-input" type="radio" name="q1" id="q1b">
+  <label class="form-check-label" for="q1b">R und Python</label>
+</div>
+<button onclick="checkQuiz()" class="btn btn-primary w-100" style="background-color: #1a4d1a; border: none; font-weight: 700;">
+  ANTWORT PRÜFEN
+</button>
+<div id="quiz-feedback" class="mt-3 fw-bold text-center"></div>
+<script>
+function checkQuiz() {
+  const isCorrect = document.getElementById('q1b').checked;
+  const feedback = document.getElementById('quiz-feedback');
+  if (isCorrect) {
+    feedback.innerHTML = "RICHTIG! Der Fortschritt für Woche 1 wurde gespeichert.";
+    feedback.style.color = "#1a4d1a";
+    if (typeof markTaskDone === 'function') {
+      markTaskDone('woche1');
+    }
+  } else {
+    feedback.innerHTML = "Leider falsch, probier es nochmal.";
+    feedback.style.color = "#d9534f";
+  }
+}
+</script>
+</div>
 
 
 </section>
@@ -658,18 +863,6 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Dashboard">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Dashboard</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="./woche2.qmd" class="pagination-link" aria-label="Woche 2: Datenreinigung">
-        <span class="nav-page-text">Woche 2: Datenreinigung</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 
 

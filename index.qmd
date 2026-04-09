@@ -2,60 +2,75 @@
 title: "Kurs-Dashboard"
 ---
 
-::: {.grid}
+```{=html}
+<style>
+.card {
+  border-radius: 12px !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+.card:hover {
+  background-color: #1a4d1a !important;
+  color: white !important;
+}
+.card:hover a,
+.card:hover small,
+.card:hover .text-muted {
+  color: white !important;
+}
+.card:hover .progress {
+  opacity: 0.7;
+}
+</style>
+```
 
-::: {.g-col-12 .g-col-md-4}
+::: {.grid}
+::: {.g-col-12 .g-col-sm-6 .g-col-md-4}
 ::: {.card .p-3 .text-center}
-#### 📅 Aktuelle Woche
+#### Aktuelle Woche
 **Woche 1**
 [ZUR VORLESUNG →](woche1.qmd){.btn .btn-primary .btn-sm .mt-2}
 :::
 :::
-
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-sm-6 .g-col-md-4}
 ::: {.card .p-3 .text-center}
-#### 🛠️ Setup Status
-Python & R bereit
+#### Setup Status
+Python und R bereit
 [Installationshilfe](setup.qmd){.text-muted .small}
 :::
 :::
-
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-sm-6 .g-col-md-4}
 ::: {.card .p-3 .text-center}
-#### 📈 Dein Fortschritt
-**10% abgeschlossen**
+#### Fortschritt
+::: {.progress .mb-2 style="height: 20px; border-radius: 8px;"}
+<div id="course-progress-bar" class="progress-bar" role="progressbar" style="width: 0%; background-color: #1a4d1a;">0%</div>
+:::
+<small id="progress-text">0 von 12 Wochen bearbeitet</small>
 :::
 :::
-
 :::
 
 ## Vorlesungsinhalte
 
 ::: {.grid}
+::: {.g-col-12 .g-col-sm-6}
+::: {.card .p-4}
+#### Woche 1: Einführung
+In dieser Woche werden die Grundlagen der Bioinformatik-Datenanalyse vermittelt.
 
-
-::: {.g-col-12 .g-col-md-6}
-::: {.card .p-4 .shadow-sm}
-#### 📝 Woche 1: Einführung
-In dieser Woche lernst du die Grundlagen von Data Analysis. Wir schauen uns die ersten Schritte in Python und R an.
-
-* **Inhalte:** Syntax, Variablen, erste Plots
+* **Inhalte:** Syntax, Variablen, grafische Grundlagen
 * **Dateien:** [Slides.pdf](#), [Daten.csv](#)
-* **Status:** [O] Noch nicht gestartet
+* **Status:** Noch nicht gestartet
 :::
 :::
+::: {.g-col-12 .g-col-sm-6}
+::: {.card .p-4}
+#### Woche 2: Datentypen
+Unterscheidung zwischen diskreten und stetigen Daten sowie deren Handhabung in der Programmierung.
 
-::: {.g-col-12 .g-col-md-6}
-::: {.card .p-4 .shadow-sm}
-#### 🧹 Woche 2: Datenreinigung
-Wie geht man mit fehlenden Werten um? (Tidy Data Prinzipien).
-
-* **Inhalte:** Pandas, Tidyverse, Regex
-* **Dateien:** [Übung.ipynb](#)
-* **Status:** [O] Gesperrt
+* **Inhalte:** Faktoren, Listen, Dataframes
+* **Dateien:** [Uebung.ipynb](#)
+* **Status:** Gesperrt
 :::
 :::
-
-:::
-
 :::
