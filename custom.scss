@@ -1,10 +1,9 @@
 /*-- scss:defaults --*/
 $dark-green: #1a4d1a;
+$light-green-bg: #ebf1e7; // Wir definieren deine neue Farbe als Variable
 $primary: $dark-green;
 
 /*-- scss:rules --*/
-
-// Sidebar Design: Ganz links, Dunkelgrün, Weiße fette Schrift
 #quarto-sidebar {
   background-color: $dark-green !important;
   margin: 0 !important;
@@ -15,20 +14,32 @@ $primary: $dark-green;
   top: 0;
   padding-top: 20px;
   border-right: none !important;
+  width: 280px !important; // ← Sidebar breiter (Standard ist ~250px)
 
-  // Hier erzwingen wir Weiß für alle Link-Zustände
   .sidebar-item-text, 
   .sidebar-link, 
   .sidebar-navigation, 
   .sidebar-title,
   a {
     color: #ffffff !important;
-    font-weight: 800 !important; // Extra fett für die Deutlichkeit
+    font-weight: 800 !important;
     text-decoration: none !important;
-    opacity: 1 !important; // Sicherstellen, dass nichts ausgegraut ist
+    opacity: 1 !important;
+    font-size: 1rem !important; // ← Text in der Sidebar größer
   }
 
-  // Aktive Seite in der Sidebar (optional: etwas heller hinterlegen)
+  // Titel oben links in der Sidebar
+  .sidebar-title, 
+  .title-block-header,
+  .navbar-title,
+  .sidebar-logo p,
+  #quarto-sidebar-header {
+    font-size: 1.4rem !important; // ← Seitentitel größer
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    line-height: 1.3 !important;
+  }
+
   .sidebar-item-text.active,
   .sidebar-link.active {
     background-color: rgba(255, 255, 255, 0.15) !important;
@@ -36,20 +47,42 @@ $primary: $dark-green;
   }
 }
 
-// Damit der Hauptinhalt nicht unter der fixierten Sidebar verschwindet
+// Hauptinhalt entsprechend der breiteren Sidebar verschieben
 @media (min-width: 992px) {
   #quarto-content {
-    margin-left: 20px; // Abstand zur Sidebar justieren
+    margin-left: 280px !important; // ← Muss mit Sidebar-Breite übereinstimmen
+  }
+}
+// DEINE NEUE QUIZ-KARTE
+.quiz-card {
+  background-color: $light-green-bg !important;
+  border-radius: 15px !important; // Runde Ecken
+  padding: 25px !important;
+  margin-top: 20px !important;
+  margin-bottom: 30px !important;
+  border: none !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); // Ein ganz dezenter Schatten
+
+  // Die Überschrift im Quiz automatisch dunkelgrün machen
+  h5, h4 {
+    color: $dark-green !important;
+    font-weight: 800 !important;
+    margin-top: 0;
+  }
+  
+  // Textfarbe für normales P im Quiz etwas dunkler für bessere Lesbarkeit
+  p {
+    color: #2c3e50;
   }
 }
 
+// (Der restliche Progress-Bar Code)
 .progress {
   background-color: #e9ecef;
   border-radius: 50px;
   overflow: hidden;
   border: 1px solid #ced4da;
 }
-
 .progress-bar {
   transition: width 0.6s ease;
   font-weight: 800;

@@ -1,5 +1,8 @@
 project:
   type: website
+  render:
+    - "*.qmd"
+    - "!test_qmds/"  # Das Ausrufezeichen schließt den Ordner aus
 
 filters:
   - shinylive
@@ -16,33 +19,14 @@ website:
     contents:
       - text: "WELCOME"
         href: index.qmd
-      - section: "VORLESUNGEN"
+      - section: "KURS-INHALTE"
         contents:
-          - href: woche1.qmd
-            text: "Einführung"
-          - href: woche2.qmd
-            text: "Datentypen"
-          - href: woche3.qmd
-            text: "Graphische Darstellung"
-          - href: woche4.qmd
-            text: "Beschreibende Statistik"
-          - href: woche5.qmd
-            text: "Hierarchisches Clustering"
-          - href: woche6.qmd
-            text: "Hauptkomponentenanalyse"
-          - href: woche7.qmd
-            text: "Wahrscheinlichkeitsverteilungen"
-          - href: woche8.qmd
-            text: "Konfidenzintervalle"
-          - href: woche9.qmd
-            text: "t-Test & Wilcoxon-Test"
-          - href: woche10.qmd
-            text: "Proportionstests"
-          - href: woche11.qmd
-            text: "Power & Multiples Testen"
-          - href: woche12.qmd
-            text: "Regressionsanalyse"
+          - href: 0_markdown.qmd
+            text: "Getting started"
+          - href: 1_datentypen.qmd
+            text: "WOCHE 1: Datentypen"
 
+          
   navbar:
     background: "#ffffff"
     right:
@@ -57,3 +41,7 @@ format:
       - cosmo
       - custom.scss
     include-in-header: language-switch.html
+
+
+execute:
+  freeze: auto  # 'auto' bedeutet: Nur re-render, wenn sich die .qmd geändert hat

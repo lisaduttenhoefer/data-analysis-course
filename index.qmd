@@ -29,7 +29,7 @@ title: "Kurs-Dashboard"
 ::: {.card .p-3 .text-center}
 #### Aktuelle Woche
 **Woche 1**
-[ZUR VORLESUNG →](woche1.qmd){.btn .btn-primary .btn-sm .mt-2}
+[ZUR VORLESUNG →](woche0.qmd){.btn .btn-primary .btn-sm .mt-2}
 :::
 :::
 ::: {.g-col-12 .g-col-sm-6 .g-col-md-4}
