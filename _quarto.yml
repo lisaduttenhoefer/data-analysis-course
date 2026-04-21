@@ -11,7 +11,7 @@ engine: knitr # Oder jupyter, falls du nur Python nutzt. knitr kann beides.
 
 website:
   # Titel mit HTML für Fettdruck und Umbruch
-  title: "<b>METHODEN DER BIOINFORMATIK</b><br>Einführung Datenanalyse"
+  title: "<b>METHODS IN DATA ANALYSIS</b><br>Introduction lecture"
   
   sidebar:
     style: "floating"
@@ -19,12 +19,12 @@ website:
     contents:
       - text: "WELCOME"
         href: index.qmd
-      - section: "KURS-INHALTE"
+      - section: "COURSE-CONTENTS"
         contents:
           - href: 0_markdown.qmd
             text: "Getting started"
           - href: 1_datentypen.qmd
-            text: "WOCHE 1: Datentypen"
+            text: "WEEK 1: Datatypes"
 
           
   navbar:
@@ -44,4 +44,6 @@ format:
 
 
 execute:
+  enabled: false
   freeze: auto  # 'auto' bedeutet: Nur re-render, wenn sich die .qmd geändert hat
+  cache: true
