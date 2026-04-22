@@ -40,7 +40,9 @@ format:
     theme: 
       - cosmo
       - custom.scss
-    include-in-header: language-switch.html
+    include-in-header: 
+      - language-switch.html
+      - supabase-auth.html
 
 
 execute:

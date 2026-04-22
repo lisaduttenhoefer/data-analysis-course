@@ -146,6 +146,138 @@ ul.task-list li input[type="checkbox"] {
   // Beim Laden der Seite den Balken initialisieren
   document.addEventListener('DOMContentLoaded', updateGlobalProgress);
   </script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// ── Supabase Config ──────────────────────────────────────────────────
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Auth State ───────────────────────────────────────────────────────
+window._sbUser = null;
+
+async function sbInit() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    window._sbUser = session.user;
+    renderUserBadge(session.user.email);
+  } else {
+    renderLoginButton();
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      window._sbUser = session.user;
+      renderUserBadge(session.user.email);
+      // Re-render progress after login
+      if (typeof updateWeekBar === 'function') updateWeekBar();
+      if (typeof render === 'function') render();
+    } else {
+      window._sbUser = null;
+      renderLoginButton();
+    }
+  });
+}
+
+function renderLoginButton() {
+  const el = document.getElementById('sb-auth-widget');
+  if (!el) return;
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <input id="sb-email" type="email" placeholder="your@email.com"
+        style="border:1px solid #1a4d1a;border-radius:50px;padding:4px 14px;font-size:0.85rem;outline:none;">
+      <button onclick="sbLogin()"
+        style="background:#1a4d1a;color:white;border:none;border-radius:50px;padding:5px 16px;font-size:0.85rem;font-weight:700;cursor:pointer;">
+        Login
+      </button>
+    </div>`;
+}
+
+function renderUserBadge(email) {
+  const el = document.getElementById('sb-auth-widget');
+  if (!el) return;
+  const short = email.split('@')[0];
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:0.85rem;color:#1a4d1a;font-weight:700;">👤 ${short}</span>
+      <button onclick="sbLogout()"
+        style="background:transparent;color:#1a4d1a;border:1px solid #1a4d1a;border-radius:50px;padding:3px 12px;font-size:0.8rem;cursor:pointer;">
+        Logout
+      </button>
+    </div>`;
+}
+
+async function sbLogin() {
+  const email = document.getElementById('sb-email').value.trim();
+  if (!email) return;
+  const { error } = await sb.auth.signInWithOtp({ email,
+    options: { shouldCreateUser: true }
+  });
+  if (error) {
+    alert('Error: ' + error.message);
+  } else {
+    alert('✅ Check your email for the login link!');
+  }
+}
+
+async function sbLogout() {
+  await sb.auth.signOut();
+}
+
+// ── Progress API ─────────────────────────────────────────────────────
+async function sbSetItem(key, value) {
+  // Always save to localStorage as fallback
+  try { localStorage.setItem(key, value); } catch(e) {}
+
+  if (!window._sbUser) return;
+  await sb.from('progress').upsert({
+    user_email: window._sbUser.email,
+    key: key,
+    value: value,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_email,key' });
+}
+
+async function sbGetItem(key) {
+  if (!window._sbUser) {
+    try { return localStorage.getItem(key); } catch(e) { return null; }
+  }
+  const { data, error } = await sb.from('progress')
+    .select('value')
+    .eq('user_email', window._sbUser.email)
+    .eq('key', key)
+    .single();
+  return data ? data.value : null;
+}
+
+async function sbGetAllProgress() {
+  if (!window._sbUser) return null;
+  const { data, error } = await sb.from('progress')
+    .select('key, value')
+    .eq('user_email', window._sbUser.email);
+  return data;
+}
+
+document.addEventListener('DOMContentLoaded', sbInit);
+</script>
+
+<!-- Auth Widget Container (wird in Navbar injiziert) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Widget in Navbar einfügen
+  function injectWidget() {
+    const navbar = document.querySelector('.navbar-nav');
+    if (!navbar) { setTimeout(injectWidget, 200); return; }
+    const div = document.createElement('div');
+    div.id = 'sb-auth-widget';
+    div.style.cssText = 'display:flex;align-items:center;margin-left:12px;';
+    navbar.parentElement.appendChild(div);
+  }
+  injectWidget();
+});
+</script>
 
 
 </head>

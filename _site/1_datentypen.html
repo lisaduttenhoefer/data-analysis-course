@@ -146,6 +146,138 @@ ul.task-list li input[type="checkbox"] {
   // Beim Laden der Seite den Balken initialisieren
   document.addEventListener('DOMContentLoaded', updateGlobalProgress);
   </script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// ── Supabase Config ──────────────────────────────────────────────────
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Auth State ───────────────────────────────────────────────────────
+window._sbUser = null;
+
+async function sbInit() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    window._sbUser = session.user;
+    renderUserBadge(session.user.email);
+  } else {
+    renderLoginButton();
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      window._sbUser = session.user;
+      renderUserBadge(session.user.email);
+      // Re-render progress after login
+      if (typeof updateWeekBar === 'function') updateWeekBar();
+      if (typeof render === 'function') render();
+    } else {
+      window._sbUser = null;
+      renderLoginButton();
+    }
+  });
+}
+
+function renderLoginButton() {
+  const el = document.getElementById('sb-auth-widget');
+  if (!el) return;
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <input id="sb-email" type="email" placeholder="your@email.com"
+        style="border:1px solid #1a4d1a;border-radius:50px;padding:4px 14px;font-size:0.85rem;outline:none;">
+      <button onclick="sbLogin()"
+        style="background:#1a4d1a;color:white;border:none;border-radius:50px;padding:5px 16px;font-size:0.85rem;font-weight:700;cursor:pointer;">
+        Login
+      </button>
+    </div>`;
+}
+
+function renderUserBadge(email) {
+  const el = document.getElementById('sb-auth-widget');
+  if (!el) return;
+  const short = email.split('@')[0];
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:0.85rem;color:#1a4d1a;font-weight:700;">👤 ${short}</span>
+      <button onclick="sbLogout()"
+        style="background:transparent;color:#1a4d1a;border:1px solid #1a4d1a;border-radius:50px;padding:3px 12px;font-size:0.8rem;cursor:pointer;">
+        Logout
+      </button>
+    </div>`;
+}
+
+async function sbLogin() {
+  const email = document.getElementById('sb-email').value.trim();
+  if (!email) return;
+  const { error } = await sb.auth.signInWithOtp({ email,
+    options: { shouldCreateUser: true }
+  });
+  if (error) {
+    alert('Error: ' + error.message);
+  } else {
+    alert('✅ Check your email for the login link!');
+  }
+}
+
+async function sbLogout() {
+  await sb.auth.signOut();
+}
+
+// ── Progress API ─────────────────────────────────────────────────────
+async function sbSetItem(key, value) {
+  // Always save to localStorage as fallback
+  try { localStorage.setItem(key, value); } catch(e) {}
+
+  if (!window._sbUser) return;
+  await sb.from('progress').upsert({
+    user_email: window._sbUser.email,
+    key: key,
+    value: value,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_email,key' });
+}
+
+async function sbGetItem(key) {
+  if (!window._sbUser) {
+    try { return localStorage.getItem(key); } catch(e) { return null; }
+  }
+  const { data, error } = await sb.from('progress')
+    .select('value')
+    .eq('user_email', window._sbUser.email)
+    .eq('key', key)
+    .single();
+  return data ? data.value : null;
+}
+
+async function sbGetAllProgress() {
+  if (!window._sbUser) return null;
+  const { data, error } = await sb.from('progress')
+    .select('key, value')
+    .eq('user_email', window._sbUser.email);
+  return data;
+}
+
+document.addEventListener('DOMContentLoaded', sbInit);
+</script>
+
+<!-- Auth Widget Container (wird in Navbar injiziert) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Widget in Navbar einfügen
+  function injectWidget() {
+    const navbar = document.querySelector('.navbar-nav');
+    if (!navbar) { setTimeout(injectWidget, 200); return; }
+    const div = document.createElement('div');
+    div.id = 'sb-auth-widget';
+    div.style.cssText = 'display:flex;align-items:center;margin-left:12px;';
+    navbar.parentElement.appendChild(div);
+  }
+  injectWidget();
+});
+</script>
 
 
 </head>
@@ -255,20 +387,17 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+
 <script>
 // ══════════════════════════════════════════════════════════════════════
 //  PROGRESS SYSTEM – Week 1
-//
-//  HOW CHUNK TRACKING WORKS:
-//  Each shinylive app contains a tags$script that registers a
-//  Shiny.addCustomMessageHandler("chunkRun", ...) which calls
-//  window.parent.postMessage(...) when the server sends the message.
-//  The parent page listens and writes to localStorage.
-//
-//  Key convention (must match index.qmd):
-//    chunk_{lang}_w1_c{N}      e.g.  chunk_r_w1_c3
-//    quiz_{lang}_w1_{quizId}   e.g.  quiz_py_w1_w1_q_vectors
 // ══════════════════════════════════════════════════════════════════════
+
+// 1. Initialisierung
+const SUPABASE_URL = 'DEINE_URL';
+const SUPABASE_KEY = 'DEIN_KEY';
+const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 var W1_CHUNK_COUNT = 28;
 var W1_QUIZ_IDS = ['w1_q_vectors','w1_q_matrices','w1_q_lists','w1_q_dataframes'];
@@ -276,46 +405,84 @@ var W1_QUIZ_IDS = ['w1_q_vectors','w1_q_matrices','w1_q_lists','w1_q_dataframes'
 function getLang() {
   try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e){ return 'python'; }
 }
-function markChunkDone(chunkId) {
-  localStorage.setItem('chunk_' + getLang() + '_' + chunkId, 'true');
+
+// 2. Funktion zum Speichern (Lokal + Supabase)
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value); 
+  
+  try {
+    const { data: { user } } = await sbClient.auth.getUser();
+    if (user) {
+      await sbClient.from('user_progress').upsert({ 
+        user_id: user.id, 
+        item_id: key,        // 'key' aus JS wird 'item_id' in SQL
+        completed: value === 'true' 
+      });
+    }
+  } catch (err) { console.error("Supabase Save Error:", err); }
+}
+
+async function markChunkDone(chunkId) {
+  const key = 'chunk_' + getLang() + '_' + chunkId;
+  await sbSaveProgress(key, 'true');
   updateWeekBar();
 }
-function markQuizDone(quizId) {
-  try { localStorage.setItem('quiz_' + getLang() + '_w1_' + quizId, 'true'); } catch(e){}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_' + getLang() + '_w1_' + quizId;
+  await sbSaveProgress(key, 'true');
   updateWeekBar();
 }
-function toggleSolution(id) {
-  var el = document.getElementById(id);
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-function updateWeekBar() {
+
+// 3. Fortschritt laden (Einmaliger Abruf für die ganze Seite)
+async function updateWeekBar() {
   var lang = getLang();
   var total = W1_CHUNK_COUNT + W1_QUIZ_IDS.length;
   var done = 0;
-  for (var i = 1; i <= W1_CHUNK_COUNT; i++) {
-    try { if (localStorage.getItem('chunk_' + lang + '_w1_c' + i) === 'true') done++; } catch(e){}
-  }
-  W1_QUIZ_IDS.forEach(function(id) {
-    try { if (localStorage.getItem('quiz_' + lang + '_w1_' + id) === 'true') done++; } catch(e){}
-  });
-  var pct = Math.round((done / total) * 100);
-  var bar = document.getElementById('week1-progress-bar');
-  var txt = document.getElementById('week1-progress-text');
-  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
-  if (txt) { txt.innerText = done + ' of ' + total + ' tasks completed (' + lang.toUpperCase() + ')'; }
+
+  try {
+    const { data: { user } } = await sbClient.auth.getUser();
+    let progressMap = {};
+
+    if (user) {
+      const { data, error } = await sbClient
+        .from('user_progress')
+        .select('item_id, completed') // Diese Namen müssen exakt wie in SQL sein
+        .eq('user_id', user.id);
+      
+      if (data) {
+        data.forEach(row => { progressMap[row.item_id] = row.completed; });
+      }
+    }
+
+    const isDone = (key) => {
+      return progressMap[key] === true || localStorage.getItem(key) === 'true';
+    };
+
+    for (var i = 1; i <= W1_CHUNK_COUNT; i++) {
+      if (isDone('chunk_' + lang + '_w1_c' + i)) done++;
+    }
+    W1_QUIZ_IDS.forEach(id => {
+      if (isDone('quiz_' + lang + '_w1_' + id)) done++;
+    });
+
+    var pct = Math.round((done / total) * 100);
+    var bar = document.getElementById('week1-progress-bar');
+    var txt = document.getElementById('week1-progress-text');
+    if (bar) { 
+      bar.style.width = pct + '%'; 
+      bar.innerText = pct > 8 ? pct + '%' : ''; 
+    }
+    if (txt) { 
+      txt.innerText = done + ' of ' + total + ' tasks completed (' + lang.toUpperCase() + ')'; 
+    }
+  } catch (err) { console.error("Update Bar Error:", err); }
 }
 
-// ── MutationObserver chunk tracking via data-chunk-id wrappers ───────
-// Each tracked shinylive chunk is wrapped in:
-//   <div class="chunk-track" data-chunk-id="w1_cN">...</div>
-// When output appears inside the iframe inside that wrapper, the chunk
-// is marked done. This is robust — no iframe index guessing needed.
-
+// 4. MutationObserver für Shinylive-Chunks
 var _observedChunks = {};
 
 function resetObservers() {
-  // Called when language switches — clears cache so chunks get re-observed
-  // for the new language (they may not yet be done in the new language)
   _observedChunks = {};
   setTimeout(scanChunkWrappers, 300);
 }
@@ -323,12 +490,6 @@ function resetObservers() {
 function observeChunkWrapper(wrapper) {
   var chunkId = wrapper.getAttribute('data-chunk-id');
   if (!chunkId || _observedChunks[chunkId]) return;
-
-  // Skip if already done
-  try {
-    if (localStorage.getItem('chunk_' + getLang() + '_' + chunkId) === 'true') return;
-  } catch(e) {}
-
   _observedChunks[chunkId] = true;
 
   function tryAttach() {
@@ -343,7 +504,6 @@ function observeChunkWrapper(wrapper) {
         }
         var obs = new MutationObserver(function() {
           try {
-            // shinylive renders output into <pre> elements
             var pres = doc.querySelectorAll('pre');
             var hasOutput = false;
             pres.forEach(function(p) { if (p.innerText && p.innerText.trim()) hasOutput = true; });
@@ -351,15 +511,10 @@ function observeChunkWrapper(wrapper) {
           } catch(e) {}
         });
         obs.observe(doc.body, { childList: true, subtree: true, characterData: true });
-      } catch(e) {
-        setTimeout(tryObserve, 800);
-      }
+      } catch(e) { setTimeout(tryObserve, 800); }
     }
-
-    iframe.addEventListener('load', function() { setTimeout(tryObserve, 400); });
-    setTimeout(tryObserve, 1000);
+    tryObserve();
   }
-
   tryAttach();
 }
 
@@ -367,34 +522,31 @@ function scanChunkWrappers() {
   document.querySelectorAll('.chunk-track[data-chunk-id]').forEach(observeChunkWrapper);
 }
 
+// 5. Event Listener & Initialisierung
 document.addEventListener('DOMContentLoaded', function() {
+  updateWeekBar();
   setTimeout(scanChunkWrappers, 500);
   setTimeout(scanChunkWrappers, 2000);
-  setTimeout(scanChunkWrappers, 5000);
 
-  // Re-scan whenever new elements are added (shinylive renders async)
+  // Re-scan für asynchrone Elemente
   new MutationObserver(function(muts) {
-    var found = false;
-    muts.forEach(function(m) {
-      m.addedNodes.forEach(function(n) {
-        if (n.nodeType === 1 && (
-          n.classList && n.classList.contains('chunk-track') ||
-          n.querySelector && n.querySelector('.chunk-track')
-        )) found = true;
+    let found = false;
+    muts.forEach(m => {
+      m.addedNodes.forEach(n => {
+        if (n.nodeType === 1 && (n.classList?.contains('chunk-track') || n.querySelector?.('.chunk-track'))) found = true;
       });
     });
     if (found) setTimeout(scanChunkWrappers, 300);
   }).observe(document.body, { childList: true, subtree: true });
 });
 
-// postMessage fallback
+// PostMessage Handler für Shinylive
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'chunkDone' && e.data.chunkId) markChunkDone(e.data.chunkId);
 });
 
-// Language switcher
+// Language Switcher Logik (hier muss dein CSS/Link-Code rein)
 document.addEventListener('DOMContentLoaded', function() {
-  updateWeekBar();
   function applyFinalStyle() {
     var links = document.querySelectorAll('.navbar-nav .nav-link');
     var pyBtn, rBtn;
@@ -415,15 +567,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     pyBtn.addEventListener('click', function(e){ e.preventDefault(); updateView('python'); });
     rBtn.addEventListener('click', function(e){ e.preventDefault(); updateView('r'); });
-    var saved = 'python';
-    try { saved = localStorage.getItem('da_course_lang') || 'python'; } catch(e){}
+    var saved = localStorage.getItem('da_course_lang') || 'python';
     updateView(saved);
   }
   applyFinalStyle();
 });
 </script>
 
-<!-- Week progress banner -->
 <div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
   <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
     <div>

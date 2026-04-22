@@ -141,6 +141,138 @@ ul.task-list li input[type="checkbox"] {
   // Beim Laden der Seite den Balken initialisieren
   document.addEventListener('DOMContentLoaded', updateGlobalProgress);
   </script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// ── Supabase Config ──────────────────────────────────────────────────
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Auth State ───────────────────────────────────────────────────────
+window._sbUser = null;
+
+async function sbInit() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    window._sbUser = session.user;
+    renderUserBadge(session.user.email);
+  } else {
+    renderLoginButton();
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      window._sbUser = session.user;
+      renderUserBadge(session.user.email);
+      // Re-render progress after login
+      if (typeof updateWeekBar === 'function') updateWeekBar();
+      if (typeof render === 'function') render();
+    } else {
+      window._sbUser = null;
+      renderLoginButton();
+    }
+  });
+}
+
+function renderLoginButton() {
+  const el = document.getElementById('sb-auth-widget');
+  if (!el) return;
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <input id="sb-email" type="email" placeholder="your@email.com"
+        style="border:1px solid #1a4d1a;border-radius:50px;padding:4px 14px;font-size:0.85rem;outline:none;">
+      <button onclick="sbLogin()"
+        style="background:#1a4d1a;color:white;border:none;border-radius:50px;padding:5px 16px;font-size:0.85rem;font-weight:700;cursor:pointer;">
+        Login
+      </button>
+    </div>`;
+}
+
+function renderUserBadge(email) {
+  const el = document.getElementById('sb-auth-widget');
+  if (!el) return;
+  const short = email.split('@')[0];
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:0.85rem;color:#1a4d1a;font-weight:700;">👤 ${short}</span>
+      <button onclick="sbLogout()"
+        style="background:transparent;color:#1a4d1a;border:1px solid #1a4d1a;border-radius:50px;padding:3px 12px;font-size:0.8rem;cursor:pointer;">
+        Logout
+      </button>
+    </div>`;
+}
+
+async function sbLogin() {
+  const email = document.getElementById('sb-email').value.trim();
+  if (!email) return;
+  const { error } = await sb.auth.signInWithOtp({ email,
+    options: { shouldCreateUser: true }
+  });
+  if (error) {
+    alert('Error: ' + error.message);
+  } else {
+    alert('✅ Check your email for the login link!');
+  }
+}
+
+async function sbLogout() {
+  await sb.auth.signOut();
+}
+
+// ── Progress API ─────────────────────────────────────────────────────
+async function sbSetItem(key, value) {
+  // Always save to localStorage as fallback
+  try { localStorage.setItem(key, value); } catch(e) {}
+
+  if (!window._sbUser) return;
+  await sb.from('progress').upsert({
+    user_email: window._sbUser.email,
+    key: key,
+    value: value,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_email,key' });
+}
+
+async function sbGetItem(key) {
+  if (!window._sbUser) {
+    try { return localStorage.getItem(key); } catch(e) { return null; }
+  }
+  const { data, error } = await sb.from('progress')
+    .select('value')
+    .eq('user_email', window._sbUser.email)
+    .eq('key', key)
+    .single();
+  return data ? data.value : null;
+}
+
+async function sbGetAllProgress() {
+  if (!window._sbUser) return null;
+  const { data, error } = await sb.from('progress')
+    .select('key, value')
+    .eq('user_email', window._sbUser.email);
+  return data;
+}
+
+document.addEventListener('DOMContentLoaded', sbInit);
+</script>
+
+<!-- Auth Widget Container (wird in Navbar injiziert) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Widget in Navbar einfügen
+  function injectWidget() {
+    const navbar = document.querySelector('.navbar-nav');
+    if (!navbar) { setTimeout(injectWidget, 200); return; }
+    const div = document.createElement('div');
+    div.id = 'sb-auth-widget';
+    div.style.cssText = 'display:flex;align-items:center;margin-left:12px;';
+    navbar.parentElement.appendChild(div);
+  }
+  injectWidget();
+});
+</script>
 
 
 </head>
@@ -250,30 +382,57 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+<style>
+  /* Kleiner Style-Fix für den Warn-Banner */
+  .auth-warning {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px dashed white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    display: none; /* Standardmäßig versteckt */
+  }
+</style>
 <div class="global-progress-banner">
-  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-    <div>
-      <h2 id="gp-headline" class="anchored">Your Progress</h2>
-      <div id="gp-subtext" style="opacity:0.85;font-size:0.95rem;">Loading…</div>
-    </div>
-    <div style="font-size:2.4rem;font-weight:900;opacity:0.9;" id="gp-percent-badge">0%</div>
-  </div>
-  <div class="progress" style="height:22px;">
-    <div id="global-progress-bar" class="progress-bar" role="progressbar" style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"></div>
-  </div>
+<div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+<pre><code>&lt;div&gt;
+  &lt;h2 id="gp-headline" style="margin-bottom: 2px; font-weight: 800;"&gt;Your Progress&lt;/h2&gt;
+  &lt;div id="gp-subtext" style="opacity:0.85;font-size:0.95rem;"&gt;Loading…&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="auth-status"&gt;&lt;/div&gt;</code></pre>
 </div>
+<div id="guest-warning" class="auth-warning">
+<pre><code>⚠️ &lt;strong&gt;Note:&lt;/strong&gt; You are not logged in. Progress is only saved locally on this device and may be lost.</code></pre>
+</div>
+<div class="d-flex align-items-center gap-3 mt-3">
+<pre><code>&lt;div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);"&gt;
+  &lt;div id="global-progress-bar" class="progress-bar" role="progressbar"
+       style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div style="font-size:2.4rem;font-weight:900;opacity:0.9; line-height: 1;" id="gp-percent-badge"&gt;0%&lt;/div&gt;</code></pre>
+</div>
+</div>
+<h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;margin-top:2rem;" class="anchored">
+Course Content
+</h3>
+<div id="week-cards-grid" class="grid" style="align-items: stretch;">
 
-<h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;" class="anchored">Course Content</h3>
-<div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
-
+</div>
 <script>
-// Week definitions — href uses the final rendered filename Quarto produces
+// 1. INITIALISIERUNG
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co/rest/v1/ ';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const WEEKS = [
   {
     n: 1,
     title:  "Week 1: Basic Data Structures",
     topics: "Syntax · Variables · Vectors · Matrices · Lists · Dataframes",
-    href:   "1_datentypen.html",   // Quarto renders 1_datentypen.qmd → 1_datentypen.html
+    href:   "1_datentypen.html",
     chunkCount: 20,
     quizIds: ["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"]
   },
@@ -290,91 +449,144 @@ const WEEKS = [
   { n:12, title:"Week 12: Bioinformatics II",    topics:"RNA-seq pipeline · Enrichment Analysis",               locked:true }
 ];
 
-// Progress key convention (must match woche1.qmd exactly):
-//   chunk_{lang}_w{n}_c{i}   e.g. chunk_r_w1_c3
-//   quiz_{lang}_w{n}_q_{id}  e.g. quiz_py_w1_q_vectors
+// 2. AUTH FUNKTIONEN
+async function updateAuthUI(user) {
+  const container = document.getElementById('auth-status');
+  const warning = document.getElementById('guest-warning');
+  
+  if (user) {
+    warning.style.display = 'none'; // Warnung verstecken
+    container.innerHTML = `
+      <button onclick="sbLogout()" class="btn btn-sm" 
+        style="background-color: transparent; color: white; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
+        LOGOUT
+      </button>`;
+  } else {
+    warning.style.display = 'block'; // Warnung zeigen
+    container.innerHTML = `
+      <button onclick="sbLogin()" class="btn btn-sm" 
+        style="background-color: #1a4d1a; color: white; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
+        LOGIN
+      </button>`;
+  }
+}
 
+async function sbLogin() {
+  const email = prompt("Enter your email to sync your progress:");
+  if (!email) return;
+  const { error } = await sbClient.auth.signInWithOtp({ 
+    email: email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  if (error) alert("Error: " + error.message);
+  else alert("Magic Link sent! Please check your email.");
+}
+
+async function sbLogout() {
+  await sbClient.auth.signOut();
+  localStorage.clear();
+  window.location.reload();
+}
+
+// 3. DATEN LOGIK
 function getLang() {
   try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e){ return 'python'; }
 }
 
-function getWeekProgress(week) {
+async function fetchAllProgress(user) {
+  if (!user) return null;
+  const { data, error } = await sbClient
+    .from('user_progress')
+    .select('item_id, completed')
+    .eq('user_id', user.id);
+  if (error) return null;
+  return data.reduce((acc, row) => { acc[row.item_id] = row.completed; return acc; }, {});
+}
+
+function calculateWeekProgress(week, dbData) {
   if (!week.chunkCount) return null;
-  const lang  = getLang();
+  const lang = getLang();
   const total = week.chunkCount + (week.quizIds ? week.quizIds.length : 0);
   let done = 0;
+
+  const isItemDone = (id) => {
+    if (dbData) return dbData[id] === true;
+    try { return localStorage.getItem(id) === 'true'; } catch(e) { return false; }
+  };
+
   for (let i = 1; i <= week.chunkCount; i++) {
-    try { if (localStorage.getItem('chunk_' + lang + '_w' + week.n + '_c' + i) === 'true') done++; } catch(e){}
+    if (isItemDone(`chunk_${lang}_w${week.n}_c${i}`)) done++;
   }
-  (week.quizIds||[]).forEach(id => {
-    try { if (localStorage.getItem('quiz_' + lang + '_w' + week.n + '_' + id) === 'true') done++; } catch(e){}
+  (week.quizIds || []).forEach(qid => {
+    if (isItemDone(`quiz_${lang}_w${week.n}_${qid}`)) done++;
   });
-  return { done, total, pct: Math.round((done/total)*100) };
+  return { done, total, pct: Math.round((done / total) * 100) };
 }
 
 function statusLabel(p, locked) {
-  if (locked)       return '🔒 Locked';
-  if (!p)           return '📋 No exercises yet';
-  if (p.pct===100)  return '✅ Completed';
-  if (p.done > 0)   return '🔄 In progress — ' + p.done + '/' + p.total + ' done';
+  if (locked) return '🔒 Locked';
+  if (!p) return '📋 No exercises yet';
+  if (p.pct === 100) return '✅ Completed';
+  if (p.done > 0) return '🔄 In progress — ' + p.done + '/' + p.total + ' done';
   return '⬜ Not started';
 }
 
-function render() {
+// 4. RENDER
+async function render() {
   const grid = document.getElementById('week-cards-grid');
+  const { data: { user } } = await sbClient.auth.getUser();
+  await updateAuthUI(user);
+
+  const dbData = await fetchAllProgress(user);
   grid.innerHTML = '';
-  let totalAll = 0, doneAll = 0;
+  let totalAll = 0, doneAll = 0, completedW = 0;
 
   WEEKS.forEach(week => {
-    const p   = getWeekProgress(week);
-    const pct = p ? p.pct : 0;
-    if (p) { totalAll += p.total; doneAll += p.done; }
-
-    const col  = document.createElement('div');
-    col.className = 'g-col-12 g-col-sm-6 g-col-md-4';
-
-    const card = document.createElement(week.locked ? 'div' : 'a');
-    card.className = 'week-card p-4';
-    if (!week.locked && week.href) {
-      card.href = week.href;
-      card.style.textDecoration = 'none';
-    } else {
-      card.style.opacity = '0.55';
-      card.style.cursor  = 'default';
+    const p = calculateWeekProgress(week, dbData);
+    if (p) {
+      totalAll += p.total;
+      doneAll += p.done;
+      if (p.pct === 100) completedW++;
     }
 
-    card.innerHTML =
-      '<div class="week-card-title">'  + week.title  + '</div>' +
-      '<div class="week-card-topics">' + week.topics + '</div>' +
-      '<div class="week-card-status">' + statusLabel(p, week.locked) + '</div>' +
-      (p
-        ? '<div class="week-card-progress-bar-bg mt-2"><div class="week-card-progress-fill" style="width:' + pct + '%"></div></div>' +
-          '<div style="font-size:0.73rem;color:#6c757d;margin-top:4px;">' + pct + '% complete</div>'
-        : '');
+    const col = document.createElement('div');
+    col.className = 'g-col-12 g-col-sm-6 g-col-md-4';
 
+    const isLocked = week.locked;
+    const card = document.createElement(isLocked ? 'div' : 'a');
+    card.className = 'week-card p-4' + (isLocked ? ' opacity-50' : '');
+    if (!isLocked && week.href) {
+      card.href = week.href;
+      card.style.textDecoration = 'none';
+    }
+
+    const pct = p ? p.pct : 0;
+    card.innerHTML = `
+      <div class="week-card-title">${week.title}</div>
+      <div class="week-card-topics">${week.topics}</div>
+      <div class="week-card-status">${statusLabel(p, isLocked)}</div>
+      ${p ? `
+        <div class="week-card-progress-bar-bg mt-2">
+          <div class="week-card-progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div style="font-size:0.73rem;color:#6c757d;margin-top:4px;">${pct}% complete</div>
+      ` : ''}
+    `;
     col.appendChild(card);
     grid.appendChild(col);
   });
 
-  // Global banner
-  const gPct = totalAll > 0 ? Math.round((doneAll/totalAll)*100) : 0;
-  const bar  = document.getElementById('global-progress-bar');
-  bar.style.width = gPct + '%';
-  bar.innerText   = gPct > 8 ? gPct + '%' : '';
+  const gPct = totalAll > 0 ? Math.round((doneAll / totalAll) * 100) : 0;
+  document.getElementById('global-progress-bar').style.width = gPct + '%';
+  document.getElementById('global-progress-bar').innerText = gPct > 8 ? gPct + '%' : '';
   document.getElementById('gp-percent-badge').innerText = gPct + '%';
-  const completedW = WEEKS.filter(w => { const p = getWeekProgress(w); return p && p.pct===100; }).length;
-  const activeW    = WEEKS.filter(w => !w.locked && getWeekProgress(w) !== null).length;
-  document.getElementById('gp-subtext').innerText =
-    completedW + ' of ' + activeW + ' weeks fully completed · ' + getLang().toUpperCase() + ' mode';
+  
+  const activeW = WEEKS.filter(w => !w.locked && w.chunkCount).length;
+  document.getElementById('gp-subtext').innerText = 
+    `${completedW} of ${activeW} weeks completed · ${getLang().toUpperCase()} mode`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  render();
-  window.addEventListener('storage', render);
-  // Re-render after a moment in case same-tab navigation just set keys
-  setTimeout(render, 400);
-  setTimeout(render, 1200);
-});
+document.addEventListener('DOMContentLoaded', render);
 </script>
 
 
