@@ -250,9 +250,9 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-  /* Kleiner Style-Fix für den Warn-Banner */
   .auth-warning {
     background-color: rgba(255, 255, 255, 0.15);
     border: 1px dashed white;
@@ -260,35 +260,35 @@ ul.task-list li input[type="checkbox"] {
     padding: 8px 12px;
     margin-top: 10px;
     font-size: 0.85rem;
-    display: none; /* Standardmäßig versteckt */
+    display: none;
   }
 </style>
+
 <div class="global-progress-banner">
-<div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
-<pre><code>&lt;div&gt;
-  &lt;h2 id="gp-headline" style="margin-bottom: 2px; font-weight: 800;"&gt;Your Progress&lt;/h2&gt;
-  &lt;div id="gp-subtext" style="opacity:0.85;font-size:0.95rem;"&gt;Loading…&lt;/div&gt;
-&lt;/div&gt;
+  <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+    <div>
+      <h2 id="gp-headline" style="margin-bottom: 2px; font-weight: 800;" class="anchored">Your Progress</h2>
+      <div id="gp-subtext" style="opacity:0.85;font-size:0.95rem;">Loading…</div>
+    </div>
+    
+    <div id="auth-status"></div>
+  </div>
 
-&lt;div id="auth-status"&gt;&lt;/div&gt;</code></pre>
+  <div id="guest-warning" class="auth-warning">
+    ⚠️ <strong>Note:</strong> You are not logged in. Progress is only saved locally on this device and may be lost.
+  </div>
+  
+  <div class="d-flex align-items-center gap-3 mt-3">
+    <div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);">
+      <div id="global-progress-bar" class="progress-bar" role="progressbar" style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"></div>
+    </div>
+    <div style="font-size:2.4rem;font-weight:900;opacity:0.9; line-height: 1;" id="gp-percent-badge">0%</div>
+  </div>
 </div>
-<div id="guest-warning" class="auth-warning">
-<pre><code>⚠️ &lt;strong&gt;Note:&lt;/strong&gt; You are not logged in. Progress is only saved locally on this device and may be lost.</code></pre>
-</div>
-<div class="d-flex align-items-center gap-3 mt-3">
-<pre><code>&lt;div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);"&gt;
-  &lt;div id="global-progress-bar" class="progress-bar" role="progressbar"
-       style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;div style="font-size:2.4rem;font-weight:900;opacity:0.9; line-height: 1;" id="gp-percent-badge"&gt;0%&lt;/div&gt;</code></pre>
-</div>
-</div>
-<h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;margin-top:2rem;" class="anchored">
-Course Content
-</h3>
-<div id="week-cards-grid" class="grid" style="align-items: stretch;">
 
-</div>
+<h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;margin-top:2rem;" class="anchored">Course Content</h3>
+<div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
+
 <script>
 // 1. INITIALISIERUNG
 const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
@@ -317,20 +317,20 @@ const WEEKS = [
   { n:12, title:"Week 12: Bioinformatics II",    topics:"RNA-seq pipeline · Enrichment Analysis",               locked:true }
 ];
 
-// 2. AUTH FUNKTIONEN
+// 2. AUTH UI
 async function updateAuthUI(user) {
   const container = document.getElementById('auth-status');
   const warning = document.getElementById('guest-warning');
   
   if (user) {
-    warning.style.display = 'none'; // Warnung verstecken
+    warning.style.display = 'none';
     container.innerHTML = `
       <button onclick="sbLogout()" class="btn btn-sm" 
-        style="background-color: transparent; color: white; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
+        style="background-color: white; color: #1a4d1a; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
         LOGOUT
       </button>`;
   } else {
-    warning.style.display = 'block'; // Warnung zeigen
+    warning.style.display = 'block';
     container.innerHTML = `
       <button onclick="sbLogin()" class="btn btn-sm" 
         style="background-color: #1a4d1a; color: white; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
@@ -339,6 +339,7 @@ async function updateAuthUI(user) {
   }
 }
 
+// Login via Magic Link
 async function sbLogin() {
   const email = prompt("Enter your email to sync your progress:");
   if (!email) return;
@@ -347,7 +348,7 @@ async function sbLogin() {
     options: { emailRedirectTo: window.location.href }
   });
   if (error) alert("Error: " + error.message);
-  else alert("Magic Link sent! Please check your email.");
+  else alert("Magic Link sent! Check your email.");
 }
 
 async function sbLogout() {
@@ -364,11 +365,16 @@ function getLang() {
 async function fetchAllProgress(user) {
   if (!user) return null;
   const { data, error } = await sbClient
-    .from('user_progress')
-    .select('item_id, completed')
-    .eq('user_id', user.id);
+    .from('progress') 
+    .select('key, value')
+    .eq('user_email', user.email);
+
   if (error) return null;
-  return data.reduce((acc, row) => { acc[row.item_id] = row.completed; return acc; }, {});
+  
+  return data.reduce((acc, row) => {
+    acc[row.key] = row.value === 'true';
+    return acc;
+  }, {});
 }
 
 function calculateWeekProgress(week, dbData) {

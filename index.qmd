@@ -3,10 +3,9 @@ title: "Course Dashboard"
 ---
 
 ```{=html}
-<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-  /* Kleiner Style-Fix für den Warn-Banner */
   .auth-warning {
     background-color: rgba(255, 255, 255, 0.15);
     border: 1px dashed white;
@@ -14,7 +13,7 @@ title: "Course Dashboard"
     padding: 8px 12px;
     margin-top: 10px;
     font-size: 0.85rem;
-    display: none; /* Standardmäßig versteckt */
+    display: none;
   }
 </style>
 
@@ -72,20 +71,20 @@ const WEEKS = [
   { n:12, title:"Week 12: Bioinformatics II",    topics:"RNA-seq pipeline · Enrichment Analysis",               locked:true }
 ];
 
-// 2. AUTH FUNKTIONEN
+// 2. AUTH UI
 async function updateAuthUI(user) {
   const container = document.getElementById('auth-status');
   const warning = document.getElementById('guest-warning');
   
   if (user) {
-    warning.style.display = 'none'; // Warnung verstecken
+    warning.style.display = 'none';
     container.innerHTML = `
       <button onclick="sbLogout()" class="btn btn-sm" 
-        style="background-color: transparent; color: white; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
+        style="background-color: white; color: #1a4d1a; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
         LOGOUT
       </button>`;
   } else {
-    warning.style.display = 'block'; // Warnung zeigen
+    warning.style.display = 'block';
     container.innerHTML = `
       <button onclick="sbLogin()" class="btn btn-sm" 
         style="background-color: #1a4d1a; color: white; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
@@ -94,6 +93,7 @@ async function updateAuthUI(user) {
   }
 }
 
+// Login via Magic Link
 async function sbLogin() {
   const email = prompt("Enter your email to sync your progress:");
   if (!email) return;
@@ -102,7 +102,7 @@ async function sbLogin() {
     options: { emailRedirectTo: window.location.href }
   });
   if (error) alert("Error: " + error.message);
-  else alert("Magic Link sent! Please check your email.");
+  else alert("Magic Link sent! Check your email.");
 }
 
 async function sbLogout() {
@@ -119,11 +119,16 @@ function getLang() {
 async function fetchAllProgress(user) {
   if (!user) return null;
   const { data, error } = await sbClient
-    .from('user_progress')
-    .select('item_id, completed')
-    .eq('user_id', user.id);
+    .from('progress') 
+    .select('key, value')
+    .eq('user_email', user.email);
+
   if (error) return null;
-  return data.reduce((acc, row) => { acc[row.item_id] = row.completed; return acc; }, {});
+  
+  return data.reduce((acc, row) => {
+    acc[row.key] = row.value === 'true';
+    return acc;
+  }, {});
 }
 
 function calculateWeekProgress(week, dbData) {
@@ -211,3 +216,4 @@ async function render() {
 
 document.addEventListener('DOMContentLoaded', render);
 </script>
+```
