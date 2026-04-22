@@ -1,5 +1,5 @@
 ---
-title: "Week 1: Basic Data Structures"
+title: "Week 1: Basic Data Structures & Data Manipulation"
 ---
 
 ```{=html}
@@ -18,7 +18,7 @@ title: "Week 1: Basic Data Structures"
 //    quiz_{lang}_w1_{quizId}   e.g.  quiz_py_w1_w1_q_vectors
 // ══════════════════════════════════════════════════════════════════════
 
-var W1_CHUNK_COUNT = 20;
+var W1_CHUNK_COUNT = 28;
 var W1_QUIZ_IDS = ['w1_q_vectors','w1_q_matrices','w1_q_lists','w1_q_dataframes'];
 
 function getLang() {
@@ -31,6 +31,10 @@ function markChunkDone(chunkId) {
 function markQuizDone(quizId) {
   try { localStorage.setItem('quiz_' + getLang() + '_w1_' + quizId, 'true'); } catch(e){}
   updateWeekBar();
+}
+function toggleSolution(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 function updateWeekBar() {
   var lang = getLang();
@@ -183,11 +187,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 ```
 
-Let's explore how data is organised and displayed in R and Python! We will first introduce the basic concepts – at the end of each section you will find a quiz to practise.
+Let's explore how data is organised and displayed in R and Python! We will first introduce the basic concepts of datatypes and then how you can manipulate this structures. At the end of each section you will find a quiz to practise the learned content. 
 
 ::: {.lang-r}
 
-## 1 – Simple Variables
+## 1 – **Datatype:** Simple Variable
 
 As you have already seen, values can be assigned to variables. For the assignment, `<-` and `=` are equivalent:
 
@@ -285,7 +289,7 @@ shinyApp(ui, server)
 
 ---
 
-## 2 – Vectors
+## 2 – **Datatype:** Vectors
 
 The function `c()` combines individual values into longer vectors. With `length()` you can determine the number of elements:
 
@@ -475,7 +479,7 @@ shinyApp(ui, server)
 
 ---
 
-## 3 – Matrices
+## 3 – **Datatype:** Matrices
 
 A matrix is a two-dimensional array of numbers. It is created using the `matrix()` function:
 
@@ -636,7 +640,7 @@ shinyApp(ui, server)
 
 ---
 
-## 4 – Lists
+## 4 – **Datatype:** Lists
 
 **Lists** are very flexible structures and can contain **various types of elements**. Elements can be named:
 
@@ -764,7 +768,7 @@ shinyApp(ui, server)
 
 ---
 
-## 5 – Dataframes
+## 5 – **Datatype:** Dataframes
 
 Dataframes are like matrices, but can contain **various data types** in different columns. They are created with `data.frame()`:
 
@@ -848,13 +852,279 @@ Dataframes can be merged using `merge()`:
 
 ---
 
-## Exercises & Quiz
+## 6 – **Manipulating Data:** Loops
+
+Sometimes we need to repeat the same operation for all elements of a vector, or all rows/columns of a matrix. This is called a **loop**.
+
+### apply, sapply, lapply
+
+`apply()` repeats an operation over all rows or columns of a **matrix** or **data frame**. The second argument controls whether rows (`1`) or columns (`2`) are used:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c21">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+CHUNK_ID <- "w1_c21"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "apply()", value = "m <- c(1,2,3,4,5,6,7,8,9,10,11,12)\nMat <- matrix(data = m, nrow = 3)\nMat\n\n# Minimum of each row:\napply(Mat, 1, min)\n\n# Minimum of each column:\napply(Mat, 2, min)", width = '100%', height = '160px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+`sapply()` loops over all elements of a **vector** or **list** and returns a vector of results:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c22">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID <- "w1_c22"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "sapply()", value = "x <- c(1:5)\nsapply(x, sqrt)   # square root of each element\n\n# Custom function:\nsapply(x, function(i) { i * 2 })", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+`lapply()` works like `sapply()` but always returns a **list**:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c23">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 270
+library(shiny)
+CHUNK_ID <- "w1_c23"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "sapply() vs lapply()", value = "List1 <- list(color = c('blue','red'), size = 5, state = c(TRUE,FALSE,TRUE,TRUE))\n\nsapply(List1, length)   # returns a vector\nlapply(List1, length)   # returns a list", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### for loops
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c24">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID <- "w1_c24"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "for loops", value = "x <- c('a', 'b', 'c')\nfor (i in x) {\n  print(i)\n}\n\nfor (i in 1:4) {\n  print(i * 3)\n}", width = '100%', height = '140px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## 7 – **Manipulating Data:** If Statements
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c25">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 280
+library(shiny)
+CHUNK_ID <- "w1_c25"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "if / else if / else", value = "a <- 10\nb <- 5\n\nif (a < b) {\n  print('a is smaller than b')\n} else if (a == b) {\n  print('a is equal to b')\n} else {\n  print('a is greater than b')\n}", width = '100%', height = '170px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+The compact `ifelse()` function tests one condition and returns different values for `TRUE` and `FALSE`:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c26">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+CHUNK_ID <- "w1_c26"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "ifelse()", value = "a <- 5\nb <- 10\nifelse(a < b, 'a is smaller than b', 'a is greater or equal to b')", width = '100%', height = '80px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## 8 – **Manipulating Data:** Subset Selection
+
+### which()
+
+`which()` returns the **positions** of all elements satisfying a condition:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c27">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 250
+library(shiny)
+CHUNK_ID <- "w1_c27"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "which()", value = "a <- c(3, 5, 10, 4, 2, 6, 7, 2)\nwhich(a < 5)       # positions of elements < 5\na[which(a < 5)]    # values of elements < 5", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### %in%
+
+`%in%` checks which elements of one vector are contained in another:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c28">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 270
+library(shiny)
+CHUNK_ID <- "w1_c28"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "%in% and which + %in%", value = "x <- c('a', 'h', 'f', 'b', 'd')\ny <- c('a', 'b', 'c', 'd')\n\nx %in% y                  # logical vector\nwhich(x %in% y)           # positions\nx[which(x %in% y)]        # values", width = '100%', height = '130px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## EXERCISES - Datatypes
 
 Answer the questions correctly to save your progress. You can use the code sandboxes to experiment!
 
 ---
 
-### Quiz 1: Vectors
+### **Exercise 1:** Vectors
 
 ```{=html}
 <div class="quiz-card">
@@ -939,7 +1209,7 @@ function checkVektorQuiz() {
 
 ---
 
-### Quiz 2: Matrices
+### **Exercise 2:** Matrices
 
 ```{=html}
 <div class="quiz-card">
@@ -1013,7 +1283,7 @@ function checkMatrixQuiz() {
 
 ---
 
-### Quiz 3: Lists
+### **Exercise 3:** Lists
 
 ```{=html}
 <div class="quiz-card">
@@ -1087,7 +1357,7 @@ function checkListQuiz() {
 
 ---
 
-### Quiz 4: Dataframes
+### **Exercise 4:** Dataframes
 
 ```{=html}
 <div class="quiz-card">
@@ -1159,14 +1429,161 @@ function checkDfQuiz() {
 </script>
 ```
 
+## EXERCISES – Data Manipulation
+
+### Exercise 1: apply & which
+
+```{=html}
+<div class="quiz-card">
+  <h5>EXERCISE 1: APPLY & WHICH</h5>
+  <p class="text-muted">🧪 Solve the tasks in the sandbox:</p>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 320
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", "Exercise 1", value = "M <- matrix(c(-2,3,1,-5,4,2,0,-1,3,6,-3,2,1,4,-2,5,2,-4,3,1), nrow = 5)\n\n# Task 1: Calculate the mean of each ROW using apply()\n\n# Task 2: Calculate the mean of each COLUMN using apply()\n\n# Task 3: Find positions of all positive elements (>0) using which()\n\n# Task 4: Get the VALUES of positive elements\n", width = '100%', height = '200px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+  <button onclick="toggleSolution('sol1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+  <div id="sol1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+    <pre><code># Task 1 – mean of each row:
+apply(M, 1, mean)
+
+# Task 2 – mean of each column:
+apply(M, 2, mean)
+
+# Task 3 – positions of positive elements:
+which(M > 0)
+
+# Task 4 – values of positive elements:
+M[which(M > 0)]</code></pre>
+  </div>
+</div>
+<script>
+function toggleSolution(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+```
+
+---
+
+### Exercise 2: if / else if / else
+
+```{=html}
+<div class="quiz-card">
+  <h5>EXERCISE 2: IF STATEMENTS</h5>
+  <p class="text-muted">🧪 Complete and extend the if statement:</p>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", "Exercise 2", value = "a <- 3\n\n# Task 1: Complete the if/else so that:\n# - 'a is positive' is printed if a > 0\n# - 'a is negative' is printed otherwise\n\n# Task 2: Add an else if to also print 'a is zero' if a == 0\n# Try a = 0, a = 5, a = -3 to test your code\n\nif () {\n  \n} else {\n  \n}\n", width = '100%', height = '180px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+  <button onclick="toggleSolution('sol2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+  <div id="sol2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+    <pre><code>a <- 3
+
+if (a > 0) {
+  print("a is positive")
+} else if (a == 0) {
+  print("a is zero")
+} else {
+  print("a is negative")
+}</code></pre>
+  </div>
+</div>
+```
+
+---
+
+### Exercise 3 *(Expert)*: sapply + ifelse
+
+```{=html}
+<div class="quiz-card">
+  <h5>EXERCISE 3 ⭐ EXPERT: SAPPLY + IFELSE</h5>
+  <p class="text-muted">🧪 Combine sapply() and ifelse():</p>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 280
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", "Exercise 3", value = "y <- c(1, 3, -5, 4, -10)\n\n# Task: Use sapply() with an ifelse() inside to:\n# - return sqrt(element) if the element > 0\n# - return 0 otherwise\n# Hint: sapply(y, function(x) { ifelse(...) })\n", width = '100%', height = '160px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+  <button onclick="toggleSolution('sol3')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+  <div id="sol3" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+    <pre><code>y <- c(1, 3, -5, 4, -10)
+
+sapply(y, function(x) {
+  ifelse(x > 0, sqrt(x), 0)
+})</code></pre>
+  </div>
+</div>
+```
+
+---
+
 :::
 
 ::: {.lang-python}
 
-## 1 – Simple Variables
+## 1 – **Datatype:** Simple Variables
 
 In Python, only `=` is used for assignments:
 
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c1">
+```
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 220
@@ -1287,7 +1704,7 @@ app = App(app_ui, server)
 
 ---
 
-## 2 – Lists (Vectors)
+## 2 – **Datatype:** Lists (Vectors)
 
 In Python, simple **lists** (`list`) correspond to vectors in R. With `len()` you can determine the number of elements. Important: Python uses **0-based indices** (the first element has index 0, not 1 as in R)!
 
@@ -1545,7 +1962,7 @@ app = App(app_ui, server)
 
 ---
 
-## 3 – Matrices
+## 3 – **Datatype:** Matrices
 
 A matrix is a two-dimensional array of numbers. In Python we use **NumPy** with `reshape()`:
 
@@ -1723,7 +2140,7 @@ app = App(app_ui, server)
 
 ---
 
-## 4 – Dictionaries (Lists)
+## 4 – **Datatype:** Dictionaries (Lists)
 
 In Python, **dictionaries** (`dict`) correspond to named lists in R. They can contain **various types of elements**:
 
@@ -1891,7 +2308,7 @@ app = App(app_ui, server)
 
 ---
 
-## 5 – DataFrames
+## 5 – **Datatype:** DataFrames
 
 DataFrames are like matrices, but can contain **various data types** in different columns. In Python we use **pandas**:
 
@@ -2020,13 +2437,359 @@ app = App(app_ui, server)
 
 ---
 
-## Exercises & Quiz
+## 6 – **Data Manipulation:** Loops
+
+In Python entspricht `apply()` dem Aufruf von Funktionen mit List Comprehensions oder `numpy`-Operationen. Für Listen und Vektoren nutzt man `map()` oder List Comprehensions.
+
+### map() and list comprehensions
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c21">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 300
+#| packages: [numpy]
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+
+CHUNK_ID = "w1_c21"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "apply() equivalent – numpy", value="import numpy as np\nMat = np.arange(1, 13).reshape(3, 4)\nprint(Mat)\n\n# Minimum of each row (axis=1):\nprint(np.min(Mat, axis=1))\n\n# Minimum of each column (axis=0):\nprint(np.min(Mat, axis=0))", width='100%', height='160px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+`map()` applies a function to each element of an iterable and returns an iterator. `list()` converts it to a list:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c22">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 260
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+
+CHUNK_ID = "w1_c22"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "map() and list comprehension", value="import math\nx = [1, 2, 3, 4, 5]\n\n# map() – like sapply():\nprint(list(map(math.sqrt, x)))\n\n# List comprehension – more Pythonic:\nprint([i * 2 for i in x])", width='100%', height='130px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+For **lists** (like R's `lapply`/`sapply`), use list comprehensions or `map()`:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c23">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 260
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+
+CHUNK_ID = "w1_c23"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "map() on lists (like lapply/sapply)", value="dict1 = {'color': ['blue','red'], 'size': [5], 'state': [True, False, True, True]}\n\n# Length of each value – like sapply(List1, length):\nresult = {k: len(v) for k, v in dict1.items()}\nprint(result)", width='100%', height='120px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+### for loops
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c24">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 260
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+
+CHUNK_ID = "w1_c24"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "for loops", value="x = ['a', 'b', 'c']\nfor i in x:\n    print(i)\n\nfor i in range(1, 5):\n    print(i * 3)", width='100%', height='130px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## 7 – **Data Manipulation:** If Statements
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c25">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 280
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+
+CHUNK_ID = "w1_c25"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "if / elif / else", value="a = 10\nb = 5\n\nif a < b:\n    print('a is smaller than b')\nelif a == b:\n    print('a is equal to b')\nelse:\n    print('a is greater than b')", width='100%', height='160px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+The compact Python equivalent of `ifelse()` is the **ternary expression**:
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c26">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 220
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+
+CHUNK_ID = "w1_c26"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "Ternary expression (like ifelse)", value="a = 5\nb = 10\nresult = 'a is smaller than b' if a < b else 'a is greater or equal to b'\nprint(result)", width='100%', height='90px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## 8 – **Data Manipulation:** Subset Selection
+
+### np.where() (equivalent to which())
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c27">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 260
+#| packages: [numpy]
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+
+CHUNK_ID = "w1_c27"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "np.where() – like which()", value="import numpy as np\na = np.array([3, 5, 10, 4, 2, 6, 7, 2])\n\nnp.where(a < 5)        # positions of elements < 5\na[np.where(a < 5)]     # values of elements < 5", width='100%', height='110px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+### np.isin() (equivalent to %in%)
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w1_c28">
+```
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 270
+#| packages: [numpy]
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+
+CHUNK_ID = "w1_c28"
+
+app_ui = ui.page_fluid(
+    ui.tags.script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+    ui.input_text_area("code", "np.isin() – like %in%", value="import numpy as np\nx = np.array(['a', 'h', 'f', 'b', 'd'])\ny = np.array(['a', 'b', 'c', 'd'])\n\nnp.isin(x, y)                    # logical array\nnp.where(np.isin(x, y))          # positions\nx[np.where(np.isin(x, y))]       # values", width='100%', height='130px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        await session.send_custom_message("chunkRun", {"chunkId": CHUNK_ID})
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## EXERCISES - Datatypes
 
 Answer the questions correctly to save your progress. You can use the code sandboxes to experiment!
 
 ---
 
-### Quiz 1: Lists & Arrays
+### **Exercise 1:** Lists & Arrays
 
 ```{=html}
 <div class="quiz-card">
@@ -2121,7 +2884,7 @@ function checkPyVektorQuiz() {
 
 ---
 
-### Quiz 2: Matrices
+### **Exercise 2:** Matrices
 
 ```{=html}
 <div class="quiz-card">
@@ -2206,7 +2969,7 @@ function checkPyMatrixQuiz() {
 
 ---
 
-### Quiz 3: Dictionaries
+### **Exercise 3:** Dictionaries
 
 ```{=html}
 <div class="quiz-card">
@@ -2288,7 +3051,7 @@ function checkPyDictQuiz() {
 
 ---
 
-### Quiz 4: DataFrames
+### **Exercise 4:** DataFrames
 
 ```{=html}
 <div class="quiz-card">
@@ -2368,8 +3131,170 @@ function checkPyDfQuiz() {
 </script>
 ```
 
-:::
+## EXERCISES – Data Manipulation
 
+### **Exercise 1:** numpy axis operations & np.where()
+
+```{=html}
+<div class="quiz-card">
+  <h5>EXERCISE 1: NUMPY AXIS & NP.WHERE()</h5>
+  <p class="text-muted">🧪 Solve the tasks in the sandbox:</p>
+```
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 340
+#| packages: [numpy]
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", "Exercise 1", value="import numpy as np\nM = np.array([-2,3,1,-5,4,2,0,-1,3,6,-3,2,1,4,-2,5,2,-4,3,1], dtype=float).reshape(5,4)\n\n# Task 1: Calculate the mean of each ROW (axis=1)\n\n# Task 2: Calculate the mean of each COLUMN (axis=0)\n\n# Task 3: Find positions of positive elements (>0) using np.where()\n\n# Task 4: Get the VALUES of positive elements\n", width='100%', height='210px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+
+```{=html}
+  <button onclick="toggleSolution('py_sol1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+  <div id="py_sol1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+    <pre><code># Task 1 – mean of each row:
+print(np.mean(M, axis=1))
+
+# Task 2 – mean of each column:
+print(np.mean(M, axis=0))
+
+# Task 3 – positions of positive elements:
+print(np.where(M > 0))
+
+# Task 4 – values of positive elements:
+print(M[np.where(M > 0)])</code></pre>
+  </div>
+</div>
+```
+
+---
+
+### **Exercise 2:** if / elif / else
+
+```{=html}
+<div class="quiz-card">
+  <h5>EXERCISE 2: IF STATEMENTS</h5>
+  <p class="text-muted">🧪 Complete and extend the if statement:</p>
+```
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 300
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", "Exercise 2", value="a = 3\n\n# Task 1: Write an if/else so that:\n# - 'a is positive' is printed if a > 0\n# - 'a is negative' is printed otherwise\n\n# Task 2: Add an elif to also print 'a is zero' if a == 0\n# Try a = 0, a = 5, a = -3\n\n", width='100%', height='170px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+
+```{=html}
+  <button onclick="toggleSolution('py_sol2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+  <div id="py_sol2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+    <pre><code>a = 3
+
+if a > 0:
+    print("a is positive")
+elif a == 0:
+    print("a is zero")
+else:
+    print("a is negative")</code></pre>
+  </div>
+</div>
+```
+
+---
+
+### **Exercise 3 *(Expert)*:** map() + ternary expression
+
+```{=html}
+<div class="quiz-card">
+  <h5>EXERCISE 3 ⭐ EXPERT: MAP() + TERNARY</h5>
+  <p class="text-muted">🧪 Combine map() and a ternary expression:</p>
+```
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 280
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", "Exercise 3", value="import math\ny = [1, 3, -5, 4, -10]\n\n# Task: Use map() with a lambda to:\n# - return sqrt(element) if element > 0\n# - return 0 otherwise\n# Hint: list(map(lambda x: ... , y))\n", width='100%', height='160px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO(); ns = {}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+
+```{=html}
+  <button onclick="toggleSolution('py_sol3')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+  <div id="py_sol3" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+    <pre><code>import math
+y = [1, 3, -5, 4, -10]
+
+result = list(map(lambda x: math.sqrt(x) if x > 0 else 0, y))
+print(result)</code></pre>
+  </div>
+</div>
+```
+:::
 ---
 
 ## Offline Materials
@@ -2380,7 +3305,7 @@ These are the slides used in the lecture of Week 1 and the videos of the matchin
 
 ```{=html}
 <div class="d-flex gap-3 mb-3 flex-wrap">
-  <a href="WEEK1/week0_lecture_slides.pdf" download class="btn btn-outline-success">
+  <a href="WEEK0/week0_lecture_slides.pdf" download class="btn btn-outline-success">
      Week 1 – Basic datatypes &amp; data manipulation (PDF)
   </a>
 </div>
@@ -2397,10 +3322,10 @@ These files contain the same content as this page and can be opened and executed
 
 ```{=html}
 <div class="d-flex gap-3 mb-3 flex-wrap">
-  <a href="WEEK1/00_basic_data_structure.md" download class="btn btn-outline-success">
+  <a href="WEEK0/00_basic_data_structure.md" download class="btn btn-outline-success">
      Week 1 – Basic Data Structures (Markdown)
   </a>
-  <a href="WEEK1/00_basic_data_manipulation.md" download class="btn btn-outline-success">
+  <a href="WEEK0/00_basic_data_manipulation.md" download class="btn btn-outline-success">
      Week 1 – Advanced Data Manipulation (Markdown)
   </a>
 </div>
@@ -2412,8 +3337,8 @@ Quick reference cards for the most important R functions:
 
 ```{=html}
 <div class="d-flex gap-3 mb-4 flex-wrap">
-  <a href="WEEK1/base-r.pdf" target="_blank" class="btn btn-outline-danger">R Base – Cheat Sheet (PDF)</a>
-  <a href="WEEK1/rmarkdown-reference.pdf" target="_blank" class="btn btn-outline-danger">Markdown Reference (PDF)</a>
-  <a href="WEEK1/cheatsheet_Best_Practice_R.pdf" target="_blank" class="btn btn-outline-danger">R Best Practice (PDF)</a>
+  <a href="WEEK0/base-r.pdf" target="_blank" class="btn btn-outline-danger">R Base – Cheat Sheet (PDF)</a>
+  <a href="WEEK0/rmarkdown-reference.pdf" target="_blank" class="btn btn-outline-danger">Markdown Reference (PDF)</a>
+  <a href="WEEK0/cheatsheet_Best_Practice_R.pdf" target="_blank" class="btn btn-outline-danger">R Best Practice (PDF)</a>
 </div>
 ```

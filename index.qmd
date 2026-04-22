@@ -18,7 +18,7 @@ title: "Course Dashboard"
 </div>
 
 <h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;">Course Content</h3>
-<div class="grid" id="week-cards-grid"></div>
+<div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
 
 <script>
 // Week definitions — href uses the final rendered filename Quarto produces

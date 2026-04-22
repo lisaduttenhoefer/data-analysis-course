@@ -2,84 +2,90 @@
 $dark-green: #1a4d1a;
 $light-green-bg: #ebf1e7;
 $primary: $dark-green;
-
 /*-- scss:rules --*/
 #quarto-sidebar {
-  background-color: $dark-green !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  height: 100vh;
-  position: fixed;
-  left: 0; top: 0;
-  padding-top: 20px;
-  border-right: none !important;
-  width: 280px !important;
-
-  .sidebar-item-text, .sidebar-link, .sidebar-navigation, .sidebar-title, a {
-    color: #ffffff !important; font-weight: 800 !important;
-    text-decoration: none !important; opacity: 1 !important; font-size: 1rem !important;
+background-color: $dark-green !important;
+margin: 0 !important;
+border-radius: 0 !important;
+height: 100vh;
+position: fixed;
+left: 0; top: 0;
+padding-top: 20px;
+border-right: none !important;
+width: 280px !important;
+.sidebar-item-text, .sidebar-link, .sidebar-navigation, .sidebar-title, a {
+color: #ffffff !important; font-weight: 800 !important;
+text-decoration: none !important; opacity: 1 !important; font-size: 1rem !important;
   }
-  .sidebar-title, .title-block-header, .navbar-title, .sidebar-logo p, #quarto-sidebar-header {
-    font-size: 1.4rem !important; font-weight: 900 !important;
-    color: #ffffff !important; line-height: 1.3 !important;
+.sidebar-title, .title-block-header, .navbar-title, .sidebar-logo p, #quarto-sidebar-header {
+font-size: 1.4rem !important; font-weight: 900 !important;
+color: #ffffff !important; line-height: 1.3 !important;
   }
-  .sidebar-item-text.active, .sidebar-link.active {
-    background-color: rgba(255,255,255,0.15) !important; border-radius: 0.5rem;
+.sidebar-item-text.active, .sidebar-link.active {
+background-color: rgba(255,255,255,0.15) !important; border-radius: 0.5rem;
   }
 }
-
 @media (min-width: 992px) {
-  #quarto-content { margin-left: 280px !important; }
+#quarto-content { margin-left: 280px !important; }
 }
-
 .quiz-card {
-  background-color: $light-green-bg !important;
-  border-radius: 15px !important; padding: 25px !important;
-  margin-top: 20px !important; margin-bottom: 30px !important;
-  border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  h5, h4 { color: $dark-green !important; font-weight: 800 !important; margin-top: 0; }
-  p { color: #2c3e50; }
+background-color: $light-green-bg !important;
+border-radius: 15px !important; padding: 25px !important;
+margin-top: 20px !important; margin-bottom: 30px !important;
+border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+h5, h4 { color: $dark-green !important; font-weight: 800 !important; margin-top: 0; }
+p { color: #2c3e50; }
 }
-
 .progress {
-  background-color: #e9ecef; border-radius: 50px; overflow: hidden; border: 1px solid #ced4da;
+background-color: #e9ecef; border-radius: 50px; overflow: hidden; border: 1px solid #ced4da;
 }
 .progress-bar {
-  transition: width 0.6s ease; font-weight: 800; font-size: 0.75rem;
+transition: width 0.6s ease; font-weight: 800; font-size: 0.75rem;
+}
+// Week cards on dashboard
+#week-cards-grid {
+  align-items: stretch;
+
+  .g-col-12 {
+    display: flex;
+  }
 }
 
-// Week cards on dashboard
 .week-card {
-  border-radius: 14px !important;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  cursor: pointer; text-decoration: none !important; display: block;
-  color: inherit !important; border: 1.5px solid #d6e4d6; background-color: #ffffff;
-  &:hover {
-    background-color: $dark-green !important; color: white !important;
-    transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,77,26,0.18);
-    text-decoration: none !important;
-    .week-card-title, .week-card-topics, .week-card-status { color: white !important; }
-    .week-card-progress-bar-bg { background-color: rgba(255,255,255,0.25) !important; }
-    .week-card-progress-fill   { background-color: #a8d5a2 !important; }
+width: 100%;
+min-height: 180px;
+display: flex !important;
+flex-direction: column;
+justify-content: space-between;
+border-radius: 14px !important;
+transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+cursor: pointer; text-decoration: none !important;
+color: inherit !important; border: 1.5px solid #d6e4d6; background-color: #ffffff;
+&:hover {
+background-color: $dark-green !important; color: white !important;
+transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,77,26,0.18);
+text-decoration: none !important;
+.week-card-title, .week-card-topics, .week-card-status { color: white !important; }
+.week-card-progress-bar-bg { background-color: rgba(255,255,255,0.25) !important; }
+.week-card-progress-fill   { background-color: #a8d5a2 !important; }
   }
 }
 .week-card-title  { color: $dark-green; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.3rem; }
 .week-card-topics { color: #4a6741; font-size: 0.85rem; margin-bottom: 0.6rem; }
 .week-card-status { font-size: 0.78rem; color: #6c757d; }
 .week-card-progress-bar-bg {
-  background-color: #e9ecef; border-radius: 50px; overflow: hidden;
-  border: 1px solid #ced4da; height: 10px; margin-top: 8px;
+background-color: #e9ecef; border-radius: 50px; overflow: hidden;
+border: 1px solid #ced4da; height: 10px; margin-top: 8px;
 }
 .week-card-progress-fill {
-  height: 10px; border-radius: 50px; background-color: $dark-green; transition: width 0.6s ease;
+height: 10px; border-radius: 50px; background-color: $dark-green; transition: width 0.6s ease;
 }
-
 // Global progress banner
 .global-progress-banner {
-  background: linear-gradient(135deg, $dark-green 0%, #2d7a2d 100%);
-  border-radius: 16px; padding: 28px 36px; color: white;
-  margin-bottom: 2rem; box-shadow: 0 4px 18px rgba(26,77,26,0.15);
-  h2 { color: white !important; font-weight: 900; font-size: 1.5rem; margin-bottom: 0.2rem; }
-  .progress { height: 22px; border-radius: 50px; background-color: rgba(255,255,255,0.2) !important; border: none !important; }
-  .progress-bar { background-color: #a8d5a2 !important; color: $dark-green !important; font-weight: 900; font-size: 0.8rem; border-radius: 50px; }
+background: linear-gradient(135deg, $dark-green 0%, #2d7a2d 100%);
+border-radius: 16px; padding: 28px 36px; color: white;
+margin-bottom: 2rem; box-shadow: 0 4px 18px rgba(26,77,26,0.15);
+h2 { color: white !important; font-weight: 900; font-size: 1.5rem; margin-bottom: 0.2rem; }
+.progress { height: 22px; border-radius: 50px; background-color: rgba(255,255,255,0.2) !important; border: none !important; }
+.progress-bar { background-color: #a8d5a2 !important; color: $dark-green !important; font-weight: 900; font-size: 0.8rem; border-radius: 50px; }
 }

@@ -47,3 +47,5 @@ execute:
   enabled: false
   freeze: auto  # 'auto' bedeutet: Nur re-render, wenn sich die .qmd geändert hat
   cache: true
+
+output-dir: docs
