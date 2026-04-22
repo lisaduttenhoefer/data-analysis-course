@@ -1,18 +1,9 @@
----
-title: "Week 1: Basic Data Structures & Data Manipulation"
----
-
 ```{=html}
-<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// ══════════════════════════════════════════════════════════════════════
-//  PROGRESS SYSTEM – Week 1
-// ══════════════════════════════════════════════════════════════════════
-
-// 1. Initialisierung
-const SUPABASE_URL = 'DEINE_URL';
-const SUPABASE_KEY = 'DEIN_KEY';
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 var W1_CHUNK_COUNT = 28;
@@ -22,17 +13,15 @@ function getLang() {
   try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e){ return 'python'; }
 }
 
-// 2. Funktion zum Speichern (Lokal + Supabase)
 async function sbSaveProgress(key, value) {
   localStorage.setItem(key, value); 
-  
   try {
     const { data: { user } } = await sbClient.auth.getUser();
     if (user) {
-      await sbClient.from('user_progress').upsert({ 
-        user_id: user.id, 
-        item_id: key,        // 'key' aus JS wird 'item_id' in SQL
-        completed: value === 'true' 
+      await sbClient.from('progress').upsert({ 
+        user_email: user.email,
+        key: key,
+        value: value
       });
     }
   } catch (err) { console.error("Supabase Save Error:", err); }
@@ -50,7 +39,6 @@ async function markQuizDone(quizId) {
   updateWeekBar();
 }
 
-// 3. Fortschritt laden (Einmaliger Abruf für die ganze Seite)
 async function updateWeekBar() {
   var lang = getLang();
   var total = W1_CHUNK_COUNT + W1_QUIZ_IDS.length;
@@ -62,12 +50,12 @@ async function updateWeekBar() {
 
     if (user) {
       const { data, error } = await sbClient
-        .from('user_progress')
-        .select('item_id, completed') // Diese Namen müssen exakt wie in SQL sein
-        .eq('user_id', user.id);
+        .from('progress')
+        .select('key, value')
+        .eq('user_email', user.email);
       
       if (data) {
-        data.forEach(row => { progressMap[row.item_id] = row.completed; });
+        data.forEach(row => { progressMap[row.key] = row.value === 'true'; });
       }
     }
 
@@ -85,17 +73,12 @@ async function updateWeekBar() {
     var pct = Math.round((done / total) * 100);
     var bar = document.getElementById('week1-progress-bar');
     var txt = document.getElementById('week1-progress-text');
-    if (bar) { 
-      bar.style.width = pct + '%'; 
-      bar.innerText = pct > 8 ? pct + '%' : ''; 
-    }
-    if (txt) { 
-      txt.innerText = done + ' of ' + total + ' tasks completed (' + lang.toUpperCase() + ')'; 
-    }
+    if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+    if (txt) { txt.innerText = done + ' of ' + total + ' tasks completed (' + lang.toUpperCase() + ')'; }
   } catch (err) { console.error("Update Bar Error:", err); }
 }
 
-// 4. MutationObserver für Shinylive-Chunks
+// MutationObserver für Shinylive-Chunks
 var _observedChunks = {};
 
 function resetObservers() {
@@ -111,7 +94,6 @@ function observeChunkWrapper(wrapper) {
   function tryAttach() {
     var iframe = wrapper.querySelector('iframe');
     if (!iframe) { setTimeout(tryAttach, 500); return; }
-
     function tryObserve() {
       try {
         var doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -138,13 +120,11 @@ function scanChunkWrappers() {
   document.querySelectorAll('.chunk-track[data-chunk-id]').forEach(observeChunkWrapper);
 }
 
-// 5. Event Listener & Initialisierung
 document.addEventListener('DOMContentLoaded', function() {
   updateWeekBar();
   setTimeout(scanChunkWrappers, 500);
   setTimeout(scanChunkWrappers, 2000);
 
-  // Re-scan für asynchrone Elemente
   new MutationObserver(function(muts) {
     let found = false;
     muts.forEach(m => {
@@ -156,12 +136,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }).observe(document.body, { childList: true, subtree: true });
 });
 
-// PostMessage Handler für Shinylive
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'chunkDone' && e.data.chunkId) markChunkDone(e.data.chunkId);
 });
 
-// Language Switcher Logik (hier muss dein CSS/Link-Code rein)
+// Language Switcher
 document.addEventListener('DOMContentLoaded', function() {
   function applyFinalStyle() {
     var links = document.querySelectorAll('.navbar-nav .nav-link');
@@ -189,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
   applyFinalStyle();
 });
 </script>
+
 
 <div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
   <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
@@ -2233,7 +2213,7 @@ def server(input, output, session):
                     if isinstance(node, ast.Expr):
                         val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
                         if val is not None: print(val)
-                    else: exec(compile(ast.Module([node],[]),'<s>','exc'), ns)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
             except Exception as e: print(f"Error: {e}")
         return f.getvalue()
 app = App(app_ui, server)
