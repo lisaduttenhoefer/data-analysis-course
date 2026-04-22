@@ -1,18 +1,17 @@
 project:
   type: website
+  output-dir: docs       # Damit GitHub Pages den richtigen Ordner findet
   render:
     - "*.qmd"
-    - "!test_qmds/"  # Das Ausrufezeichen schließt den Ordner aus
+    - "!test_qmds/"
 
 filters:
   - shinylive
 
-engine: knitr # Oder jupyter, falls du nur Python nutzt. knitr kann beides.
+engine: knitr 
 
 website:
-  # Titel mit HTML für Fettdruck und Umbruch
   title: "<b>METHODS IN DATA ANALYSIS</b><br>Introduction lecture"
-  
   sidebar:
     style: "floating"
     collapse-level: 1
@@ -25,7 +24,6 @@ website:
             text: "Getting started"
           - href: 1_datentypen.qmd
             text: "WEEK 1: Datatypes"
-
           
   navbar:
     background: "#ffffff"
@@ -42,12 +40,9 @@ format:
       - custom.scss
     include-in-header: 
       - language-switch.html
-      - supabase-auth.html
-
+      # - supabase-auth.html  # Nur aktiv lassen, wenn die Datei wirklich existiert!
 
 execute:
   enabled: false
-  freeze: auto  # 'auto' bedeutet: Nur re-render, wenn sich die .qmd geändert hat
+  freeze: auto
   cache: true
-
-output-dir: docs

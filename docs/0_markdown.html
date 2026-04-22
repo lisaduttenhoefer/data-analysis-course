@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Orientation in This Course – METHODS IN DATA ANALYSISIntroduction lecture</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-06014fac254833309f70b00675f60aeb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/run-python-blocks.js" type="module"></script>
+<link href="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/shinylive.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function applyFinalStyle() {
+      // Wir suchen alle Links in der Navbar
+      const links = document.querySelectorAll('.navbar-nav .nav-link');
+      let pyBtn, rBtn;
+  
+      links.forEach(link => {
+        if (link.textContent.trim() === 'PYTHON') pyBtn = link;
+        if (link.textContent.trim() === 'R') rBtn = link;
+      });
+  
+      if (!pyBtn || !rBtn) {
+        setTimeout(applyFinalStyle, 200);
+        return;
+      }
+  
+      const darkGreen = "#1a4d1a";
+  
+      function updateView(lang) {
+        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+        
+        // Style Python
+        pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+        
+        // Style R
+        rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+        
+        localStorage.setItem('da_course_lang', lang);
+      }
+  
+      pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
+      rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
+  
+      updateView(localStorage.getItem('da_course_lang') || 'python');
+    }
+    applyFinalStyle();
+  });
+
+  // Funktion zum Markieren einer Aufgabe als erledigt
+  function markTaskDone(taskId) {
+      localStorage.setItem('task_' + taskId, 'true');
+      updateGlobalProgress();
+  }
+
+  // Berechnet den Gesamtfortschritt und aktualisiert den Balken
+  function updateGlobalProgress() {
+      const totalWeeks = 12; // Deine Anzahl an Wochen
+      let doneCount = 0;
+      
+      for (let i = 1; i <= totalWeeks; i++) {
+          if (localStorage.getItem('task_woche' + i) === 'true') {
+              doneCount++;
+          }
+      }
+      
+      const percent = Math.round((doneCount / totalWeeks) * 100);
+      const bar = document.getElementById('course-progress-bar');
+      const text = document.getElementById('progress-text');
+      
+      if (bar && text) {
+          bar.style.width = percent + '%';
+          bar.innerText = percent + '%';
+          text.innerText = doneCount + ' von ' + totalWeeks + ' Wochen bearbeitet';
+      }
+  }
+
+  // Beim Laden der Seite den Balken initialisieren
+  document.addEventListener('DOMContentLoaded', updateGlobalProgress);
+  </script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title"><b>METHODS IN DATA ANALYSIS</b><br>Introduction lecture</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">PYTHON</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">R</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./0_markdown.html">Getting started</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WELCOME</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">COURSE-CONTENTS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./0_markdown.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WEEK 1: Datatypes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./0_markdown.html">Getting started</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Orientation in This Course</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="structure-course-materials" class="level2">
+<h2 class="anchored" data-anchor-id="structure-course-materials">Structure &amp; Course Materials</h2>
+<p>Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.</p>
+<p>On this platform you will find everything in one place: clear explanations, directly executable code examples for experimentation, and short knowledge tests after each chapter to consolidate what you have learned.</p>
+<p>You have full freedom of choice: using the <strong>button in the top right corner</strong>, you can switch between the programming languages <strong>R</strong> and <strong>Python</strong> at any time. The subject matter is identical — you decide which tool you want to work with.</p>
+<p>In addition, all lecture slides and Markdown files with the same content are linked so that you can also work through the materials independently offline.</p>
+<hr>
+</section>
+<section id="programming-languages-and-their-working-environments" class="level2">
+<h2 class="anchored" data-anchor-id="programming-languages-and-their-working-environments">Programming Languages and Their Working Environments</h2>
+<p>Before we start, it is important to understand the difference between the <strong>programming language</strong> itself and the <strong>program</strong> in which we write.</p>
+<section id="the-language-r-and-python" class="level3">
+<h3 class="anchored" data-anchor-id="the-language-r-and-python">1. The Language: R and Python</h3>
+<p><strong>R</strong> and <strong>Python</strong> are the “engines” behind your analysis. For your computer to understand what you want from it, you need to download the language as base software.</p>
+<ul>
+<li><strong>Python:</strong> Installed as a program from <a href="https://www.python.org/">python.org</a>.</li>
+<li><strong>R:</strong> Installed as “Base R” from the <a href="https://cran.r-project.org/">CRAN network</a>.</li>
+</ul>
+<p><strong>Important:</strong> You will almost never open these programs directly. They “rest” in the background of your operating system and wait for commands.</p>
+</section>
+<section id="the-tool-the-ide-rstudio-vs-code" class="level3">
+<h3 class="anchored" data-anchor-id="the-tool-the-ide-rstudio-vs-code">2. The Tool: The IDE (RStudio &amp; VS Code)</h3>
+<p>To actually write code, we use an <strong>IDE</strong> (<em>Integrated Development Environment</em>). This is your actual control center.</p>
+<ul>
+<li><strong>RStudio</strong> is the standard environment for <strong>R</strong>.</li>
+<li><strong>VS Code</strong> is the most popular environment for <strong>Python</strong>.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="what-do-you-need-for-setup" class="level2">
+<h2 class="anchored" data-anchor-id="what-do-you-need-for-setup">What Do You Need for Setup?</h2>
+<p>If you later want to work on your own computer, this is the correct order:</p>
+<ol type="1">
+<li><strong>Install the engine:</strong> Download Python or R (provides the “language”).</li>
+<li><strong>Set up the workspace:</strong> Install an IDE like RStudio or VS Code (your workstation).</li>
+<li><strong>Unpack the tools:</strong> Install so-called “packages” within the IDE. These are extensions for specific tasks, such as drawing biological diagrams.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Our Tip for Getting Started
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To work on the exercises on this website, <strong>no installed RStudio or VS Code is required</strong>. Our interactive windows already have everything “on board”. However, we recommend that you familiarize yourself with these programs during the course, as they will be your daily companions in later practice!</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="working-with-markdown" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-markdown">Working with Markdown</h2>
+<p>In this course we do not use ordinary text documents or pure program code. In addition to this website, we work with <strong>Markdown</strong> files as an offline alternative.</p>
+<p>In science, <strong>reproducibility</strong> (traceability) is crucial. Markdown allows us to do so-called <strong>Literate Programming</strong>: * We write our text (explanations, hypotheses). * We embed the actual code (R or Python) directly within it. * We let the computer <strong>render</strong> the document (in RStudio often via the <strong>Knit</strong> button).</p>
+<p>The result is a finished document (HTML, PDF, or Word) in which the text, the code, and the resulting graphics are perfectly combined.</p>
+<section id="the-structure-of-a-file" class="level3">
+<h3 class="anchored" data-anchor-id="the-structure-of-a-file">The Structure of a File</h3>
+<ol type="1">
+<li><strong>The text:</strong> Regular text with simple formatting (<code>**bold**</code>, <code>*italic*</code>, <code># Heading</code>).</li>
+<li><strong>The code chunks:</strong> Blocks that begin with three backticks. This is where the actual code is executed. It is recommended to <strong>name</strong> each chunk — this keeps your document tidy and greatly facilitates troubleshooting.</li>
+<li><strong>The YAML header:</strong> The area at the very top between the <code>---</code> lines for title and author.</li>
+</ol>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Language-Specific Introduction
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Depending on whether you have switched to “R” or “Python” above, you will now see a more detailed introduction to the respective environment below.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="focus-r-and-rstudio" class="level2 lang-r">
+<h2 class="anchored" data-anchor-id="focus-r-and-rstudio">Focus: R and RStudio</h2>
+<p><strong>R</strong> is a powerful language for statistical data analysis. We recommend that you also take the introductory courses at <strong>DataCamp</strong> to get a feel for the syntax. <strong>RStudio</strong> is an “Integrated Development Environment” (IDE) that helps you write code, visualize data, and save results.</p>
+<section id="the-rstudio-interface" class="level3">
+<h3 class="anchored" data-anchor-id="the-rstudio-interface">The RStudio Interface</h3>
+<p>The interface is divided into four main areas:</p>
+<ol type="1">
+<li><strong>Source (top left):</strong> This is where you write your scripts and Markdown files. To create a new file, click on the <code>New File</code> icon (green plus) at the top left. Everything written here can be saved.</li>
+<li><strong>Console (bottom left):</strong> Code is executed immediately here. For example, type <code>3 + 4</code> and press Enter — the result appears immediately. The console is ideal for commands that you do not need to save permanently.</li>
+<li><strong>Environment (top right):</strong> All variables, lists, and datasets that you have created and defined during your session are displayed here.</li>
+<li><strong>Files/Plots/Help (bottom right):</strong> Here you manage your files, view generated graphics, or search the help for functions (e.g., with <code>?matrix</code>).</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/rstudio-panes-labeled.jpeg" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>The main areas of RStudio</figcaption>
+</figure>
+</div>
+</section>
+<section id="first-steps-in-programming" class="level3">
+<h3 class="anchored" data-anchor-id="first-steps-in-programming">First Steps in Programming</h3>
+<ul>
+<li><strong>Assignments:</strong> Values are loaded into variables with <code>&lt;-</code> or <code>=</code> (e.g., <code>a &lt;- 10</code>). The variable then appears in the Environment.</li>
+<li><strong>R as a calculator:</strong> R is excellent for mathematical calculations. You can calculate directly with variables:</li>
+</ul>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "R Chunk: Mathematical Operations", value = "x &lt;- 5\ny &lt;- 3\nSum &lt;- x + y\nSum * 5", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })
+}
+shinyApp(ui, server)</code></pre>
+<ul>
+<li><strong>Case Sensitivity:</strong> R is extremely picky. <code>hello</code> is a different variable from <code>Hello</code>.</li>
+<li><strong>Getting help:</strong> Use the documentation directly in RStudio or online resources:
+<ul>
+<li><a href="https://www.guru99.com/r-tutorial.html">guru99 R Tutorial</a></li>
+<li><a href="https://www.bioinformatics.babraham.ac.uk/training.html#advancedrtidy">Babraham Bioinformatics</a></li>
+<li><a href="https://r4ds.had.co.nz">R for Data Science</a></li>
+</ul></li>
+<li><strong>Workspace:</strong> Use <code>ls()</code> to list your variables and <code>rm(a)</code> to delete them — <strong>Caution:</strong> <code>rm()</code> deletes irreversibly, so use it carefully! Your entire environment can be saved as an <code>.RData</code> file and restored in a later session with <code>load("MyEnvironment.RData")</code>.</li>
+<li><strong>Working Directory:</strong> Via the <strong>Files -&gt; More -&gt; Set As Working Directory</strong> tab, you define which folder R should look in for your files.</li>
+</ul>
+<section id="helpful-tips-in-the-editor" class="level4">
+<h4 class="anchored" data-anchor-id="helpful-tips-in-the-editor">Helpful Tips in the Editor</h4>
+<ul>
+<li><strong>Autocomplete:</strong> In RStudio, quotation marks <code>""</code> and brackets <code>()</code> usually appear automatically in pairs. This helps you avoid syntax errors caused by forgotten characters.</li>
+<li><strong>History:</strong> Using the <strong>arrow keys (up/down)</strong> you can scroll through your most recently used commands in the console.</li>
+<li><strong>Comments:</strong> Everything after a <code>#</code> is ignored by R. Use this generously to explain your code to yourself and others.</li>
+</ul>
+</section>
+<section id="variables-assignments" class="level4">
+<h4 class="anchored" data-anchor-id="variables-assignments">Variables &amp; Assignments</h4>
+<p>We can load values (numbers or text) into variables. In R, the arrow <code>&lt;-</code> is traditionally used for this, but <code>=</code> is also possible.</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "R Chunk: Variables &amp; Assignments", value = "a &lt;- \"Hello world!\"\nhello = \"Hello world!\"\nprint(a)\nprint(hello)", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })
+}
+shinyApp(ui, server)llo = "Hello world!"</code></pre>
+</section>
+</section>
+</section>
+<section id="python-and-vs-code" class="level2 lang-python">
+<h2 class="anchored" data-anchor-id="python-and-vs-code">Python and VS Code</h2>
+<p><strong>Python</strong> is a versatile and widely used programming language that is particularly well-suited for data analysis, machine learning, and scientific computing. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. VS Code is a flexible development environment (IDE) that can be optimally adapted for Python through extensions.</p>
+<section id="the-vs-code-interface" class="level3">
+<h3 class="anchored" data-anchor-id="the-vs-code-interface">The VS Code Interface</h3>
+<p>The interface is divided into four main areas:</p>
+<ol type="1">
+<li><strong>Editor (center):</strong> This is where you write your scripts and notebooks. To create a new file, click on the New File icon at the top left in the Explorer. Everything written here can be saved. The file extensions determine in which programming language you are writing and how the file can be used (.py/.ipynb for Python, .r for R, .md for Markdown).</li>
+<li><strong>Terminal (bottom):</strong> Code is executed immediately here and files can be launched. Connections to clusters, communication with GitHub, or searching for files also work via the terminal. The terminal can be opened, for example, at the top right (3rd icon from the right).</li>
+<li><strong>Explorer (left):</strong> Here you manage your files and folders. These are either stored locally on your computer or on a cluster.</li>
+<li><strong>Control Center (far left):</strong> Here you can, for example, search documents for a keyword, connect and manage GitHub repositories, debug, install extensions, and manage remote connections (e.g., clusters).</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/vs_code.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>The main areas of VS Code</figcaption>
+</figure>
+</div>
+</section>
+<section id="first-steps-in-programming-1" class="level3">
+<h3 class="anchored" data-anchor-id="first-steps-in-programming-1">First Steps in Programming</h3>
+<ul>
+<li><strong>Assignments:</strong> In Python, values are loaded into variables with = (e.g., a = 10). Unlike R, there is no <code>&lt;-</code> in Python.</li>
+<li><strong>Python as a calculator:</strong> Python is excellent for mathematical calculations. You can calculate directly with variables:</li>
+</ul>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+from shiny import App, ui, render, reactive
+import io, contextlib
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", "Python Chunk: Mathematical Operations", value="x = 5\ny = 3\nSum = x + y\nprint(Sum * 5)", width='100%', height='100px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    def out():
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            exec(input.code(), {})
+        return f.getvalue()
+
+app = App(app_ui, server)</code></pre>
+<ul>
+<li><strong>Case Sensitivity:</strong> Python is just as picky as R. hello is a different variable from Hello.</li>
+</ul>
+</section>
+<section id="getting-help" class="level3">
+<h3 class="anchored" data-anchor-id="getting-help">Getting Help:</h3>
+<p>Use the documentation directly in VS Code or online resources: Python Documentation W3Schools Python Tutorial Python for Data Science Handbook</p>
+<ul>
+<li><p><strong>Workspace:</strong> Use <code>dir()</code> to list all current variables and objects, and <code>del a</code> to delete a variable — <strong>Caution:</strong> <code>del</code> deletes irreversibly, so use it carefully!</p></li>
+<li><p><strong>Working Directory:</strong> With <code>import os</code> and <code>os.getcwd()</code> you can display the current directory; with <code>os.chdir("path/to/folder")</code> you change it.</p></li>
+</ul>
+</section>
+<section id="helpful-tips-in-the-editor-1" class="level3">
+<h3 class="anchored" data-anchor-id="helpful-tips-in-the-editor-1">Helpful Tips in the Editor</h3>
+<ul>
+<li><strong>Autocomplete:</strong> VS Code automatically suggests functions, variable names, and brackets. Quotation marks <code>""</code> and brackets <code>()</code> often appear automatically in pairs — this helps avoid syntax errors.</li>
+<li><strong>History:</strong> In the terminal you can scroll through your most recently used commands using the arrow keys (up/down).</li>
+<li><strong>Comments:</strong> Everything after a <code>#</code> is ignored by Python — just like in R. Use comments generously to explain your code.</li>
+</ul>
+</section>
+<section id="variables-assignments-1" class="level3">
+<h3 class="anchored" data-anchor-id="variables-assignments-1">Variables &amp; Assignments</h3>
+<p>We can load values (numbers or text) into variables. In Python, <code>=</code> is used exclusively for assignments.</p>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+from shiny import App, ui, render, reactive
+import io, contextlib
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", "Python Chunk: Variables &amp; Assignments", value='a = "Hello world!"\nhello = "Hello world!"\nprint(a)\nprint(hello)', width='100%', height='120px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    def out():
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            exec(input.code(), {})
+        return f.getvalue()
+
+app = App(app_ui, server)</code></pre>
+</section>
+</section>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
