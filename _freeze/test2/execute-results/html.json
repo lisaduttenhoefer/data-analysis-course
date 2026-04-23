@@ -1,0 +1,15 @@
+{
+  "hash": "74b98a7e9021fba9cff4ce31b5cb31eb",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Test2\"\nengine: knitr\nformat:\n  html:\n    embed-resources: false\n---\n\n```{shinylive-r}\n#| standalone: true\nlibrary(shiny)\nui <- fluidPage(textOutput(\"txt\"))\nserver <- function(input, output) {\n  output$txt <- renderText(\"Hello!\")\n}\nshinyApp(ui, server)\n```\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

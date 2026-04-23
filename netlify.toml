@@ -1,3 +1,7 @@
+[build]
+  command = "quarto render"
+  publish = "docs"
+
 [[headers]]
   for = "/*"
   [headers.values]

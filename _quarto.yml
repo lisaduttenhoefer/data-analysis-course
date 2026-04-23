@@ -35,6 +35,7 @@ website:
 
 format:
   html:
+    self-contained-math: true
     theme: 
       - cosmo
       - custom.scss
