@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Orientation in This Course – METHODS IN DATA ANALYSISIntroduction lecture</title>
+<title>markdown – &lt;b&gt;METHODS IN DATA ANALYSIS&lt;/b&gt;&lt;br&gt;Introduction lecture</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -239,7 +239,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./0_markdown.html">Getting started</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Orientation in This Course</h1>
+<h1 class="title">````yaml</h1>
 </div>
 
 
@@ -256,6 +256,10 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="title-orientation-in-this-course" class="level2">
+<h2 class="anchored" data-anchor-id="title-orientation-in-this-course">title: “Orientation in This Course”</h2>
+<p>````</p>
+</section>
 <section id="structure-course-materials" class="level2">
 <h2 class="anchored" data-anchor-id="structure-course-materials">Structure &amp; Course Materials</h2>
 <p>Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.</p>
@@ -362,10 +366,7 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Assignments:</strong> Values are loaded into variables with <code>&lt;-</code> or <code>=</code> (e.g., <code>a &lt;- 10</code>). The variable then appears in the Environment.</li>
 <li><strong>R as a calculator:</strong> R is excellent for mathematical calculations. You can calculate directly with variables:</li>
 </ul>
-<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
-#|   shinylive does not work in self-contained HTML documents.
-#|   Please set `embed-resources: false` in your metadata.
-#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
 #| viewerHeight: 300
 library(shiny)
 ui &lt;- fluidPage(
@@ -399,10 +400,7 @@ shinyApp(ui, server)</code></pre>
 <section id="variables-assignments" class="level4">
 <h4 class="anchored" data-anchor-id="variables-assignments">Variables &amp; Assignments</h4>
 <p>We can load values (numbers or text) into variables. In R, the arrow <code>&lt;-</code> is traditionally used for this, but <code>=</code> is also possible.</p>
-<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
-#|   shinylive does not work in self-contained HTML documents.
-#|   Please set `embed-resources: false` in your metadata.
-#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
 #| viewerHeight: 300
 library(shiny)
 ui &lt;- fluidPage(
@@ -413,7 +411,7 @@ ui &lt;- fluidPage(
 server &lt;- function(input, output) {
   observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })
 }
-shinyApp(ui, server)llo = "Hello world!"</code></pre>
+shinyApp(ui, server)</code></pre>
 </section>
 </section>
 </section>
@@ -442,10 +440,7 @@ shinyApp(ui, server)llo = "Hello world!"</code></pre>
 <li><strong>Assignments:</strong> In Python, values are loaded into variables with = (e.g., a = 10). Unlike R, there is no <code>&lt;-</code> in Python.</li>
 <li><strong>Python as a calculator:</strong> Python is excellent for mathematical calculations. You can calculate directly with variables:</li>
 </ul>
-<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
-#|   shinylive does not work in self-contained HTML documents.
-#|   Please set `embed-resources: false` in your metadata.
-#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
 #| viewerHeight: 300
 from shiny import App, ui, render, reactive
 import io, contextlib
@@ -489,10 +484,7 @@ app = App(app_ui, server)</code></pre>
 <section id="variables-assignments-1" class="level3">
 <h3 class="anchored" data-anchor-id="variables-assignments-1">Variables &amp; Assignments</h3>
 <p>We can load values (numbers or text) into variables. In Python, <code>=</code> is used exclusively for assignments.</p>
-<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
-#|   shinylive does not work in self-contained HTML documents.
-#|   Please set `embed-resources: false` in your metadata.
-#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
 #| viewerHeight: 300
 from shiny import App, ui, render, reactive
 import io, contextlib

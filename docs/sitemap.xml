@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/index.html</loc>
-    <lastmod>2026-04-22T11:07:06.764Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/0_markdown.html</loc>
-    <lastmod>2026-04-21T11:29:19.379Z</lastmod>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/test2.html</loc>
+    <lastmod>2026-04-23T09:26:20.768Z</lastmod>
   </url>
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/1_datentypen.html</loc>
-    <lastmod>2026-04-22T12:26:26.568Z</lastmod>
+    <lastmod>2026-04-23T09:59:18.713Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/0_markdown.html</loc>
+    <lastmod>2026-04-23T09:57:39.511Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/index.html</loc>
+    <lastmod>2026-04-22T11:07:06.764Z</lastmod>
   </url>
 </urlset>
