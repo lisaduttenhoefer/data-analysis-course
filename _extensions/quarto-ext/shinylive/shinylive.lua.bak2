@@ -459,6 +459,12 @@ return {
         el.attr.classes:insert("shinylive-r")
       end
       
+      el.text = 
+        "#| '!! shinylive warning !!': |\n"..
+        "#|   shinylive does not work in self-contained HTML documents.\n" .. 
+        "#|   Please set `embed-resources: false` in your metadata.\n" ..
+        el.text
+      
       return el
     end
   }
