@@ -1,6 +1,8 @@
+````yaml
 ---
 title: "Orientation in This Course"
 ---
+````
 
 ## Structure & Course Materials
 
@@ -140,7 +142,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   observeEvent(input$run, { output$out <- renderPrint({ eval(parse(text = input$code)) }) })
 }
-shinyApp(ui, server)llo = "Hello world!"
+shinyApp(ui, server)
 ```
 :::
 

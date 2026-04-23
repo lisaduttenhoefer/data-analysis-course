@@ -7,8 +7,7 @@ project:
 
 filters:
   - shinylive
-
-engine: knitr 
+ 
 
 website:
   title: "<b>METHODS IN DATA ANALYSIS</b><br>Introduction lecture"

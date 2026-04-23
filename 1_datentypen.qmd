@@ -1,6 +1,9 @@
+---
+title: "Week 1: Basic Data Structures & Data Manipulation"
+---
+
 ```{=html}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
 const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
@@ -2099,7 +2102,7 @@ With `np.column_stack()` column vectors can be joined into a matrix. Column name
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy]
+#| packages: [numpy, pandas]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2316,6 +2319,7 @@ DataFrames are like matrices, but can contain **various data types** in differen
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 270
+#| packages: [pandas]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -2357,6 +2361,7 @@ DataFrames can be indexed similarly to dictionaries and matrices:
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 300
+#| packages: [pandas]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -2398,7 +2403,7 @@ There are important **differences** between DataFrames and NumPy matrices. Note 
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy]
+#| packages: [numpy, pandas]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2798,7 +2803,8 @@ Answer the questions correctly to save your progress. You can use the code sandb
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy]
+#| packages: [numpy, pandas]
+
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2893,7 +2899,8 @@ function checkPyVektorQuiz() {
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy]
+#| packages: [numpy, pandas]
+
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2978,6 +2985,7 @@ function checkPyMatrixQuiz() {
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 220
+#| packages: [pandas, numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 app_ui = ui.page_fluid(
@@ -3060,6 +3068,8 @@ function checkPyDictQuiz() {
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 250
+#| packages: [pandas, numpy]
+
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 app_ui = ui.page_fluid(
@@ -3142,7 +3152,8 @@ function checkPyDfQuiz() {
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 340
-#| packages: [numpy]
+#| packages: [numpy, pandas]
+
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -3201,6 +3212,7 @@ print(M[np.where(M > 0)])</code></pre>
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 300
+#| packages: [pandas, numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -3255,6 +3267,8 @@ else:
 ```{shinylive-python}
 #| standalone: true
 #| viewerHeight: 280
+#| packages: [pandas, numpy]
+
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -3309,11 +3323,10 @@ These are the slides used in the lecture of Week 1 and the videos of the matchin
 </div>
 ```
 
-* **Videos:**
-  Video 1/3: [General introduction to RStudio](https://youtu.be/doQYGprZe94)
-  Video 2/3: [Working with R scripts](https://youtu.be/joM5D3AXXgg)
-  Video 3/3: [Working with Markdown](https://youtu.be/DVOlDfgY9gU)
-
+* **Video 1/3:** [General introduction to RStudio](https://youtu.be/doQYGprZe94)
+* **Video 1/3:** [Working with R scripts](https://youtu.be/joM5D3AXXgg)
+* **Video 1/3:** [Working with Markdown](https://youtu.be/DVOlDfgY9gU)
+  
 ### Markdown Files (R only)
 
 These files contain the same content as this page and can be opened and executed directly in RStudio:
