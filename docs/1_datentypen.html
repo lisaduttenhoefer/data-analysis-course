@@ -430,7 +430,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2 class="anchored" data-anchor-id="datatype-simple-variable">1 – <strong>Datatype:</strong> Simple Variable</h2>
 <p>As you have already seen, values can be assigned to variables. For the assignment, <code>&lt;-</code> and <code>=</code> are equivalent:</p>
 <div class="chunk-track" data-chunk-id="w1_c1">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 library(shiny)
 CHUNK_ID &lt;- "w1_c1"
@@ -454,7 +457,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>The function <code>str()</code> shows you the <strong>structure</strong> of a variable – <code>chr</code> stands for <em>character</em> (string), not for chromosomes!</p>
 <div class="chunk-track" data-chunk-id="w1_c2">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 200
 library(shiny)
 CHUNK_ID &lt;- "w1_c2"
@@ -477,7 +483,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>With the operators <code>==</code>, <code>&gt;</code> and <code>&lt;</code> we can perform <strong>tests</strong> on simple variables:</p>
 <div class="chunk-track" data-chunk-id="w1_c3">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 library(shiny)
 CHUNK_ID &lt;- "w1_c3"
@@ -504,7 +513,10 @@ shinyApp(ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-vectors">2 – <strong>Datatype:</strong> Vectors</h2>
 <p>The function <code>c()</code> combines individual values into longer vectors. With <code>length()</code> you can determine the number of elements:</p>
 <div class="chunk-track" data-chunk-id="w1_c4">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 240
 library(shiny)
 CHUNK_ID &lt;- "w1_c4"
@@ -527,7 +539,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>Vectors can consist of numbers, strings or logical values (TRUE/FALSE/NA). With <code>str()</code> you can display the structure:</p>
 <div class="chunk-track" data-chunk-id="w1_c5">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 250
 library(shiny)
 CHUNK_ID &lt;- "w1_c5"
@@ -550,7 +565,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>When data types are mixed, <strong>all elements are converted to the lowest type</strong>:</p>
 <div class="chunk-track" data-chunk-id="w1_c6">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 250
 library(shiny)
 CHUNK_ID &lt;- "w1_c6"
@@ -573,7 +591,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>Using square brackets <code>[]</code> and the <strong>index</strong> of an element, you can select elements of a vector:</p>
 <div class="chunk-track" data-chunk-id="w1_c7">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 300
 library(shiny)
 CHUNK_ID &lt;- "w1_c7"
@@ -596,7 +617,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>Tests can also be applied to each element of a vector individually:</p>
 <div class="chunk-track" data-chunk-id="w1_c8">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 library(shiny)
 CHUNK_ID &lt;- "w1_c8"
@@ -619,7 +643,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>Elements in a vector can also be <strong>modified</strong>:</p>
 <div class="chunk-track" data-chunk-id="w1_c9">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 270
 library(shiny)
 CHUNK_ID &lt;- "w1_c9"
@@ -646,7 +673,10 @@ shinyApp(ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-matrices">3 – <strong>Datatype:</strong> Matrices</h2>
 <p>A matrix is a two-dimensional array of numbers. It is created using the <code>matrix()</code> function:</p>
 <div class="chunk-track" data-chunk-id="w1_c10">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
 library(shiny)
 CHUNK_ID &lt;- "w1_c10"
@@ -669,7 +699,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>With <code>dim()</code> you can query the <strong>dimensions</strong> of a matrix:</p>
 <div class="chunk-track" data-chunk-id="w1_c11">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 210
 library(shiny)
 CHUNK_ID &lt;- "w1_c11"
@@ -692,7 +725,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>Elements of a matrix are accessed similarly to vectors – but with <strong>two indices</strong> <code>[row, column]</code>:</p>
 <div class="chunk-track" data-chunk-id="w1_c12">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
 library(shiny)
 CHUNK_ID &lt;- "w1_c12"
@@ -715,7 +751,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>With <code>drop = FALSE</code> the result remains two-dimensional:</p>
 <div class="chunk-track" data-chunk-id="w1_c13">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 library(shiny)
 CHUNK_ID &lt;- "w1_c13"
@@ -738,7 +777,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>With <code>cbind()</code> column vectors can be joined into a matrix. Row and column names can be assigned using <code>rownames()</code> and <code>colnames()</code>:</p>
 <div class="chunk-track" data-chunk-id="w1_c14">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 290
 library(shiny)
 CHUNK_ID &lt;- "w1_c14"
@@ -768,7 +810,10 @@ shinyApp(ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-lists">4 – <strong>Datatype:</strong> Lists</h2>
 <p><strong>Lists</strong> are very flexible structures and can contain <strong>various types of elements</strong>. Elements can be named:</p>
 <div class="chunk-track" data-chunk-id="w1_c15">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 240
 library(shiny)
 CHUNK_ID &lt;- "w1_c15"
@@ -791,7 +836,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>List elements can be accessed with <code>$</code> or <code>[[]]</code>. Note the <strong>difference</strong> between <code>[</code> and <code>[[</code>:</p>
 <div class="chunk-track" data-chunk-id="w1_c16">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 270
 library(shiny)
 CHUNK_ID &lt;- "w1_c16"
@@ -814,7 +862,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>For lists <strong>without named elements</strong>, access works via the index:</p>
 <div class="chunk-track" data-chunk-id="w1_c17">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 library(shiny)
 CHUNK_ID &lt;- "w1_c17"
@@ -837,7 +888,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>Deleting an element from a list:</p>
 <div class="chunk-track" data-chunk-id="w1_c18">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 library(shiny)
 CHUNK_ID &lt;- "w1_c18"
@@ -864,7 +918,10 @@ shinyApp(ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-dataframes">5 – <strong>Datatype:</strong> Dataframes</h2>
 <p>Dataframes are like matrices, but can contain <strong>various data types</strong> in different columns. They are created with <code>data.frame()</code>:</p>
 <div class="chunk-track" data-chunk-id="w1_c19">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 270
 library(shiny)
 CHUNK_ID &lt;- "w1_c19"
@@ -887,7 +944,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>Dataframes can be indexed similarly to lists and matrices:</p>
 <div class="chunk-track" data-chunk-id="w1_c20">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
 library(shiny)
 CHUNK_ID &lt;- "w1_c20"
@@ -928,7 +988,10 @@ shinyApp(ui, server)</code></pre>
 <h3 class="anchored" data-anchor-id="apply-sapply-lapply">apply, sapply, lapply</h3>
 <p><code>apply()</code> repeats an operation over all rows or columns of a <strong>matrix</strong> or <strong>data frame</strong>. The second argument controls whether rows (<code>1</code>) or columns (<code>2</code>) are used:</p>
 <div class="chunk-track" data-chunk-id="w1_c21">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 300
 library(shiny)
 CHUNK_ID &lt;- "w1_c21"
@@ -951,7 +1014,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p><code>sapply()</code> loops over all elements of a <strong>vector</strong> or <strong>list</strong> and returns a vector of results:</p>
 <div class="chunk-track" data-chunk-id="w1_c22">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 library(shiny)
 CHUNK_ID &lt;- "w1_c22"
@@ -974,7 +1040,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p><code>lapply()</code> works like <code>sapply()</code> but always returns a <strong>list</strong>:</p>
 <div class="chunk-track" data-chunk-id="w1_c23">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 270
 library(shiny)
 CHUNK_ID &lt;- "w1_c23"
@@ -999,7 +1068,10 @@ shinyApp(ui, server)</code></pre>
 <section id="for-loops" class="level3">
 <h3 class="anchored" data-anchor-id="for-loops">for loops</h3>
 <div class="chunk-track" data-chunk-id="w1_c24">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 library(shiny)
 CHUNK_ID &lt;- "w1_c24"
@@ -1026,7 +1098,10 @@ shinyApp(ui, server)</code></pre>
 <section id="manipulating-data-if-statements" class="level2">
 <h2 class="anchored" data-anchor-id="manipulating-data-if-statements">7 – <strong>Manipulating Data:</strong> If Statements</h2>
 <div class="chunk-track" data-chunk-id="w1_c25">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
 library(shiny)
 CHUNK_ID &lt;- "w1_c25"
@@ -1049,7 +1124,10 @@ shinyApp(ui, server)</code></pre>
 </div>
 <p>The compact <code>ifelse()</code> function tests one condition and returns different values for <code>TRUE</code> and <code>FALSE</code>:</p>
 <div class="chunk-track" data-chunk-id="w1_c26">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 library(shiny)
 CHUNK_ID &lt;- "w1_c26"
@@ -1078,7 +1156,10 @@ shinyApp(ui, server)</code></pre>
 <h3 class="anchored" data-anchor-id="which">which()</h3>
 <p><code>which()</code> returns the <strong>positions</strong> of all elements satisfying a condition:</p>
 <div class="chunk-track" data-chunk-id="w1_c27">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 250
 library(shiny)
 CHUNK_ID &lt;- "w1_c27"
@@ -1104,7 +1185,10 @@ shinyApp(ui, server)</code></pre>
 <h3 class="anchored" data-anchor-id="in">%in%</h3>
 <p><code>%in%</code> checks which elements of one vector are contained in another:</p>
 <div class="chunk-track" data-chunk-id="w1_c28">
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 270
 library(shiny)
 CHUNK_ID &lt;- "w1_c28"
@@ -1137,7 +1221,10 @@ shinyApp(ui, server)</code></pre>
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: VECTORS</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 library(shiny)
 ui &lt;- fluidPage(
@@ -1213,7 +1300,10 @@ function checkVektorQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: MATRICES</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 library(shiny)
 ui &lt;- fluidPage(
@@ -1278,7 +1368,10 @@ function checkMatrixQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: LISTS</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 library(shiny)
 ui &lt;- fluidPage(
@@ -1343,7 +1436,10 @@ function checkListQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: DATAFRAMES</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 250
 library(shiny)
 ui &lt;- fluidPage(
@@ -1410,7 +1506,10 @@ function checkDfQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">EXERCISE 1: APPLY &amp; WHICH</h5>
   <p class="text-muted">🧪 Solve the tasks in the sandbox:</p>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 320
 library(shiny)
 ui &lt;- fluidPage(
@@ -1455,7 +1554,10 @@ function toggleSolution(id) {
 <div class="quiz-card">
   <h5 class="anchored">EXERCISE 2: IF STATEMENTS</h5>
   <p class="text-muted">🧪 Complete and extend the if statement:</p>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 300
 library(shiny)
 ui &lt;- fluidPage(
@@ -1492,7 +1594,10 @@ if (a &gt; 0) {
 <div class="quiz-card">
   <h5 class="anchored">EXERCISE 3 ⭐ EXPERT: SAPPLY + IFELSE</h5>
   <p class="text-muted">🧪 Combine sapply() and ifelse():</p>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
 library(shiny)
 ui &lt;- fluidPage(
@@ -1527,7 +1632,10 @@ sapply(y, function(x) {
 <h2 class="anchored" data-anchor-id="datatype-simple-variables">1 – <strong>Datatype:</strong> Simple Variables</h2>
 <p>In Python, only <code>=</code> is used for assignments:</p>
 <div class="chunk-track" data-chunk-id="w1_c1">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -1560,7 +1668,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>The function <code>type()</code> shows you the <strong>data type</strong> of a variable – <code>str</code> stands for <em>string</em>, not for chromosomes!</p>
 <div class="chunk-track" data-chunk-id="w1_c2">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 200
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -1593,7 +1704,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>With the operators <code>==</code>, <code>&gt;</code> and <code>&lt;</code> we can perform tests on simple variables:</p>
 <div class="chunk-track" data-chunk-id="w1_c3">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -1630,7 +1744,10 @@ app = App(app_ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-lists-vectors">2 – <strong>Datatype:</strong> Lists (Vectors)</h2>
 <p>In Python, simple <strong>lists</strong> (<code>list</code>) correspond to vectors in R. With <code>len()</code> you can determine the number of elements. Important: Python uses <strong>0-based indices</strong> (the first element has index 0, not 1 as in R)!</p>
 <div class="chunk-track" data-chunk-id="w1_c4">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 240
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -1663,7 +1780,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>Lists can consist of numbers, strings or logical values (<code>True</code>/<code>False</code>/<code>None</code>). With <code>type()</code> you can display the type:</p>
 <div class="chunk-track" data-chunk-id="w1_c5">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 250
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -1696,7 +1816,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>For numerical operations and filtering we use <strong>NumPy arrays</strong> – these are the more powerful vectors in Python:</p>
 <div class="chunk-track" data-chunk-id="w1_c6">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -1731,7 +1854,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>Using square brackets <code>[]</code> and the index of an element, you can select elements of an array. Remember: index 0 = first element!</p>
 <div class="chunk-track" data-chunk-id="w1_c7">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -1766,7 +1892,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>Tests can be applied to each element individually. With <code>sum()</code> on a boolean array you count the <code>True</code> values:</p>
 <div class="chunk-track" data-chunk-id="w1_c8">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -1801,7 +1930,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>Elements in an array can also be <strong>modified</strong>:</p>
 <div class="chunk-track" data-chunk-id="w1_c9">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -1840,7 +1972,10 @@ app = App(app_ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-matrices-1">3 – <strong>Datatype:</strong> Matrices</h2>
 <p>A matrix is a two-dimensional array of numbers. In Python we use <strong>NumPy</strong> with <code>reshape()</code>:</p>
 <div class="chunk-track" data-chunk-id="w1_c10">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -1875,7 +2010,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>With <code>.shape</code> you can query the <strong>dimensions</strong> of a matrix:</p>
 <div class="chunk-track" data-chunk-id="w1_c11">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -1910,7 +2048,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>Elements of a matrix are accessed with <strong>two indices</strong> <code>[row, column]</code> – indexing also starts at 0 here:</p>
 <div class="chunk-track" data-chunk-id="w1_c12">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -1945,9 +2086,12 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>With <code>np.column_stack()</code> column vectors can be joined into a matrix. Column names can be assigned via a pandas DataFrame:</p>
 <div class="chunk-track" data-chunk-id="w1_c13">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy, pandas]
+#| packages: [numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -1987,7 +2131,10 @@ app = App(app_ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-dictionaries-lists">4 – <strong>Datatype:</strong> Dictionaries (Lists)</h2>
 <p>In Python, <strong>dictionaries</strong> (<code>dict</code>) correspond to named lists in R. They can contain <strong>various types of elements</strong>:</p>
 <div class="chunk-track" data-chunk-id="w1_c14">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 240
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2020,7 +2167,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>Dictionary elements can be accessed with <code>[]</code> or <code>.get()</code>. A single key returns the value directly – note the <strong>difference</strong> to R lists:</p>
 <div class="chunk-track" data-chunk-id="w1_c15">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2053,7 +2203,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>For <strong>unnamed</strong> structures, a plain <code>list</code> is used in Python:</p>
 <div class="chunk-track" data-chunk-id="w1_c16">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2086,7 +2239,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>Deleting an element from a dictionary or list:</p>
 <div class="chunk-track" data-chunk-id="w1_c17">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2123,9 +2279,11 @@ app = App(app_ui, server)</code></pre>
 <h2 class="anchored" data-anchor-id="datatype-dataframes-1">5 – <strong>Datatype:</strong> DataFrames</h2>
 <p>DataFrames are like matrices, but can contain <strong>various data types</strong> in different columns. In Python we use <strong>pandas</strong>:</p>
 <div class="chunk-track" data-chunk-id="w1_c18">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 270
-#| packages: [pandas]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -2157,9 +2315,11 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>DataFrames can be indexed similarly to dictionaries and matrices:</p>
 <div class="chunk-track" data-chunk-id="w1_c19">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 300
-#| packages: [pandas]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -2191,9 +2351,12 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>There are important <strong>differences</strong> between DataFrames and NumPy matrices. Note especially: <code>Df[3]</code> returns the column with label 3, not the 4th element!</p>
 <div class="chunk-track" data-chunk-id="w1_c20">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy, pandas]
+#| packages: [numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2232,7 +2395,10 @@ app = App(app_ui, server)</code></pre>
 <section id="map-and-list-comprehensions" class="level3">
 <h3 class="anchored" data-anchor-id="map-and-list-comprehensions">map() and list comprehensions</h3>
 <div class="chunk-track" data-chunk-id="w1_c21">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 300
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -2267,7 +2433,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p><code>map()</code> applies a function to each element of an iterable and returns an iterator. <code>list()</code> converts it to a list:</p>
 <div class="chunk-track" data-chunk-id="w1_c22">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2300,7 +2469,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>For <strong>lists</strong> (like R’s <code>lapply</code>/<code>sapply</code>), use list comprehensions or <code>map()</code>:</p>
 <div class="chunk-track" data-chunk-id="w1_c23">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2335,7 +2507,10 @@ app = App(app_ui, server)</code></pre>
 <section id="for-loops-1" class="level3">
 <h3 class="anchored" data-anchor-id="for-loops-1">for loops</h3>
 <div class="chunk-track" data-chunk-id="w1_c24">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2372,7 +2547,10 @@ app = App(app_ui, server)</code></pre>
 <section id="data-manipulation-if-statements" class="level2">
 <h2 class="anchored" data-anchor-id="data-manipulation-if-statements">7 – <strong>Data Manipulation:</strong> If Statements</h2>
 <div class="chunk-track" data-chunk-id="w1_c25">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2405,7 +2583,10 @@ app = App(app_ui, server)</code></pre>
 </div>
 <p>The compact Python equivalent of <code>ifelse()</code> is the <strong>ternary expression</strong>:</p>
 <div class="chunk-track" data-chunk-id="w1_c26">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
@@ -2443,7 +2624,10 @@ app = App(app_ui, server)</code></pre>
 <section id="np.where-equivalent-to-which" class="level3">
 <h3 class="anchored" data-anchor-id="np.where-equivalent-to-which">np.where() (equivalent to which())</h3>
 <div class="chunk-track" data-chunk-id="w1_c27">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 260
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -2480,7 +2664,10 @@ app = App(app_ui, server)</code></pre>
 <section id="np.isin-equivalent-to-in" class="level3">
 <h3 class="anchored" data-anchor-id="np.isin-equivalent-to-in">np.isin() (equivalent to %in%)</h3>
 <div class="chunk-track" data-chunk-id="w1_c28">
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 270
 #| packages: [numpy]
 from shiny import App, ui, render, reactive
@@ -2525,10 +2712,12 @@ app = App(app_ui, server)</code></pre>
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: LISTS &amp; ARRAYS</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy, pandas]
-
+#| packages: [numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2612,10 +2801,12 @@ function checkPyVektorQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: MATRICES</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 230
-#| packages: [numpy, pandas]
-
+#| packages: [numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2689,9 +2880,11 @@ function checkPyMatrixQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: DICTIONARIES</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 220
-#| packages: [pandas, numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 app_ui = ui.page_fluid(
@@ -2763,10 +2956,11 @@ function checkPyDictQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">QUIZ: DATAFRAMES</h5>
   <p class="text-muted">🧪 Try out your code here:</p>
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 250
-#| packages: [pandas, numpy]
-
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 app_ui = ui.page_fluid(
@@ -2840,10 +3034,12 @@ function checkPyDfQuiz() {
 <div class="quiz-card">
   <h5 class="anchored">EXERCISE 1: NUMPY AXIS &amp; NP.WHERE()</h5>
   <p class="text-muted">🧪 Solve the tasks in the sandbox:</p>
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 340
-#| packages: [numpy, pandas]
-
+#| packages: [numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
@@ -2891,9 +3087,11 @@ print(M[np.where(M &gt; 0)])</code></pre>
 <div class="quiz-card">
   <h5 class="anchored">EXERCISE 2: IF STATEMENTS</h5>
   <p class="text-muted">🧪 Complete and extend the if statement:</p>
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 300
-#| packages: [pandas, numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -2937,10 +3135,11 @@ else:
 <div class="quiz-card">
   <h5 class="anchored">EXERCISE 3 ⭐ EXPERT: MAP() + TERNARY</h5>
   <p class="text-muted">🧪 Combine map() and a ternary expression:</p>
-<pre class="shinylive-python" data-engine="python"><code>#| standalone: true
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
 #| viewerHeight: 280
-#| packages: [pandas, numpy]
-
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 
@@ -2989,9 +3188,7 @@ print(result)</code></pre>
   </a>
 </div>
 <ul>
-<li><strong>Video 1/3:</strong> <a href="https://youtu.be/doQYGprZe94">General introduction to RStudio</a></li>
-<li><strong>Video 1/3:</strong> <a href="https://youtu.be/joM5D3AXXgg">Working with R scripts</a></li>
-<li><strong>Video 1/3:</strong> <a href="https://youtu.be/DVOlDfgY9gU">Working with Markdown</a></li>
+<li><strong>Videos:</strong> Video 1/3: <a href="https://youtu.be/doQYGprZe94">General introduction to RStudio</a> Video 2/3: <a href="https://youtu.be/joM5D3AXXgg">Working with R scripts</a> Video 3/3: <a href="https://youtu.be/DVOlDfgY9gU">Working with Markdown</a></li>
 </ul>
 </section>
 <section id="markdown-files-r-only" class="level3">
