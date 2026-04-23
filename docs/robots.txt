@@ -1,1 +1,1 @@
-Sitemap: https://lisaduttenhoefer.github.io/data-analysis-course/sitemap.xml
+Sitemap: https://dataanalysiscourse.netlify.app/1_datentypen.html/sitemap.xml

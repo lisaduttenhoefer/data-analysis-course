@@ -1,6 +1,6 @@
 [build]
-  command = "quarto render"
   publish = "docs"
+  command = ""   # kein Build-Befehl, da du pre-rendered deployest
 
 [[headers]]
   for = "/*"

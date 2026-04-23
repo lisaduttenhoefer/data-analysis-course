@@ -11,7 +11,7 @@ filters:
 
 website:
   title: "<b>METHODS IN DATA ANALYSIS</b><br>Introduction lecture"
-  site-url: "https://lisaduttenhoefer.github.io/data-analysis-course"
+  site-url: "https://dataanalysiscourse.netlify.app/1_datentypen.html"
   sidebar:
     style: "floating"
     collapse-level: 1
