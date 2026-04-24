@@ -1,9 +1,8 @@
 [build]
   publish = "docs"
-  command = ""   # kein Build-Befehl, da du pre-rendered deployest
 
 [[headers]]
   for = "/*"
   [headers.values]
-    Cross-Origin-Embedder-Policy = "require-corp"
     Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "require-corp"
