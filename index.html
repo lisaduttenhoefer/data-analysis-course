@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Course Dashboard – METHODS IN DATA ANALYSIS - Introduction lecture</title>
+<title>Course Dashboard – METHODS IN DATA ANALYSIS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -154,7 +154,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">METHODS IN DATA ANALYSIS - Introduction lecture</span>
+    <span class="navbar-title">METHODS IN DATA ANALYSIS</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -291,33 +291,33 @@ ul.task-list li input[type="checkbox"] {
 <div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
 
 <script>
-// 1. INITIALISIERUNG
 const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
-const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-sbClient.auth.onAuthStateChange(async (event, session) => {
-  console.log('Auth event:', event, session?.user?.email);
-  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-    if (window.location.hash.includes('access_token')) {
-      window.history.replaceState({}, document.title, window.location.pathname);
+// Warten bis Supabase-Script geladen ist, dann Client global setzen
+let sbClient;
+(function waitForSupabase() {
+  if (typeof supabase === 'undefined') return setTimeout(waitForSupabase, 100);
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+      await render();
     }
-    await render(); // ganze Seite neu rendern mit eingeloggtem User
-  }
-  if (event === 'SIGNED_OUT') {
-    await render();
-  }
-});
+    if (event === 'SIGNED_OUT') await render();
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', render);
+  } else {
+    render();
+  } // direkt aufrufen, kein DOMContentLoaded nötig da Script am Ende steht
+})();
 
 const WEEKS = [
-  {
-    n: 1,
-    title:  "Week 1: Basic Data Structures",
-    topics: "Syntax · Variables · Vectors · Matrices · Lists · Dataframes",
-    href:   "1_datentypen.html",
-    chunkCount: 20,
-    quizIds: ["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"]
-  },
+  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", chunkCount:20, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
   { n:2,  title:"Week 2: Datatypes",            topics:"Factors · Discrete vs. Continuous · Type Coercion",    locked:true },
   { n:3,  title:"Week 3: Data Import & Export",  topics:"CSV · Excel · RData · Working Directory",              locked:true },
   { n:4,  title:"Week 4: Data Manipulation",     topics:"dplyr / pandas · filter · mutate · group_by",          locked:true },
@@ -331,111 +331,41 @@ const WEEKS = [
   { n:12, title:"Week 12: Bioinformatics II",    topics:"RNA-seq pipeline · Enrichment Analysis",               locked:true }
 ];
 
-// 2. AUTH UI
-async function updateAuthUI(user) {
-  const container = document.getElementById('auth-status');
-  const warning = document.getElementById('guest-warning');
-  
-  if (user) {
-    warning.style.display = 'none';
-    container.innerHTML = `
-      <button onclick="sbLogout()" class="btn btn-sm" 
-        style="background-color: white; color: #1a4d1a; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
-        LOGOUT
-      </button>`;
-  } else {
-    warning.style.display = 'block';
-    container.innerHTML = `
-      <button onclick="sbLogin()" class="btn btn-sm" 
-        style="background-color: #1a4d1a; color: white; border: 2px solid white; border-radius: 50px; font-weight: 800; padding: 5px 20px;">
-        LOGIN
-      </button>`;
-  }
-}
-
-// Login via Magic Link
-async function sbLogin() {
-  const email = prompt("Enter your email to sync your progress:");
-  if (!email) return;
-  const { error } = await sbClient.auth.signInWithOtp({ 
-    email: email,
-    options: { emailRedirectTo: window.location.href }
-  });
-  if (error) alert("Error: " + error.message);
-  else alert("Magic Link sent! Check your email.");
-}
-
-async function sbLogout() {
-  await sbClient.auth.signOut();
-  localStorage.clear();
-  window.location.reload();
-}
-
-// 3. DATEN LOGIK
 function getLang() {
-  try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e){ return 'python'; }
+  try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e) { return 'python'; }
 }
 
-async function fetchAllProgress(user) {
-  if (!user) return null;
-  const { data, error } = await sbClient
-    .from('progress') 
-    .select('key, value')
-    .eq('user_email', user.email);
-
-  if (error) return null;
-  
-  return data.reduce((acc, row) => {
-    acc[row.key] = row.value === 'true';
-    return acc;
-  }, {});
-}
-
-function calculateWeekProgress(week, dbData) {
-  if (!week.chunkCount) return null;
-  const lang = getLang();
-  const total = week.chunkCount + (week.quizIds ? week.quizIds.length : 0);
-  let done = 0;
-
-  const isItemDone = (id) => {
-    if (dbData) return dbData[id] === true;
-    try { return localStorage.getItem(id) === 'true'; } catch(e) { return false; }
-  };
-
-  for (let i = 1; i <= week.chunkCount; i++) {
-    if (isItemDone(`chunk_${lang}_w${week.n}_c${i}`)) done++;
-  }
-  (week.quizIds || []).forEach(qid => {
-    if (isItemDone(`quiz_${lang}_w${week.n}_${qid}`)) done++;
-  });
-  return { done, total, pct: Math.round((done / total) * 100) };
-}
-
-function statusLabel(p, locked) {
-  if (locked) return '🔒 Locked';
-  if (!p) return '📋 No exercises yet';
-  if (p.pct === 100) return '✅ Completed';
-  if (p.done > 0) return '🔄 In progress — ' + p.done + '/' + p.total + ' done';
-  return '⬜ Not started';
-}
-
-// 4. RENDER
 async function render() {
   const grid = document.getElementById('week-cards-grid');
+  if (!grid) return;
   grid.innerHTML = '';
-  let totalAll = 0, doneAll = 0, completedW = 0;
 
-  // Kacheln sofort rendern ohne auf Auth zu warten
+  let user = null, dbData = null;
+  try {
+    const { data } = await sbClient.auth.getUser();
+    user = data?.user || null;
+    if (user) {
+      const { data: rows } = await sbClient
+        .from('progress').select('key, value').eq('user_email', user.email);
+      if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = r.value === 'true'; return acc; }, {});
+    }
+  } catch(e) { console.error('Auth/DB error:', e); }
+
+  updateAuthUI(user);
+
+  let totalAll = 0, doneAll = 0, completedW = 0;
+  const activeW = WEEKS.filter(w => !w.locked && w.chunkCount).length;
+
   WEEKS.forEach(week => {
-    const p = calculateWeekProgress(week, null);
+    const p = calculateWeekProgress(week, dbData);
     if (p) { totalAll += p.total; doneAll += p.done; if (p.pct === 100) completedW++; }
 
     const col = document.createElement('div');
     col.className = 'g-col-12 g-col-sm-6 g-col-md-4';
-    const isLocked = week.locked;
+    const isLocked = !!week.locked;
     const card = document.createElement(isLocked ? 'div' : 'a');
-    card.className = 'week-card p-4' + (isLocked ? ' opacity-50' : '');
-    if (!isLocked && week.href) { card.href = week.href; card.style.textDecoration = 'none'; }
+    card.className = 'week-card p-3' + (isLocked ? ' opacity-50' : '');
+    if (!isLocked && week.href) card.href = week.href;
     const pct = p ? p.pct : 0;
     card.innerHTML = `
       <div class="week-card-title">${week.title}</div>
@@ -450,28 +380,74 @@ async function render() {
   });
 
   const gPct = totalAll > 0 ? Math.round((doneAll / totalAll) * 100) : 0;
-  document.getElementById('global-progress-bar').style.width = gPct + '%';
-  document.getElementById('global-progress-bar').innerText = gPct > 8 ? gPct + '%' : '';
-  document.getElementById('gp-percent-badge').innerText = gPct + '%';
-  const activeW = WEEKS.filter(w => !w.locked && w.chunkCount).length;
-  document.getElementById('gp-subtext').innerText = 
-    `${completedW} of ${activeW} weeks completed · ${getLang().toUpperCase()} mode`;
+  const bar = document.getElementById('global-progress-bar');
+  if (bar) {
+    bar.style.width = gPct + '%';
+    bar.innerText = gPct > 8 ? gPct + '%' : '';
+  }
+  const badge = document.getElementById('gp-percent-badge');
+  if (badge) badge.innerText = gPct + '%';
+  const sub = document.getElementById('gp-subtext');
+  if (sub) sub.innerText = `${completedW} of ${activeW} weeks completed · ${getLang().toUpperCase()} mode`;
+}
 
-  // Auth danach laden
-  try {
-    const { data: { user } } = await sbClient.auth.getUser();
-    await updateAuthUI(user);
-  } catch(e) {
-    console.error('Auth error:', e);
-    await updateAuthUI(null);
+function calculateWeekProgress(week, dbData) {
+  if (!week.chunkCount) return null;
+  const lang = getLang();
+  const total = week.chunkCount + (week.quizIds ? week.quizIds.length : 0);
+  let done = 0;
+  const isDone = id => {
+    if (dbData) return dbData[id] === true;
+    try { return localStorage.getItem(id) === 'true'; } catch(e) { return false; }
+  };
+  for (let i = 1; i <= week.chunkCount; i++)
+    if (isDone(`chunk_${lang}_w${week.n}_c${i}`)) done++;
+  (week.quizIds || []).forEach(qid => {
+    if (isDone(`quiz_${lang}_w${week.n}_${qid}`)) done++;
+  });
+  return { done, total, pct: Math.round((done / total) * 100) };
+}
+
+function statusLabel(p, locked) {
+  if (locked) return '🔒 Locked';
+  if (!p) return '📋 No exercises yet';
+  if (p.pct === 100) return '✅ Completed';
+  if (p.done > 0) return '🔄 In progress — ' + p.done + '/' + p.total + ' done';
+  return '⬜ Not started';
+}
+
+function updateAuthUI(user) {
+  const container = document.getElementById('auth-status');
+  const warning = document.getElementById('guest-warning');
+  if (!container) return;
+  if (user) {
+    warning.style.display = 'none';
+    container.innerHTML = `<button onclick="sbLogout()" class="btn btn-sm"
+      style="background:white;color:#1a4d1a;border:2px solid white;border-radius:50px;font-weight:800;padding:5px 20px;">
+      LOGOUT</button>`;
+  } else {
+    warning.style.display = 'block';
+    container.innerHTML = `<button onclick="sbLogin()" class="btn btn-sm"
+      style="background:#1a4d1a;color:white;border:2px solid white;border-radius:50px;font-weight:800;padding:5px 20px;">
+      LOGIN</button>`;
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // Kurz warten damit Supabase den Token aus dem Hash verarbeiten kann
-  await new Promise(r => setTimeout(r, 500));
-  await render();
-});
+async function sbLogin() {
+  const email = prompt("Enter your email to sync your progress:");
+  if (!email) return;
+  const { error } = await sbClient.auth.signInWithOtp({
+    email, options: { emailRedirectTo: window.location.href }
+  });
+  if (error) alert("Error: " + error.message);
+  else alert("Magic Link sent! Check your email.");
+}
+
+async function sbLogout() {
+  await sbClient.auth.signOut();
+  localStorage.clear();
+  window.location.reload();
+}
 </script>
 
 
