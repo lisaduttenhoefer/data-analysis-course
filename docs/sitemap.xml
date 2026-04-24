@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://dataanalysiscourse.netlify.app/1_datentypen.html/test2.html</loc>
-    <lastmod>2026-04-23T09:26:20.768Z</lastmod>
-  </url>
-  <url>
-    <loc>https://dataanalysiscourse.netlify.app/1_datentypen.html/1_datentypen.html</loc>
-    <lastmod>2026-04-23T09:59:18.713Z</lastmod>
+    <loc>https://dataanalysiscourse.netlify.app/1_datentypen.html/index.html</loc>
+    <lastmod>2026-04-22T11:07:06.764Z</lastmod>
   </url>
   <url>
     <loc>https://dataanalysiscourse.netlify.app/1_datentypen.html/0_markdown.html</loc>
     <lastmod>2026-04-23T09:57:39.511Z</lastmod>
   </url>
   <url>
-    <loc>https://dataanalysiscourse.netlify.app/1_datentypen.html/index.html</loc>
-    <lastmod>2026-04-22T11:07:06.764Z</lastmod>
+    <loc>https://dataanalysiscourse.netlify.app/1_datentypen.html/1_datentypen.html</loc>
+    <lastmod>2026-04-23T09:59:18.713Z</lastmod>
   </url>
 </urlset>

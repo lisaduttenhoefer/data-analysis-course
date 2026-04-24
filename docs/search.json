@@ -1,10 +1,110 @@
 [
   {
-    "objectID": "test2.html",
-    "href": "test2.html",
-    "title": "Test2",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Course Dashboard",
     "section": "",
-    "text": "#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\nlibrary(shiny)\nui &lt;- fluidPage(textOutput(\"txt\"))\nserver &lt;- function(input, output) {\n  output$txt &lt;- renderText(\"Hello!\")\n}\nshinyApp(ui, server)"
+    "text": "Your Progress\n      Loading…\n    \n    \n    \n  \n\n  \n    ⚠️ Note: You are not logged in. Progress is only saved locally on this device and may be lost.\n  \n  \n  \n    \n      \n    \n    0%\n  \n\n\nCourse Content",
+    "crumbs": [
+      "PYTHON",
+      "WELCOME"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html",
+    "href": "0_markdown.html",
+    "title": "````yaml",
+    "section": "",
+    "text": "````",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html#title-orientation-in-this-course",
+    "href": "0_markdown.html#title-orientation-in-this-course",
+    "title": "````yaml",
+    "section": "",
+    "text": "````",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html#structure-course-materials",
+    "href": "0_markdown.html#structure-course-materials",
+    "title": "````yaml",
+    "section": "Structure & Course Materials",
+    "text": "Structure & Course Materials\nWelcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.\nOn this platform you will find everything in one place: clear explanations, directly executable code examples for experimentation, and short knowledge tests after each chapter to consolidate what you have learned.\nYou have full freedom of choice: using the button in the top right corner, you can switch between the programming languages R and Python at any time. The subject matter is identical — you decide which tool you want to work with.\nIn addition, all lecture slides and Markdown files with the same content are linked so that you can also work through the materials independently offline.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html#programming-languages-and-their-working-environments",
+    "href": "0_markdown.html#programming-languages-and-their-working-environments",
+    "title": "````yaml",
+    "section": "Programming Languages and Their Working Environments",
+    "text": "Programming Languages and Their Working Environments\nBefore we start, it is important to understand the difference between the programming language itself and the program in which we write.\n\n1. The Language: R and Python\nR and Python are the “engines” behind your analysis. For your computer to understand what you want from it, you need to download the language as base software.\n\nPython: Installed as a program from python.org.\nR: Installed as “Base R” from the CRAN network.\n\nImportant: You will almost never open these programs directly. They “rest” in the background of your operating system and wait for commands.\n\n\n2. The Tool: The IDE (RStudio & VS Code)\nTo actually write code, we use an IDE (Integrated Development Environment). This is your actual control center.\n\nRStudio is the standard environment for R.\nVS Code is the most popular environment for Python.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html#what-do-you-need-for-setup",
+    "href": "0_markdown.html#what-do-you-need-for-setup",
+    "title": "````yaml",
+    "section": "What Do You Need for Setup?",
+    "text": "What Do You Need for Setup?\nIf you later want to work on your own computer, this is the correct order:\n\nInstall the engine: Download Python or R (provides the “language”).\nSet up the workspace: Install an IDE like RStudio or VS Code (your workstation).\nUnpack the tools: Install so-called “packages” within the IDE. These are extensions for specific tasks, such as drawing biological diagrams.\n\n\n\n\n\n\n\nTipOur Tip for Getting Started\n\n\n\nTo work on the exercises on this website, no installed RStudio or VS Code is required. Our interactive windows already have everything “on board”. However, we recommend that you familiarize yourself with these programs during the course, as they will be your daily companions in later practice!",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html#working-with-markdown",
+    "href": "0_markdown.html#working-with-markdown",
+    "title": "````yaml",
+    "section": "Working with Markdown",
+    "text": "Working with Markdown\nIn this course we do not use ordinary text documents or pure program code. In addition to this website, we work with Markdown files as an offline alternative.\nIn science, reproducibility (traceability) is crucial. Markdown allows us to do so-called Literate Programming: * We write our text (explanations, hypotheses). * We embed the actual code (R or Python) directly within it. * We let the computer render the document (in RStudio often via the Knit button).\nThe result is a finished document (HTML, PDF, or Word) in which the text, the code, and the resulting graphics are perfectly combined.\n\nThe Structure of a File\n\nThe text: Regular text with simple formatting (**bold**, *italic*, # Heading).\nThe code chunks: Blocks that begin with three backticks. This is where the actual code is executed. It is recommended to name each chunk — this keeps your document tidy and greatly facilitates troubleshooting.\nThe YAML header: The area at the very top between the --- lines for title and author.\n\n\n\n\n\n\n\n\nNoteLanguage-Specific Introduction\n\n\n\nDepending on whether you have switched to “R” or “Python” above, you will now see a more detailed introduction to the respective environment below.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html#focus-r-and-rstudio",
+    "href": "0_markdown.html#focus-r-and-rstudio",
+    "title": "````yaml",
+    "section": "Focus: R and RStudio",
+    "text": "Focus: R and RStudio\nR is a powerful language for statistical data analysis. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. RStudio is an “Integrated Development Environment” (IDE) that helps you write code, visualize data, and save results.\n\nThe RStudio Interface\nThe interface is divided into four main areas:\n\nSource (top left): This is where you write your scripts and Markdown files. To create a new file, click on the New File icon (green plus) at the top left. Everything written here can be saved.\nConsole (bottom left): Code is executed immediately here. For example, type 3 + 4 and press Enter — the result appears immediately. The console is ideal for commands that you do not need to save permanently.\nEnvironment (top right): All variables, lists, and datasets that you have created and defined during your session are displayed here.\nFiles/Plots/Help (bottom right): Here you manage your files, view generated graphics, or search the help for functions (e.g., with ?matrix).\n\n\n\n\nThe main areas of RStudio\n\n\n\n\nFirst Steps in Programming\n\nAssignments: Values are loaded into variables with &lt;- or = (e.g., a &lt;- 10). The variable then appears in the Environment.\nR as a calculator: R is excellent for mathematical calculations. You can calculate directly with variables:\n\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nlibrary(shiny)\nui &lt;- fluidPage(\n  textAreaInput(\"code\", \"R Chunk: Mathematical Operations\", value = \"x &lt;- 5\\ny &lt;- 3\\nSum &lt;- x + y\\nSum * 5\", width = '100%', height = '100px'),\n  actionButton(\"run\", \"Run Code\", class = \"btn-success\"),\n  verbatimTextOutput(\"out\")\n)\nserver &lt;- function(input, output) {\n  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })\n}\nshinyApp(ui, server)\n\nCase Sensitivity: R is extremely picky. hello is a different variable from Hello.\nGetting help: Use the documentation directly in RStudio or online resources:\n\nguru99 R Tutorial\nBabraham Bioinformatics\nR for Data Science\n\nWorkspace: Use ls() to list your variables and rm(a) to delete them — Caution: rm() deletes irreversibly, so use it carefully! Your entire environment can be saved as an .RData file and restored in a later session with load(\"MyEnvironment.RData\").\nWorking Directory: Via the Files -&gt; More -&gt; Set As Working Directory tab, you define which folder R should look in for your files.\n\n\nHelpful Tips in the Editor\n\nAutocomplete: In RStudio, quotation marks \"\" and brackets () usually appear automatically in pairs. This helps you avoid syntax errors caused by forgotten characters.\nHistory: Using the arrow keys (up/down) you can scroll through your most recently used commands in the console.\nComments: Everything after a # is ignored by R. Use this generously to explain your code to yourself and others.\n\n\n\nVariables & Assignments\nWe can load values (numbers or text) into variables. In R, the arrow &lt;- is traditionally used for this, but = is also possible.\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nlibrary(shiny)\nui &lt;- fluidPage(\n  textAreaInput(\"code\", \"R Chunk: Variables & Assignments\", value = \"a &lt;- \\\"Hello world!\\\"\\nhello = \\\"Hello world!\\\"\\nprint(a)\\nprint(hello)\", width = '100%', height = '120px'),\n  actionButton(\"run\", \"Run Code\", class = \"btn-success\"),\n  verbatimTextOutput(\"out\")\n)\nserver &lt;- function(input, output) {\n  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })\n}\nshinyApp(ui, server)",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
+  },
+  {
+    "objectID": "0_markdown.html#python-and-vs-code",
+    "href": "0_markdown.html#python-and-vs-code",
+    "title": "````yaml",
+    "section": "Python and VS Code",
+    "text": "Python and VS Code\nPython is a versatile and widely used programming language that is particularly well-suited for data analysis, machine learning, and scientific computing. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. VS Code is a flexible development environment (IDE) that can be optimally adapted for Python through extensions.\n\nThe VS Code Interface\nThe interface is divided into four main areas:\n\nEditor (center): This is where you write your scripts and notebooks. To create a new file, click on the New File icon at the top left in the Explorer. Everything written here can be saved. The file extensions determine in which programming language you are writing and how the file can be used (.py/.ipynb for Python, .r for R, .md for Markdown).\nTerminal (bottom): Code is executed immediately here and files can be launched. Connections to clusters, communication with GitHub, or searching for files also work via the terminal. The terminal can be opened, for example, at the top right (3rd icon from the right).\nExplorer (left): Here you manage your files and folders. These are either stored locally on your computer or on a cluster.\nControl Center (far left): Here you can, for example, search documents for a keyword, connect and manage GitHub repositories, debug, install extensions, and manage remote connections (e.g., clusters).\n\n\n\n\nThe main areas of VS Code\n\n\n\n\nFirst Steps in Programming\n\nAssignments: In Python, values are loaded into variables with = (e.g., a = 10). Unlike R, there is no &lt;- in Python.\nPython as a calculator: Python is excellent for mathematical calculations. You can calculate directly with variables:\n\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nfrom shiny import App, ui, render, reactive\nimport io, contextlib\n\napp_ui = ui.page_fluid(\n    ui.input_text_area(\"code\", \"Python Chunk: Mathematical Operations\", value=\"x = 5\\ny = 3\\nSum = x + y\\nprint(Sum * 5)\", width='100%', height='100px'),\n    ui.input_action_button(\"run\", \"Run Code\", class_=\"btn-success\"),\n    ui.output_text_verbatim(\"out\")\n)\n\ndef server(input, output, session):\n    @render.text\n    @reactive.event(input.run)\n    def out():\n        f = io.StringIO()\n        with contextlib.redirect_stdout(f):\n            exec(input.code(), {})\n        return f.getvalue()\n\napp = App(app_ui, server)\n\nCase Sensitivity: Python is just as picky as R. hello is a different variable from Hello.\n\n\n\nGetting Help:\nUse the documentation directly in VS Code or online resources: Python Documentation W3Schools Python Tutorial Python for Data Science Handbook\n\nWorkspace: Use dir() to list all current variables and objects, and del a to delete a variable — Caution: del deletes irreversibly, so use it carefully!\nWorking Directory: With import os and os.getcwd() you can display the current directory; with os.chdir(\"path/to/folder\") you change it.\n\n\n\nHelpful Tips in the Editor\n\nAutocomplete: VS Code automatically suggests functions, variable names, and brackets. Quotation marks \"\" and brackets () often appear automatically in pairs — this helps avoid syntax errors.\nHistory: In the terminal you can scroll through your most recently used commands using the arrow keys (up/down).\nComments: Everything after a # is ignored by Python — just like in R. Use comments generously to explain your code.\n\n\n\nVariables & Assignments\nWe can load values (numbers or text) into variables. In Python, = is used exclusively for assignments.\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nfrom shiny import App, ui, render, reactive\nimport io, contextlib\n\napp_ui = ui.page_fluid(\n    ui.input_text_area(\"code\", \"Python Chunk: Variables & Assignments\", value='a = \"Hello world!\"\\nhello = \"Hello world!\"\\nprint(a)\\nprint(hello)', width='100%', height='120px'),\n    ui.input_action_button(\"run\", \"Run Code\", class_=\"btn-success\"),\n    ui.output_text_verbatim(\"out\")\n)\n\ndef server(input, output, session):\n    @render.text\n    @reactive.event(input.run)\n    def out():\n        f = io.StringIO()\n        with contextlib.redirect_stdout(f):\n            exec(input.code(), {})\n        return f.getvalue()\n\napp = App(app_ui, server)",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Getting started"
+    ]
   },
   {
     "objectID": "1_datentypen.html",
@@ -268,113 +368,6 @@
       "PYTHON",
       "COURSE-CONTENTS",
       "WEEK 1: Datatypes"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html",
-    "href": "0_markdown.html",
-    "title": "````yaml",
-    "section": "",
-    "text": "````",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html#title-orientation-in-this-course",
-    "href": "0_markdown.html#title-orientation-in-this-course",
-    "title": "````yaml",
-    "section": "",
-    "text": "````",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html#structure-course-materials",
-    "href": "0_markdown.html#structure-course-materials",
-    "title": "````yaml",
-    "section": "Structure & Course Materials",
-    "text": "Structure & Course Materials\nWelcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.\nOn this platform you will find everything in one place: clear explanations, directly executable code examples for experimentation, and short knowledge tests after each chapter to consolidate what you have learned.\nYou have full freedom of choice: using the button in the top right corner, you can switch between the programming languages R and Python at any time. The subject matter is identical — you decide which tool you want to work with.\nIn addition, all lecture slides and Markdown files with the same content are linked so that you can also work through the materials independently offline.",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html#programming-languages-and-their-working-environments",
-    "href": "0_markdown.html#programming-languages-and-their-working-environments",
-    "title": "````yaml",
-    "section": "Programming Languages and Their Working Environments",
-    "text": "Programming Languages and Their Working Environments\nBefore we start, it is important to understand the difference between the programming language itself and the program in which we write.\n\n1. The Language: R and Python\nR and Python are the “engines” behind your analysis. For your computer to understand what you want from it, you need to download the language as base software.\n\nPython: Installed as a program from python.org.\nR: Installed as “Base R” from the CRAN network.\n\nImportant: You will almost never open these programs directly. They “rest” in the background of your operating system and wait for commands.\n\n\n2. The Tool: The IDE (RStudio & VS Code)\nTo actually write code, we use an IDE (Integrated Development Environment). This is your actual control center.\n\nRStudio is the standard environment for R.\nVS Code is the most popular environment for Python.",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html#what-do-you-need-for-setup",
-    "href": "0_markdown.html#what-do-you-need-for-setup",
-    "title": "````yaml",
-    "section": "What Do You Need for Setup?",
-    "text": "What Do You Need for Setup?\nIf you later want to work on your own computer, this is the correct order:\n\nInstall the engine: Download Python or R (provides the “language”).\nSet up the workspace: Install an IDE like RStudio or VS Code (your workstation).\nUnpack the tools: Install so-called “packages” within the IDE. These are extensions for specific tasks, such as drawing biological diagrams.\n\n\n\n\n\n\n\nTipOur Tip for Getting Started\n\n\n\nTo work on the exercises on this website, no installed RStudio or VS Code is required. Our interactive windows already have everything “on board”. However, we recommend that you familiarize yourself with these programs during the course, as they will be your daily companions in later practice!",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html#working-with-markdown",
-    "href": "0_markdown.html#working-with-markdown",
-    "title": "````yaml",
-    "section": "Working with Markdown",
-    "text": "Working with Markdown\nIn this course we do not use ordinary text documents or pure program code. In addition to this website, we work with Markdown files as an offline alternative.\nIn science, reproducibility (traceability) is crucial. Markdown allows us to do so-called Literate Programming: * We write our text (explanations, hypotheses). * We embed the actual code (R or Python) directly within it. * We let the computer render the document (in RStudio often via the Knit button).\nThe result is a finished document (HTML, PDF, or Word) in which the text, the code, and the resulting graphics are perfectly combined.\n\nThe Structure of a File\n\nThe text: Regular text with simple formatting (**bold**, *italic*, # Heading).\nThe code chunks: Blocks that begin with three backticks. This is where the actual code is executed. It is recommended to name each chunk — this keeps your document tidy and greatly facilitates troubleshooting.\nThe YAML header: The area at the very top between the --- lines for title and author.\n\n\n\n\n\n\n\n\nNoteLanguage-Specific Introduction\n\n\n\nDepending on whether you have switched to “R” or “Python” above, you will now see a more detailed introduction to the respective environment below.",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html#focus-r-and-rstudio",
-    "href": "0_markdown.html#focus-r-and-rstudio",
-    "title": "````yaml",
-    "section": "Focus: R and RStudio",
-    "text": "Focus: R and RStudio\nR is a powerful language for statistical data analysis. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. RStudio is an “Integrated Development Environment” (IDE) that helps you write code, visualize data, and save results.\n\nThe RStudio Interface\nThe interface is divided into four main areas:\n\nSource (top left): This is where you write your scripts and Markdown files. To create a new file, click on the New File icon (green plus) at the top left. Everything written here can be saved.\nConsole (bottom left): Code is executed immediately here. For example, type 3 + 4 and press Enter — the result appears immediately. The console is ideal for commands that you do not need to save permanently.\nEnvironment (top right): All variables, lists, and datasets that you have created and defined during your session are displayed here.\nFiles/Plots/Help (bottom right): Here you manage your files, view generated graphics, or search the help for functions (e.g., with ?matrix).\n\n\n\n\nThe main areas of RStudio\n\n\n\n\nFirst Steps in Programming\n\nAssignments: Values are loaded into variables with &lt;- or = (e.g., a &lt;- 10). The variable then appears in the Environment.\nR as a calculator: R is excellent for mathematical calculations. You can calculate directly with variables:\n\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nlibrary(shiny)\nui &lt;- fluidPage(\n  textAreaInput(\"code\", \"R Chunk: Mathematical Operations\", value = \"x &lt;- 5\\ny &lt;- 3\\nSum &lt;- x + y\\nSum * 5\", width = '100%', height = '100px'),\n  actionButton(\"run\", \"Run Code\", class = \"btn-success\"),\n  verbatimTextOutput(\"out\")\n)\nserver &lt;- function(input, output) {\n  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })\n}\nshinyApp(ui, server)\n\nCase Sensitivity: R is extremely picky. hello is a different variable from Hello.\nGetting help: Use the documentation directly in RStudio or online resources:\n\nguru99 R Tutorial\nBabraham Bioinformatics\nR for Data Science\n\nWorkspace: Use ls() to list your variables and rm(a) to delete them — Caution: rm() deletes irreversibly, so use it carefully! Your entire environment can be saved as an .RData file and restored in a later session with load(\"MyEnvironment.RData\").\nWorking Directory: Via the Files -&gt; More -&gt; Set As Working Directory tab, you define which folder R should look in for your files.\n\n\nHelpful Tips in the Editor\n\nAutocomplete: In RStudio, quotation marks \"\" and brackets () usually appear automatically in pairs. This helps you avoid syntax errors caused by forgotten characters.\nHistory: Using the arrow keys (up/down) you can scroll through your most recently used commands in the console.\nComments: Everything after a # is ignored by R. Use this generously to explain your code to yourself and others.\n\n\n\nVariables & Assignments\nWe can load values (numbers or text) into variables. In R, the arrow &lt;- is traditionally used for this, but = is also possible.\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nlibrary(shiny)\nui &lt;- fluidPage(\n  textAreaInput(\"code\", \"R Chunk: Variables & Assignments\", value = \"a &lt;- \\\"Hello world!\\\"\\nhello = \\\"Hello world!\\\"\\nprint(a)\\nprint(hello)\", width = '100%', height = '120px'),\n  actionButton(\"run\", \"Run Code\", class = \"btn-success\"),\n  verbatimTextOutput(\"out\")\n)\nserver &lt;- function(input, output) {\n  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })\n}\nshinyApp(ui, server)",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "0_markdown.html#python-and-vs-code",
-    "href": "0_markdown.html#python-and-vs-code",
-    "title": "````yaml",
-    "section": "Python and VS Code",
-    "text": "Python and VS Code\nPython is a versatile and widely used programming language that is particularly well-suited for data analysis, machine learning, and scientific computing. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. VS Code is a flexible development environment (IDE) that can be optimally adapted for Python through extensions.\n\nThe VS Code Interface\nThe interface is divided into four main areas:\n\nEditor (center): This is where you write your scripts and notebooks. To create a new file, click on the New File icon at the top left in the Explorer. Everything written here can be saved. The file extensions determine in which programming language you are writing and how the file can be used (.py/.ipynb for Python, .r for R, .md for Markdown).\nTerminal (bottom): Code is executed immediately here and files can be launched. Connections to clusters, communication with GitHub, or searching for files also work via the terminal. The terminal can be opened, for example, at the top right (3rd icon from the right).\nExplorer (left): Here you manage your files and folders. These are either stored locally on your computer or on a cluster.\nControl Center (far left): Here you can, for example, search documents for a keyword, connect and manage GitHub repositories, debug, install extensions, and manage remote connections (e.g., clusters).\n\n\n\n\nThe main areas of VS Code\n\n\n\n\nFirst Steps in Programming\n\nAssignments: In Python, values are loaded into variables with = (e.g., a = 10). Unlike R, there is no &lt;- in Python.\nPython as a calculator: Python is excellent for mathematical calculations. You can calculate directly with variables:\n\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nfrom shiny import App, ui, render, reactive\nimport io, contextlib\n\napp_ui = ui.page_fluid(\n    ui.input_text_area(\"code\", \"Python Chunk: Mathematical Operations\", value=\"x = 5\\ny = 3\\nSum = x + y\\nprint(Sum * 5)\", width='100%', height='100px'),\n    ui.input_action_button(\"run\", \"Run Code\", class_=\"btn-success\"),\n    ui.output_text_verbatim(\"out\")\n)\n\ndef server(input, output, session):\n    @render.text\n    @reactive.event(input.run)\n    def out():\n        f = io.StringIO()\n        with contextlib.redirect_stdout(f):\n            exec(input.code(), {})\n        return f.getvalue()\n\napp = App(app_ui, server)\n\nCase Sensitivity: Python is just as picky as R. hello is a different variable from Hello.\n\n\n\nGetting Help:\nUse the documentation directly in VS Code or online resources: Python Documentation W3Schools Python Tutorial Python for Data Science Handbook\n\nWorkspace: Use dir() to list all current variables and objects, and del a to delete a variable — Caution: del deletes irreversibly, so use it carefully!\nWorking Directory: With import os and os.getcwd() you can display the current directory; with os.chdir(\"path/to/folder\") you change it.\n\n\n\nHelpful Tips in the Editor\n\nAutocomplete: VS Code automatically suggests functions, variable names, and brackets. Quotation marks \"\" and brackets () often appear automatically in pairs — this helps avoid syntax errors.\nHistory: In the terminal you can scroll through your most recently used commands using the arrow keys (up/down).\nComments: Everything after a # is ignored by Python — just like in R. Use comments generously to explain your code.\n\n\n\nVariables & Assignments\nWe can load values (numbers or text) into variables. In Python, = is used exclusively for assignments.\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nfrom shiny import App, ui, render, reactive\nimport io, contextlib\n\napp_ui = ui.page_fluid(\n    ui.input_text_area(\"code\", \"Python Chunk: Variables & Assignments\", value='a = \"Hello world!\"\\nhello = \"Hello world!\"\\nprint(a)\\nprint(hello)', width='100%', height='120px'),\n    ui.input_action_button(\"run\", \"Run Code\", class_=\"btn-success\"),\n    ui.output_text_verbatim(\"out\")\n)\n\ndef server(input, output, session):\n    @render.text\n    @reactive.event(input.run)\n    def out():\n        f = io.StringIO()\n        with contextlib.redirect_stdout(f):\n            exec(input.code(), {})\n        return f.getvalue()\n\napp = App(app_ui, server)",
-    "crumbs": [
-      "PYTHON",
-      "COURSE-CONTENTS",
-      "Getting started"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Course Dashboard",
-    "section": "",
-    "text": "Your Progress\n      Loading…\n    \n    \n    \n  \n\n  \n    ⚠️ Note: You are not logged in. Progress is only saved locally on this device and may be lost.\n  \n  \n  \n    \n      \n    \n    0%\n  \n\n\nCourse Content",
-    "crumbs": [
-      "PYTHON",
-      "WELCOME"
     ]
   }
 ]
