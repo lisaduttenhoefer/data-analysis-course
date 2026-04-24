@@ -1,8 +1,8 @@
-````yaml
+
 ---
 title: "Orientation in This Course"
 ---
-````
+
 
 ## Structure & Course Materials
 

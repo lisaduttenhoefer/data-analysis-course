@@ -42,7 +42,8 @@ format:
     embed-resources: false
     include-in-header: 
       - language-switch.html
-      #- coi-header.html
+      - coi-header.html
+      
       # - supabase-auth.html  # Nur aktiv lassen, wenn die Datei wirklich existiert!
 
 execute:
