@@ -296,8 +296,12 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 // Warten bis Supabase-Script geladen ist, dann Client global setzen
 let sbClient;
+let _initialized = false;
 (function waitForSupabase() {
   if (typeof supabase === 'undefined') return setTimeout(waitForSupabase, 100);
+  if (_initialized) return;
+  _initialized = true;
+  
   sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   sbClient.auth.onAuthStateChange(async (event, session) => {
@@ -313,7 +317,7 @@ let sbClient;
     document.addEventListener('DOMContentLoaded', render);
   } else {
     render();
-  } // direkt aufrufen, kein DOMContentLoaded nötig da Script am Ende steht
+  }
 })();
 
 const WEEKS = [
