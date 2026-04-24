@@ -39,6 +39,7 @@ format:
     theme: 
       - cosmo
       - custom.scss
+    embed-resources: false
     include-in-header: 
       - language-switch.html
       #- coi-header.html
