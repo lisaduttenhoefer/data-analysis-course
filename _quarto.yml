@@ -1,17 +1,17 @@
 project:
   type: website
-  output-dir: docs       # Damit GitHub Pages den richtigen Ordner findet
+  output-dir: docs
   render:
     - "*.qmd"
     - "!test_qmds/"
 
 filters:
   - shinylive
- 
 
 website:
-  title: "<b>METHODS IN DATA ANALYSIS</b><br>Introduction lecture"
-  site-url: "https://dataanalysiscourse.netlify.app/1_datentypen.html"
+  title: "METHODS IN DATA ANALYSIS"
+  site-url: "https://lisaduttenhoefer.github.io/data-analysis-course"
+  
   sidebar:
     style: "floating"
     collapse-level: 1
@@ -20,11 +20,11 @@ website:
         href: index.qmd
       - section: "COURSE-CONTENTS"
         contents:
-          - href: 0_markdown.qmd
-            text: "Getting started"
-          - href: 1_datentypen.qmd
-            text: "WEEK 1: Datatypes"
-          
+          - text: "Getting started"
+            href: 0_markdown.qmd
+          - text: "WEEK 1: Datatypes"
+            href: 1_datentypen.qmd
+
   navbar:
     background: "#ffffff"
     right:
@@ -35,19 +35,15 @@ website:
 
 format:
   html:
-    self-contained-math: true
     theme: 
       - cosmo
       - custom.scss
     embed-resources: false
-    include-in-header: 
+    include-in-header:
       - language-switch.html
       - coi-header.html
-      
-      # - supabase-auth.html  # Nur aktiv lassen, wenn die Datei wirklich existiert!
 
 execute:
   enabled: true
   freeze: auto
   cache: false
-  
