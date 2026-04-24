@@ -2106,6 +2106,7 @@ With `np.column_stack()` column vectors can be joined into a matrix. Column name
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
+import pandas as pd
 
 CHUNK_ID = "w1_c13"
 
@@ -2407,6 +2408,7 @@ There are important **differences** between DataFrames and NumPy matrices. Note 
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
+import pandas as pd
 
 CHUNK_ID = "w1_c20"
 
@@ -2808,6 +2810,7 @@ Answer the questions correctly to save your progress. You can use the code sandb
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
+import pandas as pd
 
 app_ui = ui.page_fluid(
     ui.input_text_area("code", "Sandbox – Lists & Arrays", value="import numpy as np\n# Try anything here!\n", width='100%', height='100px'),
@@ -2904,6 +2907,7 @@ function checkPyVektorQuiz() {
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
+import pandas as pd
 
 app_ui = ui.page_fluid(
     ui.input_text_area("code", "Sandbox – Matrices", value="import numpy as np\nX = np.arange(1, 7).reshape(2, 3)\nprint(X)\nprint(X.shape)", width='100%', height='100px'),
@@ -2988,6 +2992,9 @@ function checkPyMatrixQuiz() {
 #| packages: [pandas, numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
+import pandas as pd
+import numpy as np
+
 app_ui = ui.page_fluid(
     ui.input_text_area("code", "Sandbox – Dictionaries", value="dict1 = {'color': ['blue', 'red'], 'size': 5, 'state': True}\nprint(type(dict1['color']))\nprint(dict1['color'][1])", width='100%', height='100px'),
     ui.input_action_button("run", "Run Code", class_="btn-success"),
@@ -3072,6 +3079,9 @@ function checkPyDictQuiz() {
 
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
+import pandas as pd
+import numpy as np
+
 app_ui = ui.page_fluid(
     ui.input_text_area("code", "Sandbox – DataFrames", value="import pandas as pd\nProduct_name = ['orange', 'strawberry', 'broccoli', 'blueberry', 'cucumber']\nFruit = [True, True, False, True, False]\nColor = ['orange', 'red', 'green', 'blue', 'green']\ndf = pd.DataFrame({'Product_name': Product_name, 'Fruit': Fruit, 'Color': Color})\nprint(df)", width='100%', height='140px'),
     ui.input_action_button("run", "Run Code", class_="btn-success"),
@@ -3157,6 +3167,7 @@ function checkPyDfQuiz() {
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
 import numpy as np
+import pandas as pd
 
 app_ui = ui.page_fluid(
     ui.input_text_area("code", "Exercise 1", value="import numpy as np\nM = np.array([-2,3,1,-5,4,2,0,-1,3,6,-3,2,1,4,-2,5,2,-4,3,1], dtype=float).reshape(5,4)\n\n# Task 1: Calculate the mean of each ROW (axis=1)\n\n# Task 2: Calculate the mean of each COLUMN (axis=0)\n\n# Task 3: Find positions of positive elements (>0) using np.where()\n\n# Task 4: Get the VALUES of positive elements\n", width='100%', height='210px'),
@@ -3215,6 +3226,8 @@ print(M[np.where(M > 0)])</code></pre>
 #| packages: [pandas, numpy]
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
+import pandas as pd
+import numpy as np
 
 app_ui = ui.page_fluid(
     ui.input_text_area("code", "Exercise 2", value="a = 3\n\n# Task 1: Write an if/else so that:\n# - 'a is positive' is printed if a > 0\n# - 'a is negative' is printed otherwise\n\n# Task 2: Add an elif to also print 'a is zero' if a == 0\n# Try a = 0, a = 5, a = -3\n\n", width='100%', height='170px'),
@@ -3271,6 +3284,8 @@ else:
 
 from shiny import App, ui, render, reactive
 import io, contextlib, ast
+import pandas as pd
+import numpy as np
 
 app_ui = ui.page_fluid(
     ui.input_text_area("code", "Exercise 3", value="import math\ny = [1, 3, -5, 4, -10]\n\n# Task: Use map() with a lambda to:\n# - return sqrt(element) if element > 0\n# - return 0 otherwise\n# Hint: list(map(lambda x: ... , y))\n", width='100%', height='160px'),

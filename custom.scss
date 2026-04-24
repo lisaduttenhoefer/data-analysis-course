@@ -89,3 +89,41 @@ h2 { color: white !important; font-weight: 900; font-size: 1.5rem; margin-bottom
 .progress { height: 22px; border-radius: 50px; background-color: rgba(255,255,255,0.2) !important; border: none !important; }
 .progress-bar { background-color: #a8d5a2 !important; color: $dark-green !important; font-weight: 900; font-size: 0.8rem; border-radius: 50px; }
 }
+
+// Content-Breite maximieren
+@media (min-width: 992px) {
+  #quarto-content {
+    margin-left: 280px !important;
+    width: calc(100% - 280px) !important;
+    max-width: 100% !important;
+  }
+  
+  .quarto-container {
+    max-width: 100% !important;
+    padding-right: 2rem !important;
+  }
+  
+  main.content {
+    max-width: 900px !important;
+    width: 100% !important;
+  }
+}
+
+// Responsive auf kleinen Bildschirmen
+@media (max-width: 991px) {
+  #quarto-sidebar {
+    width: 100% !important;
+    height: auto !important;
+    position: relative !important;
+  }
+  #quarto-content {
+    margin-left: 0 !important;
+  }
+}
+
+// Shinylive iframes responsive
+.shinylive-wrapper iframe,
+.html-widget-output iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+}
