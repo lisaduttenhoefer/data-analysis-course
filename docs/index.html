@@ -296,16 +296,16 @@ const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// NEU: Auth state listener
 sbClient.auth.onAuthStateChange(async (event, session) => {
+  console.log('Auth event:', event, session?.user?.email);
   if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-    await updateAuthUI(session?.user);
     if (window.location.hash.includes('access_token')) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+    await render(); // ganze Seite neu rendern mit eingeloggtem User
   }
   if (event === 'SIGNED_OUT') {
-    await updateAuthUI(null);
+    await render();
   }
 });
 
@@ -474,7 +474,11 @@ async function render() {
     `${completedW} of ${activeW} weeks completed · ${getLang().toUpperCase()} mode`;
 }
 
-document.addEventListener('DOMContentLoaded', render);
+document.addEventListener('DOMContentLoaded', async () => {
+  // Kurz warten damit Supabase den Token aus dem Hash verarbeiten kann
+  await new Promise(r => setTimeout(r, 500));
+  await render();
+});
 </script>
 
 
