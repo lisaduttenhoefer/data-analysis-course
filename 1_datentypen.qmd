@@ -9,6 +9,14 @@ const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// NEU: Auth state listener
+sbClient.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    updateWeekBar();
+  }
+});
+
 var W1_CHUNK_COUNT = 28;
 var W1_QUIZ_IDS = ['w1_q_vectors','w1_q_matrices','w1_q_lists','w1_q_dataframes'];
 
