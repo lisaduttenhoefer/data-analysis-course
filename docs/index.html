@@ -271,14 +271,13 @@ ul.task-list li input[type="checkbox"] {
       <h2 id="gp-headline" style="margin-bottom: 2px; font-weight: 800;" class="anchored">Your Progress</h2>
       <div id="gp-subtext" style="opacity:0.85;font-size:0.95rem;">Loading…</div>
     </div>
-    
     <div id="auth-status"></div>
   </div>
 
   <div id="guest-warning" class="auth-warning">
     ⚠️ <strong>Note:</strong> You are not logged in. Progress is only saved locally on this device and may be lost.
   </div>
-  
+
   <div class="d-flex align-items-center gap-3 mt-3">
     <div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);">
       <div id="global-progress-bar" class="progress-bar" role="progressbar" style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"></div>
@@ -294,14 +293,14 @@ ul.task-list li input[type="checkbox"] {
 const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
 
-// Warten bis Supabase-Script geladen ist, dann Client global setzen
 let sbClient;
 let _initialized = false;
+
 (function waitForSupabase() {
   if (typeof supabase === 'undefined') return setTimeout(waitForSupabase, 100);
   if (_initialized) return;
   _initialized = true;
-  
+
   sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   sbClient.auth.onAuthStateChange(async (event, session) => {
@@ -314,9 +313,9 @@ let _initialized = false;
   });
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', render);
+    document.addEventListener('DOMContentLoaded', () => setTimeout(render, 300));
   } else {
-    render();
+    setTimeout(render, 300);
   }
 })();
 
@@ -426,25 +425,31 @@ function updateAuthUI(user) {
   if (!container) return;
   if (user) {
     warning.style.display = 'none';
-    container.innerHTML = `<button onclick="sbLogout()" class="btn btn-sm"
-      style="background:white;color:#1a4d1a;border:2px solid white;border-radius:50px;font-weight:800;padding:5px 20px;">
-      LOGOUT</button>`;
+    const name = user.user_metadata?.user_name || user.email || 'GitHub User';
+    container.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:0.85rem;opacity:0.9;">👋 ${name}</span>
+        <button onclick="sbLogout()" class="btn btn-sm"
+          style="background:white;color:#1a4d1a;border:2px solid white;border-radius:50px;font-weight:800;padding:5px 20px;">
+          LOGOUT
+        </button>
+      </div>`;
   } else {
     warning.style.display = 'block';
-    container.innerHTML = `<button onclick="sbLogin()" class="btn btn-sm"
-      style="background:#1a4d1a;color:white;border:2px solid white;border-radius:50px;font-weight:800;padding:5px 20px;">
-      LOGIN</button>`;
+    container.innerHTML = `
+      <button onclick="sbLogin()" class="btn btn-sm"
+        style="background:#1a4d1a;color:white;border:2px solid white;border-radius:50px;font-weight:800;padding:5px 20px;">
+        🐙 LOGIN WITH GITHUB
+      </button>`;
   }
 }
 
 async function sbLogin() {
-  const email = prompt("Enter your email to sync your progress:");
-  if (!email) return;
-  const { error } = await sbClient.auth.signInWithOtp({
-    email, options: { emailRedirectTo: window.location.href }
+  const { error } = await sbClient.auth.signInWithOAuth({
+    provider: 'github',
+    options: { redirectTo: 'https://lisaduttenhoefer.github.io/data-analysis-course/' }
   });
   if (error) alert("Error: " + error.message);
-  else alert("Magic Link sent! Check your email.");
 }
 
 async function sbLogout() {
