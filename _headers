@@ -1,4 +1,10 @@
-/*
+/index.html
+  Cache-Control: no-cache, must-revalidate
+
+/1_datentypen.html
   Cross-Origin-Embedder-Policy: require-corp
   Cross-Origin-Opener-Policy: same-origin
-  Cache-Control: no-cache, must-revalidate
+
+/0_markdown.html
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin
