@@ -93,9 +93,14 @@ function getLang() {
   try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e) { return 'python'; }
 }
 
+let _rendering = false;
+
 async function render() {
+  if (_rendering) return;
+  _rendering = true;
+  
   const grid = document.getElementById('week-cards-grid');
-  if (!grid) return;
+  if (!grid) { _rendering = false; return; }
   grid.innerHTML = '';
 
   let user = null, dbData = null;
@@ -148,6 +153,8 @@ async function render() {
   const sub = document.getElementById('gp-subtext');
   if (sub) sub.innerText = `${completedW} of ${activeW} weeks completed · ${getLang().toUpperCase()} mode`;
 }
+
+_rendering = false;
 
 function calculateWeekProgress(week, dbData) {
   if (!week.chunkCount) return null;
