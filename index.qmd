@@ -55,7 +55,12 @@ let _initialized = false;
   _initialized = true;
 
   sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'sb-da-course-auth'  // eindeutiger Key verhindert Lock-Konflikte
+    }
   });
 
   sbClient.auth.onAuthStateChange(async (event, session) => {
@@ -152,9 +157,11 @@ async function render() {
   if (badge) badge.innerText = gPct + '%';
   const sub = document.getElementById('gp-subtext');
   if (sub) sub.innerText = `${completedW} of ${activeW} weeks completed · ${getLang().toUpperCase()} mode`;
+
+  _rendering = false;
 }
 
-_rendering = false;
+
 
 function calculateWeekProgress(week, dbData) {
   if (!week.chunkCount) return null;
