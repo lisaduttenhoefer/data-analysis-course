@@ -16,7 +16,9 @@ let _initialized = false;
   if (_initialized) return;
   _initialized = true;
 
-  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
 
   sbClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
@@ -25,7 +27,11 @@ let _initialized = false;
     }
   });
 
-  setTimeout(updateWeekBar, 300);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(updateWeekBar, 300));
+  } else {
+    setTimeout(updateWeekBar, 300);
+  }
 })();
 
 var W1_CHUNK_COUNT = 28;
