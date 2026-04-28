@@ -333,27 +333,22 @@ async function markChunkDone(chunkId) {
   updateWeekBar();
 }
 
-async function markQuizDone(quizId) {
-  const key = 'quiz_' + getLang() + '_w1_' + quizId;
-  await sbSaveProgress(key, 'true');
-  updateWeekBar();
-}
-
 async function updateWeekBar() {
   var lang = getLang();
   var total = W1_CHUNK_COUNT + W1_QUIZ_IDS.length;
   var done = 0;
-
   try {
-    const { data: { user } } = await sbClient.auth.getUser();
+    // User aus sessionStorage statt getUser()
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
     let progressMap = {};
 
     if (user) {
-      const { data, error } = await sbClient
+      const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const { data } = await dbClient
         .from('progress')
         .select('key, value')
         .eq('user_email', user.email);
-      
       if (data) {
         data.forEach(row => { progressMap[row.key] = row.value === 'true'; });
       }
