@@ -371,8 +371,14 @@ async function render() {
 
     let user = null, dbData = null;
     try {
-      const { data } = await sbClient.auth.getUser();
-      user = data?.user || null;
+      // Erst aus sessionStorage lesen, getUser() nur als Fallback
+      const savedSession = sessionStorage.getItem('sb-session');
+      if (savedSession) {
+        user = JSON.parse(savedSession).user || null;
+      } else {
+        const { data } = await sbClient.auth.getUser();
+        user = data?.user || null;
+      }
       if (user) {
         const { data: rows } = await sbClient
           .from('progress').select('key, value').eq('user_email', user.email);
