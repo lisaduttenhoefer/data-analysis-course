@@ -288,12 +288,12 @@ let _initialized = false;
       if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
       if (window.location.hash.includes('access_token'))
         window.history.replaceState({}, document.title, window.location.pathname);
-      await render();
+      updateWeekBar();
     }
     if (event === 'SIGNED_OUT') {
       sessionStorage.removeItem('sb-session');
-      await render();
-    }
+      updateWeekBar();
+      }
   });
 
   if (document.readyState === 'loading') {
