@@ -322,7 +322,7 @@ async function sbSaveProgress(key, value) {
         user_email: user.email,
         key: key,
         value: value
-      });
+      }, { onConflict: 'user_email,key' });
     }
   } catch (err) { console.error("Supabase Save Error:", err); }
 }

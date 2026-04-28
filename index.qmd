@@ -90,7 +90,7 @@ let _initialized = false;
 })();
 
 const WEEKS = [
-  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", chunkCount:20, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
+  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
   { n:2,  title:"Week 2: Datatypes",            topics:"Factors · Discrete vs. Continuous · Type Coercion",    locked:true },
   { n:3,  title:"Week 3: Data Import & Export",  topics:"CSV · Excel · RData · Working Directory",              locked:true },
   { n:4,  title:"Week 4: Data Manipulation",     topics:"dplyr / pandas · filter · mutate · group_by",          locked:true },
@@ -244,6 +244,7 @@ async function sbLogin() {
 
 async function sbLogout() {
   await sbClient.auth.signOut();
+  sessionStorage.removeItem('sb-session');
   localStorage.clear();
   window.location.reload();
 }
