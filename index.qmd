@@ -62,6 +62,14 @@ let _initialized = false;
     }
   });
 
+  window.addEventListener('pageshow', async (event) => {
+    if (event.persisted) {
+      // Seite kommt aus Browser-Cache (Back-Navigation)
+      _rendering = false; // Flag zurücksetzen
+      await render();
+    }
+  });
+
   sbClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
       if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
@@ -88,6 +96,7 @@ let _initialized = false;
     }
   }
 })();
+
 
 const WEEKS = [
   { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
