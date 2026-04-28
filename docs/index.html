@@ -309,12 +309,6 @@ let _initialized = false;
     }
   });
 
-  // Session in sessionStorage retten und wiederherstellen
-  const savedSession = sessionStorage.getItem('sb-session');
-  if (savedSession) {
-    sbClient.auth.setSession(JSON.parse(savedSession));
-  }
-
   sbClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
       if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
@@ -328,10 +322,15 @@ let _initialized = false;
     }
   });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(render, 300));
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) {
+    sbClient.auth.setSession(JSON.parse(savedSession));
   } else {
-    setTimeout(render, 300);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(render, 300));
+    } else {
+      setTimeout(render, 300);
+    }
   }
 })();
 
@@ -357,25 +356,29 @@ function getLang() {
 let _rendering = false;
 
 async function render() {
-  if (_rendering) return;
+  if (_rendering) {
+    setTimeout(render, 200); // retry statt ignorieren
+    return;
+  }
   _rendering = true;
   
-  const grid = document.getElementById('week-cards-grid');
-  if (!grid) { _rendering = false; return; }
-  grid.innerHTML = '';
-
-  let user = null, dbData = null;
   try {
-    const { data } = await sbClient.auth.getUser();
-    user = data?.user || null;
-    if (user) {
-      const { data: rows } = await sbClient
-        .from('progress').select('key, value').eq('user_email', user.email);
-      if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = r.value === 'true'; return acc; }, {});
-    }
-  } catch(e) { console.error('Auth/DB error:', e); }
+    const grid = document.getElementById('week-cards-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
 
-  updateAuthUI(user);
+    let user = null, dbData = null;
+    try {
+      const { data } = await sbClient.auth.getUser();
+      user = data?.user || null;
+      if (user) {
+        const { data: rows } = await sbClient
+          .from('progress').select('key, value').eq('user_email', user.email);
+        if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = r.value === 'true'; return acc; }, {});
+      }
+    } catch(e) { console.error('Auth/DB error:', e); }
+
+    updateAuthUI(user);
 
   let totalAll = 0, doneAll = 0, completedW = 0;
   const activeW = WEEKS.filter(w => !w.locked && w.chunkCount).length;
@@ -413,6 +416,9 @@ async function render() {
   if (badge) badge.innerText = gPct + '%';
   const sub = document.getElementById('gp-subtext');
   if (sub) sub.innerText = `${completedW} of ${activeW} weeks completed · ${getLang().toUpperCase()} mode`;
+  } finally {
+    _rendering = false;
+  }
 }
 
 _rendering = false;
