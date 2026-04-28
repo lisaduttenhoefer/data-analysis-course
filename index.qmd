@@ -50,9 +50,16 @@ let sbClient;
 let _initialized = false;
 
 (function waitForSupabase() {
+  
   if (typeof supabase === 'undefined') return setTimeout(waitForSupabase, 100);
   if (_initialized) return;
   _initialized = true;
+
+  // Wenn man von einer Unterseite zurückkommt, neu rendern
+  if (sessionStorage.getItem('needs-refresh') === 'true') {
+    sessionStorage.removeItem('needs-refresh');
+    setTimeout(render, 500);
+  }
 
   sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: {

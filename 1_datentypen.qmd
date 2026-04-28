@@ -210,6 +210,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   applyFinalStyle();
 });
+window.addEventListener('pagehide', () => {
+  sessionStorage.setItem('needs-refresh', 'true');
+});
 </script>
 
 
