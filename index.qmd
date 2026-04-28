@@ -124,7 +124,6 @@ async function render() {
 
     let user = null, dbData = null;
     try {
-      // Erst aus sessionStorage lesen, getUser() nur als Fallback
       const savedSession = sessionStorage.getItem('sb-session');
       if (savedSession) {
         user = JSON.parse(savedSession).user || null;
@@ -133,7 +132,8 @@ async function render() {
         user = data?.user || null;
       }
       if (user) {
-        const { data: rows } = await sbClient
+        const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { data: rows } = await dbClient
           .from('progress').select('key, value').eq('user_email', user.email);
         if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = r.value === 'true'; return acc; }, {});
       }
