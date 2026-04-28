@@ -302,16 +302,30 @@ let _initialized = false;
   _initialized = true;
 
   sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: true
+    }
   });
+
+  // Session in sessionStorage retten und wiederherstellen
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) {
+    sbClient.auth.setSession(JSON.parse(savedSession));
+  }
 
   sbClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
       if (window.location.hash.includes('access_token'))
         window.history.replaceState({}, document.title, window.location.pathname);
       await render();
     }
-    if (event === 'SIGNED_OUT') await render();
+    if (event === 'SIGNED_OUT') {
+      sessionStorage.removeItem('sb-session');
+      await render();
+    }
   });
 
   if (document.readyState === 'loading') {
