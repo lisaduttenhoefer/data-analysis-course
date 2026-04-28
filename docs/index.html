@@ -324,7 +324,9 @@ let _initialized = false;
 
   const savedSession = sessionStorage.getItem('sb-session');
   if (savedSession) {
-    sbClient.auth.setSession(JSON.parse(savedSession));
+    sbClient.auth.setSession(JSON.parse(savedSession)).then(() => {
+      setTimeout(render, 300);
+    });
   } else {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => setTimeout(render, 300));
