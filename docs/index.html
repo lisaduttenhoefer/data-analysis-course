@@ -252,63 +252,65 @@ ul.task-list li input[type="checkbox"] {
 
 
 <script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
-<div id="progress-tile" class="global-progress-banner relative-box">
-<div id="progress-content">
-<pre><code>&lt;div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2"&gt;
-  &lt;div&gt;
-    &lt;h2 style="margin-bottom: 2px; font-weight: 800; color: white;"&gt;Your Progress&lt;/h2&gt;
-    &lt;div id="gp-subtext" style="opacity:0.85;font-size:0.95rem; color: white;"&gt;Loading…&lt;/div&gt;
-  &lt;/div&gt;
-  &lt;div id="auth-status"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="d-flex align-items-center gap-3 mt-3"&gt;
-  &lt;div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);"&gt;
-    &lt;div id="global-progress-bar" class="progress-bar" role="progressbar" style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"&gt;&lt;/div&gt;
-  &lt;/div&gt;
-  &lt;div style="font-size:2.4rem;font-weight:900;opacity:0.9; line-height: 1; color: white;" id="gp-percent-badge"&gt;0%&lt;/div&gt;
-&lt;/div&gt;</code></pre>
+
+<div class="global-progress-banner relative-box" id="progress-tile">
+  <div id="progress-content">
+    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+      <div>
+        <h2 style="margin-bottom: 2px; font-weight: 800; color: white;" class="anchored">Your Progress</h2>
+        <div id="gp-subtext" style="opacity:0.85;font-size:0.95rem; color: white;">Loading…</div>
+      </div>
+      <div id="auth-status"></div>
+    </div>
+    <div class="d-flex align-items-center gap-3 mt-3">
+      <div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);">
+        <div id="global-progress-bar" class="progress-bar" role="progressbar" style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"></div>
+      </div>
+      <div style="font-size:2.4rem;font-weight:900;opacity:0.9; line-height: 1; color: white;" id="gp-percent-badge">0%</div>
+    </div>
+  </div>
+
+  <!-- Login Button Overlay -->
+  <div id="login-overlay" class="centered-overlay-btn" style="display:none;">
+     <button onclick="sbLogin()" class="btn btn-lg" style="background:white; color:#1a4d1a; border:none; border-radius:50px; font-weight:800; padding:12px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        🐙 LOGIN WITH GITHUB
+     </button>
+  </div>
 </div>
-<!-- Login Button Overlay -->
-<div id="login-overlay" class="centered-overlay-btn" style="display:none;">
-<pre><code> &lt;button onclick="sbLogin()" class="btn btn-lg" style="background:white; color:#1a4d1a; border:none; border-radius:50px; font-weight:800; padding:12px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"&gt;
-    🐙 LOGIN WITH GITHUB
- &lt;/button&gt;</code></pre>
-</div>
-</div>
+
 <!-- LEADERBOARD KACHEL -->
 <div id="leaderboard-section" class="global-progress-banner relative-box" style="margin-top: 2rem; background: linear-gradient(135deg, #1a4d1a 0%, #2d7a2d 100%); min-height: 150px;">
-<div id="leaderboard-content">
-<pre><code> &lt;h3 style="color:white; font-weight:800; margin-bottom:1.5rem;"&gt;🏆 Class Leaderboard&lt;/h3&gt;
- &lt;div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px;"&gt;&lt;/div&gt;
- &lt;div id="leaderboard-expand-container" style="text-align: center; margin-top: 15px; display: none;"&gt;
-    &lt;button onclick="toggleLeaderboard()" id="btn-expand" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 5px 20px;"&gt;SHOW ALL&lt;/button&gt;
- &lt;/div&gt;</code></pre>
+  <div id="leaderboard-content">
+     <h3 style="color:white; font-weight:800; margin-bottom:1.5rem;" class="anchored">🏆 Class Leaderboard</h3>
+     <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+     <div id="leaderboard-expand-container" style="text-align: center; margin-top: 15px; display: none;">
+        <button onclick="toggleLeaderboard()" id="btn-expand" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 5px 20px;">SHOW ALL</button>
+     </div>
+  </div>
+
+  <!-- Nickname Button Overlay -->
+  <div id="nickname-overlay-btn" class="centered-overlay-btn" style="display:none;">
+     <button onclick="showNicknameModal()" class="btn btn-lg" style="background:#a8d5a2; color:#1a4d1a; border:none; border-radius:50px; font-weight:800; padding:12px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        🥇 CHOOSE NICKNAME
+     </button>
+  </div>
 </div>
-<!-- Nickname Button Overlay -->
-<div id="nickname-overlay-btn" class="centered-overlay-btn" style="display:none;">
-<pre><code> &lt;button onclick="showNicknameModal()" class="btn btn-lg" style="background:#a8d5a2; color:#1a4d1a; border:none; border-radius:50px; font-weight:800; padding:12px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"&gt;
-    🥇 CHOOSE NICKNAME
- &lt;/button&gt;</code></pre>
-</div>
-</div>
+
 <!-- Nickname Modal -->
 <div id="nickname-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; align-items:center; justify-content:center;">
-<div style="background:white; padding:40px; border-radius:20px; text-align:center; max-width:450px; width:90%;">
-<pre><code>&lt;h2 style="color:#1a4d1a; font-weight:800;"&gt;Almost there!&lt;/h2&gt;
-&lt;p style="color:#555; margin-bottom:25px;"&gt;Pick a nickname to join the leaderboard.&lt;/p&gt;
-&lt;input type="text" id="nickname-input" placeholder="Your Nickname" maxlength="15" 
-       style="width:100%; padding:15px; border-radius:50px; border:2px solid #eee; margin-bottom:20px; font-size:1.1rem; text-align:center;"&gt;
-&lt;button onclick="saveNickname()" class="btn btn-lg w-100" style="background:#1a4d1a; color:white; border-radius:50px; font-weight:800; padding:12px;"&gt;
-  SAVE &amp; START
-&lt;/button&gt;</code></pre>
+  <div style="background:white; padding:40px; border-radius:20px; text-align:center; max-width:450px; width:90%;">
+    <h2 style="color:#1a4d1a; font-weight:800;" class="anchored">Almost there!</h2>
+    <p style="color:#555; margin-bottom:25px;">Pick a nickname to join the leaderboard.</p>
+    <input type="text" id="nickname-input" placeholder="Your Nickname" maxlength="15" style="width:100%; padding:15px; border-radius:50px; border:2px solid #eee; margin-bottom:20px; font-size:1.1rem; text-align:center;">
+    <button onclick="saveNickname()" class="btn btn-lg w-100" style="background:#1a4d1a; color:white; border-radius:50px; font-weight:800; padding:12px;">
+      SAVE &amp; START
+    </button>
+  </div>
 </div>
-</div>
-<h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;margin-top:2rem;" class="anchored">
-Course Content
-</h3>
-<div id="week-cards-grid" class="grid" style="align-items: stretch;">
 
-</div>
+<h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;margin-top:2rem;" class="anchored">Course Content</h3>
+<div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
+
 <script>
 const SUPABASE_URL = '[https://hpyezixseggwnrpepbhx.supabase.co](https://hpyezixseggwnrpepbhx.supabase.co)';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
