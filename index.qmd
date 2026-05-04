@@ -49,61 +49,59 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let sbClient;
 let _initialized = false;
 
-(function waitForSupabase() {
+// 1. Zentrale Initialisierungs-Funktion
+async function initSupabase() {
+  if (typeof supabase === 'undefined') {
+    setTimeout(initSupabase, 100);
+    return;
+  }
   
-  if (typeof supabase === 'undefined') return setTimeout(waitForSupabase, 100);
-  if (_initialized) return;
-  _initialized = true;
-
-  // Wenn man von einer Unterseite zurückkommt, neu rendern
-  if (sessionStorage.getItem('needs-refresh') === 'true') {
-    sessionStorage.removeItem('needs-refresh');
-    setTimeout(render, 500);
-  }
-
-  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: true
-    }
-  });
-
-  window.addEventListener('pageshow', async (event) => {
-    if (event.persisted) {
-      // Seite kommt aus Browser-Cache (Back-Navigation)
-      _rendering = false; // Flag zurücksetzen
-      await render();
-    }
-  });
-
-  sbClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
-      if (window.location.hash.includes('access_token'))
-        window.history.replaceState({}, document.title, window.location.pathname);
-      await render();
-    }
-    if (event === 'SIGNED_OUT') {
-      sessionStorage.removeItem('sb-session');
-      await render();
-    }
-  });
-
-  const savedSession = sessionStorage.getItem('sb-session');
-  if (savedSession) {
-    sbClient.auth.setSession(JSON.parse(savedSession)).then(() => {
-      setTimeout(render, 800);
+  if (!_initialized) {
+    sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { 
+        persistSession: true, 
+        detectSessionInUrl: true 
+      }
     });
-  } else {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => setTimeout(render, 300));
-    } else {
-      setTimeout(render, 300);
-    }
-  }
-})();
+    _initialized = true;
 
+    // Auf Auth-Änderungen hören (Login/Logout)
+    sbClient.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth Event:", event);
+      if (session) {
+        sessionStorage.setItem('sb-session', JSON.stringify(session));
+      } else {
+        sessionStorage.removeItem('sb-session');
+      }
+      await render(); // Bei jeder Änderung neu zeichnen
+    });
+  }
+
+  // 2. Bestehende Session prüfen
+  const { data: { session } } = await sbClient.auth.getSession();
+  if (session) {
+    sessionStorage.setItem('sb-session', JSON.stringify(session));
+  }
+  
+  // 3. Seite zum ersten Mal rendern
+  await render();
+}
+
+// 4. Start beim Laden der Seite
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSupabase);
+} else {
+  initSupabase();
+}
+
+// 5. Spezial-Fix für den "Zurück-Button" des Browsers
+window.addEventListener('pageshow', async (event) => {
+  // Wenn die Seite aus dem Cache geladen wird (Back-Button), neu rendern
+  if (event.persisted && typeof render === 'function') {
+    _rendering = false; 
+    await render();
+  }
+});
 
 const WEEKS = [
   { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
