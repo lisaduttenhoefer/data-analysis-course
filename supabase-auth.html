@@ -62,34 +62,29 @@ function renderUserBadge(email) {
 }
 
 async function sbLogin() {
-  const email = document.getElementById('sb-email').value.trim();
-  if (!email) return;
-  const { error } = await sb.auth.signInWithOtp({ email,
-    options: { shouldCreateUser: true }
-  });
-  if (error) {
-    alert('Error: ' + error.message);
-  } else {
-    alert('✅ Check your email for the login link!');
-  }
+  await sb.auth.signInWithOAuth({ provider: 'github' });
 }
+
 
 async function sbLogout() {
   await sb.auth.signOut();
 }
 
 // ── Progress API ─────────────────────────────────────────────────────
+// ── Progress API ─────────────────────────────────────────────────────
 async function sbSetItem(key, value) {
-  // Always save to localStorage as fallback
   try { localStorage.setItem(key, value); } catch(e) {}
 
   if (!window._sbUser) return;
-  await sb.from('progress').upsert({
-    user_email: window._sbUser.email,
+
+  const { error } = await sb.from('progress').upsert({
+    id: window._sbUser.id,   // Sicherer Abgleich über UUID
     key: key,
     value: value,
     updated_at: new Date().toISOString()
-  }, { onConflict: 'user_email,key' });
+  });
+
+  if (error) console.error("Speichern fehlgeschlagen:", error.message);
 }
 
 async function sbGetItem(key) {
@@ -98,9 +93,13 @@ async function sbGetItem(key) {
   }
   const { data, error } = await sb.from('progress')
     .select('value')
-    .eq('user_email', window._sbUser.email)
+    .eq('id', window._sbUser.id) // Geändert von user_email auf id
     .eq('key', key)
     .single();
+  
+  if (error && error.code !== 'PGRST116') { // PGRST116 heißt nur "nichts gefunden"
+    console.error("Fehler beim Laden:", error.message);
+  }
   return data ? data.value : null;
 }
 
@@ -108,7 +107,9 @@ async function sbGetAllProgress() {
   if (!window._sbUser) return null;
   const { data, error } = await sb.from('progress')
     .select('key, value')
-    .eq('user_email', window._sbUser.email);
+    .eq('id', window._sbUser.id); // Geändert von user_email auf id
+    
+  if (error) console.error("Fehler beim Laden aller Daten:", error.message);
   return data;
 }
 
