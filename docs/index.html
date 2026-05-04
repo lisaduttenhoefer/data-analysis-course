@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ba8577c035dc07b953209c43deaab74b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-83d804e9624a8fc4afce41226e543271.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -286,6 +286,23 @@ ul.task-list li input[type="checkbox"] {
   </div>
 </div>
 
+<!-- Leaderboard Bereich (Nur für eingeloggte User) -->
+<div id="leaderboard-section" style="display:none;">
+  <div class="leaderboard-container">
+    <h4 style="font-weight:800; margin-bottom:10px;" class="anchored">🏆 Class Leaderboard</h4>
+    <div id="leaderboard-list">Loading rankings...</div>
+  </div>
+</div>
+
+<!-- Nickname Overlay (Erscheint nur, wenn Nickname fehlt) -->
+<div id="nickname-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; padding:30px; border-radius:15px; text-align:center; max-width:400px;">
+    <h3 style="color:#1a4d1a;" class="anchored">Welcome!</h3>
+    <p style="color:#666;">Please choose a nickname for the leaderboard:</p>
+    <input type="text" id="nickname-input" placeholder="CoolDataScientist" style="width:100%; padding:10px; border-radius:50px; border:1px solid #ccc; margin-bottom:15px;">
+    <button onclick="saveNickname()" class="btn" style="background:#1a4d1a; color:white; border-radius:50px; padding:10px 30px; font-weight:800;">START LEARNING</button>
+  </div>
+</div>
 <h3 style="color:#1a4d1a;font-weight:800;margin-bottom:1.2rem;margin-top:2rem;" class="anchored">Course Content</h3>
 <div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
 
@@ -372,6 +389,21 @@ async function render() {
 
     // UI zeichnen
     updateAuthUI(user);
+  
+    // 1. Transparenz steuern
+    const banner = document.querySelector('.global-progress-banner');
+    const cards = document.getElementById('week-cards-grid');
+    if (!user) {
+        banner.classList.add('auth-locked');
+        cards.classList.add('auth-locked');
+        document.getElementById('leaderboard-section').style.display = 'none';
+    } else {
+        banner.classList.remove('auth-locked');
+        cards.classList.remove('auth-locked');
+        document.getElementById('leaderboard-section').style.display = 'block';
+        checkNickname(user); // Prüfen, ob Nickname existiert
+        loadLeaderboard();   // Leaderboard laden
+    }
     
     grid.innerHTML = '';
     let totalAll = 0, doneAll = 0, completedW = 0;
@@ -459,8 +491,51 @@ async function sbLogin() {
 async function sbLogout() {
   await sbClient.auth.signOut();
   sessionStorage.removeItem('sb-session');
-  localStorage.clear();
   window.location.reload();
+}
+
+async function checkNickname(user) {
+
+  const { data, error } = await sbClient.from('profiles').select('nickname').eq('id', user.id).maybeSingle();
+  
+  if (error) {
+    console.error("Error checking nickname:", error);
+    return;
+  }
+
+  if (!data || !data.nickname) {
+    document.getElementById('nickname-overlay').style.display = 'flex';
+  } else {
+    document.getElementById('nickname-overlay').style.display = 'none';
+  }
+}
+
+async function saveNickname() {
+  const name = document.getElementById('nickname-input').value.trim();
+  if (!name) return alert("Please enter a name!");
+  
+  const { data: { user } } = await sbClient.auth.getUser();
+  const { error } = await sbClient.from('profiles').upsert({ id: user.id, nickname: name });
+  
+  if (error) {
+    alert("Nickname already taken or error!");
+  } else {
+    document.getElementById('nickname-overlay').style.display = 'none';
+    render(); // Seite neu laden
+  }
+}
+
+async function loadLeaderboard() {
+  const { data, error } = await sbClient.from('leaderboard').select('*').limit(5);
+  const container = document.getElementById('leaderboard-list');
+  if (error || !data) return;
+
+  container.innerHTML = data.map((entry, index) => `
+    <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+      <span>${index + 1}. ${entry.nickname}</span>
+      <span style="font-weight:800;">${entry.percent}%</span>
+    </div>
+  `).join('');
 }
 </script>
 

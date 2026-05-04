@@ -127,3 +127,20 @@ h2 { color: white !important; font-weight: 900; font-size: 1.5rem; margin-bottom
   width: 100% !important;
   max-width: 100% !important;
 }
+
+/* Transparenz-Effekt für nicht eingeloggte User */
+.auth-locked {
+  opacity: 0.3;
+  pointer-events: none; /* Verhindert Klicken */
+  filter: blur(1px);
+  transition: all 0.5s ease;
+}
+
+/* Leaderboard Styling */
+.leaderboard-container {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 20px;
+  color: white;
+}
