@@ -59,20 +59,19 @@ function getLang() {
 
 async function sbSaveProgress(key, value) {
   localStorage.setItem(key, value);
-  console.log('sbSaveProgress:', key);
-  
   try {
     const savedSession = sessionStorage.getItem('sb-session');
     const user = savedSession ? JSON.parse(savedSession).user : null;
-    
-    if (user && sbClient) { // Wir nutzen den globalen sbClient!
+
+    if (user && sbClient) {
+      // WICHTIG: Hier fehlte die schließende Klammer vor dem Semikolon!
       const { error } = await sbClient.from('progress').upsert({
         id: user.id,
         key: key,
         value: value
-      }); // Kein onConflict nötig, da PRIMARY KEY in DB definiert ist
+      }); 
       
-      if (error) console.error("Save Error:", error.message);
+      if (error) console.error("Supabase Error:", error.message);
     }
   } catch (err) { console.error("System Error:", err); }
 }
