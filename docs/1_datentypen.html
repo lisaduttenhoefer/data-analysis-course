@@ -312,21 +312,22 @@ function getLang() {
 
 async function sbSaveProgress(key, value) {
   localStorage.setItem(key, value);
-  console.log('sbSaveProgress:', key, sessionStorage.getItem('sb-session') ? 'session exists' : 'NO SESSION');
+  console.log('sbSaveProgress:', key);
+  
   try {
     const savedSession = sessionStorage.getItem('sb-session');
     const user = savedSession ? JSON.parse(savedSession).user : null;
-    console.log('user:', user?.email || 'null');
-    if (user) {
-      const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      const result = await dbClient.from('progress').upsert({
-        user_email: user.email,
+    
+    if (user && sbClient) { // Wir nutzen den globalen sbClient!
+      const { error } = await sbClient.from('progress').upsert({
+        id: user.id,
         key: key,
         value: value
-      }, { onConflict: 'user_email,key' });
-      console.log('upsert result:', result.status, result.error);
+      }); // Kein onConflict nötig, da PRIMARY KEY in DB definiert ist
+      
+      if (error) console.error("Save Error:", error.message);
     }
-  } catch (err) { console.error("Supabase Save Error:", err); }
+  } catch (err) { console.error("System Error:", err); }
 }
 
 async function markChunkDone(chunkId) {
@@ -345,12 +346,11 @@ async function updateWeekBar() {
     const user = savedSession ? JSON.parse(savedSession).user : null;
     let progressMap = {};
 
-    if (user) {
-      const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      const { data } = await dbClient
+    if (user && sbClient) {
+      const { data } = await sbClient
         .from('progress')
         .select('key, value')
-        .eq('user_email', user.email);
+        .eq('id', user.id);
       if (data) {
         data.forEach(row => { progressMap[row.key] = row.value === 'true'; });
       }

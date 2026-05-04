@@ -5,7 +5,7 @@
 // ── Supabase Config ──────────────────────────────────────────────────
 const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── Auth State ───────────────────────────────────────────────────────
 window._sbUser = null;
@@ -72,22 +72,20 @@ async function sbLogout() {
 
 // ── Progress API ─────────────────────────────────────────────────────
 // ── Progress API ─────────────────────────────────────────────────────
-async function sbSetItem(key, value) {
+window.sbSetItem = async function(key, value) {
   try { localStorage.setItem(key, value); } catch(e) {}
-
   if (!window._sbUser) return;
 
-  const { error } = await sb.from('progress').upsert({
-    id: window._sbUser.id,   // Sicherer Abgleich über UUID
+  const { error } = await window.sb.from('progress').upsert({
+    id: window._sbUser.id,
     key: key,
     value: value,
     updated_at: new Date().toISOString()
   });
-
   if (error) console.error("Speichern fehlgeschlagen:", error.message);
 }
 
-async function sbGetItem(key) {
+window.sbGetItem = async function(key) {
   if (!window._sbUser) {
     try { return localStorage.getItem(key); } catch(e) { return null; }
   }
@@ -103,7 +101,7 @@ async function sbGetItem(key) {
   return data ? data.value : null;
 }
 
-async function sbGetAllProgress() {
+window.sbGetAllProgress = async function() {
   if (!window._sbUser) return null;
   const { data, error } = await sb.from('progress')
     .select('key, value')

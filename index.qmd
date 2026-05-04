@@ -147,10 +147,11 @@ async function render() {
         const { data } = await sbClient.auth.getUser();
         user = data?.user || null;
       }
-      if (user) {
-        const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const { data: rows } = await dbClient
-          .from('progress').select('key, value').eq('user_email', user.email);
+      if (user && sbClient) {
+        const { data: rows } = await sbClient
+          .from('progress')
+          .select('key, value')
+          .eq('id', user.id);
         if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = r.value === 'true'; return acc; }, {});
       }
     } catch(e) { console.error('Auth/DB error:', e); }
