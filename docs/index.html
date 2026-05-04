@@ -305,34 +305,31 @@ async function initSupabase() {
   
   if (!_initialized) {
     sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: { 
-        persistSession: true, 
-        detectSessionInUrl: true 
-      }
+      auth: { persistSession: true, detectSessionInUrl: true }
     });
     _initialized = true;
 
-    // Auf Auth-Änderungen hören (Login/Logout)
     sbClient.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth Event:", event);
       if (session) {
         sessionStorage.setItem('sb-session', JSON.stringify(session));
       } else {
         sessionStorage.removeItem('sb-session');
       }
-      await render(); // Bei jeder Änderung neu zeichnen
+      // WICHTIG: render erst aufrufen, wenn wir ein Event haben
+      await render(); 
     });
   }
 
-  // 2. Bestehende Session prüfen
-  const { data: { session } } = await sbClient.auth.getSession();
+  // WARTEN auf die Session, bevor der erste Render-Lauf startet
+  const { data: { session }, error } = await sbClient.auth.getSession();
   if (session) {
     sessionStorage.setItem('sb-session', JSON.stringify(session));
   }
   
-  // 3. Seite zum ersten Mal rendern
+  // Jetzt erst rendern
   await render();
 }
+
 
 // 4. Start beim Laden der Seite
 if (document.readyState === 'loading') {
