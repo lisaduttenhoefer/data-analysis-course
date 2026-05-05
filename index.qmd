@@ -2,7 +2,7 @@
 title: "Course Dashboard"
 ---
 ```{=html}
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <div class="global-progress-banner relative-box" id="progress-tile">
   <div id="progress-content">
@@ -64,7 +64,7 @@ title: "Course Dashboard"
 <div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
 
 <script>
-const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co](https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
 
 let sbClient;
@@ -78,20 +78,34 @@ const WEEKS = [
   { n:2, title:"Week 2: Datatypes", topics:"Factors · Discrete vs. Continuous · Type Coercion", locked:true }
 ];
 
+// 2. INITIALISIERUNG
 async function initSupabase() {
-  if (typeof supabase === 'undefined') return setTimeout(initSupabase, 100);
+  if (typeof supabase === 'undefined') {
+    setTimeout(initSupabase, 100);
+    return;
+  }
   if (!_initialized) {
-    sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    _initialized = true;
-    sbClient.auth.onAuthStateChange(() => render());
+    try {
+      sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      _initialized = true;
+      console.log("Supabase initialized successfully");
+      
+      sbClient.auth.onAuthStateChange((event) => {
+        console.log("Auth event:", event);
+        render();
+      });
+    } catch (err) {
+      console.error("Supabase Init Error:", err);
+    }
   }
   render();
 }
 
 initSupabase();
 
+// 3. RENDER FUNKTION
 async function render() {
-  if (_isRendering) return;
+  if (_isRendering || !sbClient) return;
   _isRendering = true;
 
   try {
@@ -102,35 +116,37 @@ async function render() {
     const loginOverlay = document.getElementById('login-overlay');
     const leadContent = document.getElementById('leaderboard-content');
     const nickOverlayBtn = document.getElementById('nickname-overlay-btn');
-    const cardsGrid = document.getElementById('week-cards-grid');
     const leadSection = document.getElementById('leaderboard-section');
+    const mainContent = document.querySelector('main.content');
 
     let dbData = null;
 
     if (!user) {
+      // GAST-MODUS
+      if(mainContent) mainContent.classList.add('content-locked-down');
       progContent.classList.add('tile-locked');
       loginOverlay.style.display = 'flex';
-      cardsGrid.classList.add('auth-locked-cards');
       leadSection.classList.add('tile-locked');
       nickOverlayBtn.style.display = 'none';
     } else {
+      // EINGELOGGT
+      if(mainContent) mainContent.classList.remove('content-locked-down');
       progContent.classList.remove('tile-locked');
       loginOverlay.style.display = 'none';
-      cardsGrid.classList.remove('auth-locked-cards');
 
+      // Nickname Check
       const { data: profile } = await sbClient.from('profiles').select('nickname').eq('id', user.id).maybeSingle();
       
       if (!profile || !profile.nickname) {
         leadContent.classList.add('tile-locked');
         nickOverlayBtn.style.display = 'flex';
-        leadSection.classList.remove('tile-locked');
       } else {
         leadContent.classList.remove('tile-locked');
         nickOverlayBtn.style.display = 'none';
-        leadSection.classList.remove('tile-locked');
         loadLeaderboard();
       }
 
+      // Progress laden
       const { data: rows } = await sbClient.from('progress').select('key, value').eq('id', user.id);
       if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = (r.value === 'true'); return acc; }, {});
     }
@@ -139,6 +155,8 @@ async function render() {
     renderWeekCards(dbData);
     updateGlobalUI(dbData);
 
+  } catch (err) {
+    console.error("Render error:", err);
   } finally {
     _isRendering = false;
   }
@@ -216,12 +234,20 @@ function toggleLeaderboard() {
 function showNicknameModal() { document.getElementById('nickname-modal').style.display = 'flex'; }
 
 async function saveNickname() {
-  const name = document.getElementById('nickname-input').value.trim();
+  const input = document.getElementById('nickname-input');
+  const name = input.value.trim();
   if (name.length < 3) return alert("Name too short!");
+  
+  if (!sbClient) return;
   const user = (await sbClient.auth.getUser()).data.user;
+  
   const { error } = await sbClient.from('profiles').upsert({ id: user.id, nickname: name });
-  if (error) alert("Error or name taken!");
-  else { document.getElementById('nickname-modal').style.display = 'none'; render(); }
+  if (error) {
+    alert("Name taken or error!");
+  } else {
+    document.getElementById('nickname-modal').style.display = 'none';
+    render();
+  }
 }
 
 function calculateWeekProgress(week, dbData) {
@@ -247,6 +273,7 @@ function updateAuthUI(user) {
 }
 
 async function sbLogin() { 
+  if (!sbClient) return alert("Supabase not ready!");
   await sbClient.auth.signInWithOAuth({ 
     provider: 'github', 
     options: { redirectTo: window.location.origin + window.location.pathname } 
