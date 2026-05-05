@@ -370,36 +370,40 @@ async function render() {
     let dbData = null;
 
     if (!user) {
-      // GAST-MODUS
+      // --- PHASE 1: NICHT EINGELOGGT ---
       if(mainContent) mainContent.classList.add('content-locked-down');
       progContent.classList.add('tile-locked');
-      loginOverlay.style.display = 'flex';
+      loginOverlay.style.display = 'flex'; // Zeige Login-Button
+      
       leadSection.classList.add('tile-locked');
-      nickOverlayBtn.style.display = 'none';
+      nickOverlayBtn.style.display = 'none'; 
     } else {
-      // EINGELOGGT
+      // --- PHASE 2: EINGELOGGT ---
       if(mainContent) mainContent.classList.remove('content-locked-down');
       progContent.classList.remove('tile-locked');
-      loginOverlay.style.display = 'none';
+      loginOverlay.style.display = 'none'; // VERSTECKE Login-Button nach Login
 
-      // Nickname Check
+      // Nickname Check für das Leaderboard
       const { data: profile } = await sbClient.from('profiles').select('nickname').eq('id', user.id).maybeSingle();
       
       if (!profile || !profile.nickname) {
+        // Noch kein Nickname gewählt
         leadContent.classList.add('tile-locked');
-        nickOverlayBtn.style.display = 'flex';
+        nickOverlayBtn.style.display = 'flex'; // Zeige Nickname-Button
       } else {
+        // Nickname ist da!
         leadContent.classList.remove('tile-locked');
-        nickOverlayBtn.style.display = 'none';
+        nickOverlayBtn.style.display = 'none'; // VERSTECKE Nickname-Button
         loadLeaderboard();
       }
 
-      // Progress laden
+      // Progress Daten laden
       const { data: rows } = await sbClient.from('progress').select('key, value').eq('id', user.id);
       if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = (r.value === 'true'); return acc; }, {});
     }
 
-    updateAuthUI(user);
+    // WICHTIG: Diese Aufrufe müssen am Ende stehen, um die UI zu füllen
+    updateAuthUI(user); 
     renderWeekCards(dbData);
     updateGlobalUI(dbData);
 
@@ -514,10 +518,26 @@ function statusLabel(p, locked) {
 }
 
 function updateAuthUI(user) {
-  const status = document.getElementById('auth-status');
+  const statusContainer = document.getElementById('auth-status');
+  if (!statusContainer) return;
+
   if (user) {
-    status.innerHTML = `<button onclick="sbLogout()" class="btn btn-sm" style="background:white; color:#1a4d1a; border-radius:50px; font-weight:800; padding:5px 15px;">LOGOUT</button>`;
-  } else { status.innerHTML = ''; }
+    // Hole den Namen aus den GitHub-Metadaten oder nimm die E-Mail
+    const userName = user.user_metadata?.user_name || user.user_metadata?.full_name || user.email.split('@')[0];
+    
+    statusContainer.innerHTML = `
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:0.9rem; font-weight:700; color:white;">👋 ${userName}</span>
+        <button onclick="sbLogout()" class="btn btn-sm" 
+                style="background:rgba(255,255,255,0.2); color:white; border:1px solid white; border-radius:50px; padding:4px 15px; font-weight:700;">
+          LOGOUT
+        </button>
+      </div>
+    `;
+  } else {
+    // Wenn nicht eingeloggt, bleibt der Bereich leer (da der Button ja im Overlay ist)
+    statusContainer.innerHTML = '';
+  }
 }
 
 async function sbLogin() { 
