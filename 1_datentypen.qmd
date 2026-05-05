@@ -82,6 +82,12 @@ async function markChunkDone(chunkId) {
   updateWeekBar();
 }
 
+async function markQuizDone(quizId) {
+  const key = 'quiz_' + getLang() + '_w1_' + quizId;
+  await sbSaveProgress(key, 'true');
+  updateWeekBar();
+}
+
 async function updateWeekBar() {
   var lang = getLang();
   var total = W1_CHUNK_COUNT + W1_QUIZ_IDS.length;

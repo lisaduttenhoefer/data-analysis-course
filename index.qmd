@@ -75,7 +75,7 @@ let isLeaderboardExpanded = false;
 
 const WEEKS = [
   { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
-  { n:2, title:"Week 2: Datatypes", topics:"Factors · Discrete vs. Continuous · Type Coercion", locked:true }
+  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", chunkCount:20, quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" }
 ];
 
 // 2. INITIALISIERUNG
@@ -263,12 +263,17 @@ async function saveNickname() {
   }
 }
 
+function getLang() {
+  try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e) { return 'python'; }
+}
+
 function calculateWeekProgress(week, dbData) {
   if (!week.chunkCount) return null;
+  const lang = week.lang || getLang();
   const total = week.chunkCount + (week.quizIds?.length || 0);
   let done = 0;
-  for (let i = 1; i <= week.chunkCount; i++) if (dbData?.[`chunk_python_w${week.n}_c${i}`]) done++;
-  week.quizIds?.forEach(qid => { if (dbData?.[`quiz_python_w${week.n}_${qid}`]) done++; });
+  for (let i = 1; i <= week.chunkCount; i++) if (dbData?.[`chunk_${lang}_w${week.n}_c${i}`]) done++;
+  week.quizIds?.forEach(qid => { if (dbData?.[`quiz_${lang}_w${week.n}_${qid}`]) done++; });
   return { done, total, pct: Math.round((done / total) * 100) };
 }
 

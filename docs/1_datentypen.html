@@ -226,6 +226,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">WEEK 1: Datatypes</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_data_cleanup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WEEK 2: Data Cleanup</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -331,6 +337,12 @@ async function sbSaveProgress(key, value) {
 
 async function markChunkDone(chunkId) {
   const key = 'chunk_' + getLang() + '_' + chunkId;
+  await sbSaveProgress(key, 'true');
+  updateWeekBar();
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_' + getLang() + '_w1_' + quizId;
   await sbSaveProgress(key, 'true');
   updateWeekBar();
 }

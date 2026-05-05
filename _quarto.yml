@@ -24,6 +24,8 @@ website:
             href: 0_markdown.qmd
           - text: "WEEK 1: Datatypes"
             href: 1_datentypen.qmd
+          - text: "WEEK 2: Data Cleanup"
+            href: 2_data_cleanup.qmd
 
   navbar:
     background: "#ffffff"

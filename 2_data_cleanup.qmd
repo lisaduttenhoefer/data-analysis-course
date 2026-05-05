@@ -1,0 +1,1209 @@
+---
+title: "Week 2: Data Cleanup & Visualisation"
+---
+
+```{=html}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+let sbClient;
+let _initialized = false;
+
+(function waitForSupabase() {
+  if (typeof supabase === 'undefined') return setTimeout(waitForSupabase, 100);
+  if (_initialized) return;
+  _initialized = true;
+
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+      updateWeekBar();
+    }
+    if (event === 'SIGNED_OUT') {
+      sessionStorage.removeItem('sb-session');
+      updateWeekBar();
+    }
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(updateWeekBar, 300));
+  } else {
+    setTimeout(updateWeekBar, 300);
+  }
+})();
+
+var W2_CHUNK_COUNT = 20;
+var W2_QUIZ_IDS = ['w2_q_loading', 'w2_q_cleanup', 'w2_q_viz', 'w2_q_exercises'];
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { error } = await sbClient.from('progress').upsert({ id: user.id, key: key, value: value });
+      if (error) console.error("Supabase Error:", error.message);
+    }
+  } catch (err) { console.error("System Error:", err); }
+}
+
+async function markChunkDone(chunkId) {
+  const key = 'chunk_r_' + chunkId;
+  await sbSaveProgress(key, 'true');
+  updateWeekBar();
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w2_' + quizId;
+  await sbSaveProgress(key, 'true');
+  updateWeekBar();
+}
+
+async function updateWeekBar() {
+  var total = W2_CHUNK_COUNT + W2_QUIZ_IDS.length;
+  var done = 0;
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    let progressMap = {};
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key, value').eq('id', user.id);
+      if (data) data.forEach(row => { progressMap[row.key] = row.value === 'true'; });
+    }
+    const isDone = (key) => progressMap[key] === true || localStorage.getItem(key) === 'true';
+    for (var i = 1; i <= W2_CHUNK_COUNT; i++) {
+      if (isDone('chunk_r_w2_c' + i)) done++;
+    }
+    W2_QUIZ_IDS.forEach(id => {
+      if (isDone('quiz_r_w2_' + id)) done++;
+    });
+    var pct = Math.round((done / total) * 100);
+    var bar = document.getElementById('week2-progress-bar');
+    var txt = document.getElementById('week2-progress-text');
+    if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+    if (txt) { txt.innerText = done + ' of ' + total + ' tasks completed (R)'; }
+  } catch (err) { console.error("Update Bar Error:", err); }
+}
+
+var _observedChunks = {};
+
+function resetObservers() {
+  _observedChunks = {};
+  setTimeout(scanChunkWrappers, 300);
+}
+
+function observeChunkWrapper(wrapper) {
+  var chunkId = wrapper.getAttribute('data-chunk-id');
+  if (!chunkId || _observedChunks[chunkId]) return;
+  _observedChunks[chunkId] = true;
+
+  function tryAttach() {
+    var iframe = wrapper.querySelector('iframe');
+    if (!iframe) { setTimeout(tryAttach, 500); return; }
+    function tryObserve() {
+      try {
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (!doc || !doc.body || doc.body.innerHTML.trim() === '') {
+          setTimeout(tryObserve, 600); return;
+        }
+        var obs = new MutationObserver(function() {
+          try {
+            var pres = doc.querySelectorAll('pre');
+            var hasOutput = false;
+            pres.forEach(function(p) { if (p.innerText && p.innerText.trim()) hasOutput = true; });
+            if (hasOutput) { obs.disconnect(); markChunkDone(chunkId); }
+          } catch(e) {}
+        });
+        obs.observe(doc.body, { childList: true, subtree: true, characterData: true });
+      } catch(e) { setTimeout(tryObserve, 800); }
+    }
+    tryObserve();
+  }
+  tryAttach();
+}
+
+function scanChunkWrappers() {
+  document.querySelectorAll('.chunk-track[data-chunk-id]').forEach(observeChunkWrapper);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(scanChunkWrappers, 500);
+  setTimeout(scanChunkWrappers, 2000);
+  new MutationObserver(function(muts) {
+    let found = false;
+    muts.forEach(m => {
+      m.addedNodes.forEach(n => {
+        if (n.nodeType === 1 && (n.classList?.contains('chunk-track') || n.querySelector?.('.chunk-track'))) found = true;
+      });
+    });
+    if (found) setTimeout(scanChunkWrappers, 300);
+  }).observe(document.body, { childList: true, subtree: true });
+});
+
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'chunkDone' && e.data.chunkId) markChunkDone(e.data.chunkId);
+});
+</script>
+
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 2 Progress</strong>
+      <div id="week2-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week2-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+  <div style="font-size:0.75rem;opacity:0.7;margin-top:6px;">This week is R only — complete all sandboxes and quizzes to reach 100%</div>
+</div>
+```
+
+In this week you will work with a real diabetes dataset and learn how to **prepare raw data for analysis**. Good data cleanup is the foundation of any reliable result.
+
+> 💡 **Course dataset:** Load the real data in RStudio with:
+> ```r
+> dat <- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1')
+> ```
+> The sandboxes below use a **small 8-row sample** so you can experiment directly in the browser.
+
+---
+
+## 1 – Loading and Exploring Data
+
+When you receive a dataset for the first time, your first goal is to **understand its structure** before doing any analysis.
+
+### `head()` and `tail()` — your first look
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c1">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 310
+library(shiny)
+CHUNK_ID <- "w2_c1"
+DAT <- data.frame(
+  age    = c(46, 29, 58, 67, 64, 34, 30, 37),
+  gender = c("female","female","female","male","male","female","male","male"),
+  chol   = c(203, 165, 228, 259, 294, 155, 170, 205),
+  weight = c(202, 122, 165, 189, 170, 125, 143, 156),
+  bp.2s  = as.numeric(rep(NA, 8)),
+  location = c("Louisa","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa")
+)
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "head() / tail()", value = "head(dat)      # First 6 rows (default)\nhead(dat, 3)   # First 3 rows\ntail(dat, 2)   # Last 2 rows", width = '100%', height = '80px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `dim()`, `nrow()`, `ncol()` — how big is the data?
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c2">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 240
+library(shiny)
+CHUNK_ID <- "w2_c2"
+DAT <- data.frame(
+  age    = c(46, 29, 58, 67, 64, 34, 30, 37),
+  gender = c("female","female","female","male","male","female","male","male"),
+  chol   = c(203, 165, 228, 259, 294, 155, 170, 205),
+  weight = c(202, 122, 165, 189, 170, 125, 143, 156)
+)
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "dim / nrow / ncol", value = "dim(dat)     # c(rows, columns)\nnrow(dat)    # Row count only\nncol(dat)    # Column count only", width = '100%', height = '70px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `colnames()` — what are the variables?
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c3">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+CHUNK_ID <- "w2_c3"
+DAT <- data.frame(age = c(46, 29, 58), gender = c("female","female","male"), chol = c(203, 165, 228), weight = c(202, 122, 165))
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "colnames()", value = "colnames(dat)        # All column names\ncolnames(dat)[2]     # Name of second column\nnrow(dat)            # Can you also check row count?", width = '100%', height = '70px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `summary()` — a full statistical overview
+
+`summary()` is one of the most useful first steps: it shows **min, quartiles, mean, median, max** for numeric columns, and **counts** for categorical columns. It also reveals how many `NA` values exist in each column.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c4">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 340
+library(shiny)
+CHUNK_ID <- "w2_c4"
+DAT <- data.frame(
+  age    = c(46, 29, 58, 67, 64, 34, 30, 37),
+  gender = c("female","female","female","male","male","female","male","male"),
+  chol   = c(203, 165, 228, 259, 294, 155, 170, 205),
+  glyhb  = c(4.31, 4.86, 5.06, 5.40, 11.93, NA, 5.12, 4.95)
+)
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "summary()", value = "summary(dat)   # Notice the NA's count in glyhb!", width = '100%', height = '50px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `min()`, `max()`, `range()`, `mean()`, `sd()`
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c5">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 250
+library(shiny)
+CHUNK_ID <- "w2_c5"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Basic statistics", value = "age <- c(46, 29, 58, 67, 64, 34, 30, 37)\nmin(age)    # Youngest\nmax(age)    # Oldest\nrange(age)  # c(min, max)\nmean(age)   # Average\nsd(age)     # Standard deviation", width = '100%', height = '130px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### Accessing columns and rows with `$` and `[]`
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c6">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 290
+library(shiny)
+CHUNK_ID <- "w2_c6"
+DAT <- data.frame(age = c(46, 29, 58, 67), gender = c("female","female","male","male"), chol = c(203, 165, 228, 259))
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Subsetting", value = "dat$age           # Column by name\ndat[, 1]          # First column by index\ndat[1, ]          # First row\ndat[1:2, ]        # First two rows\ndat[dat$age > 50, ] # Rows where age > 50", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## 2 – Data Cleanup
+
+Raw data is rarely analysis-ready. You typically need to remove irrelevant columns, handle missing values (`NA`), and reorder variables. Four functions are essential for this:  `which()`, `%in%`, `is.na()`, and `apply()`.
+
+### `which()` — finding positions
+
+`which()` returns the **indices** (positions) of elements where a condition is `TRUE` — not the values themselves.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c7">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 240
+library(shiny)
+CHUNK_ID <- "w2_c7"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "which()", value = "x <- c(10, 3, 7, 15, 2, 8)\nwhich(x > 5)     # Positions where condition is TRUE\nwhich.min(x)     # Position of smallest value\nwhich.max(x)     # Position of largest value\nx[which(x > 5)]  # The actual values at those positions", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `%in%` — testing membership
+
+`%in%` checks whether each element of one vector appears in a second vector. Combined with `which()`, it is the standard way to find columns by name.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c8">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID <- "w2_c8"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "%in%", value = "fruits <- c('apple', 'banana', 'cherry', 'date')\nfruits %in% c('banana', 'date')         # Logical vector\nwhich(fruits %in% c('banana', 'date'))  # Positions\n\n# Practical: find column indices to remove\ncols <- c('age', 'bp.2s', 'chol', 'time.ppn')\nwhich(cols %in% c('bp.2s', 'time.ppn'))", width = '100%', height = '130px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `is.na()` — detecting missing values
+
+`NA` ("Not Available") is R's representation of a missing value. `is.na()` returns `TRUE` wherever a value is missing.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c9">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 230
+library(shiny)
+CHUNK_ID <- "w2_c9"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "is.na()", value = "x <- c(1, NA, 3, NA, 5)\nis.na(x)       # TRUE where value is missing\n!is.na(x)      # TRUE where value is present\nx[!is.na(x)]  # Keep only non-missing values", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### Counting NAs with `sum(is.na())`
+
+Because `TRUE` = 1 and `FALSE` = 0, you can count `NA` values by calling `sum()` on the result of `is.na()`.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c10">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID <- "w2_c10"
+DAT <- data.frame(age = c(46, NA, 58), chol = c(203, 165, NA), weight = c(202, 122, 165))
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "sum(is.na())", value = "x <- c(1, NA, 3, NA, 5)\nsum(is.na(x))       # Count NAs in a vector\n\n# In a dataframe:\nsum(is.na(dat))              # Total NAs in whole dataframe\nsum(is.na(dat$chol))         # NAs in one column", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### Removing columns with negative indexing
+
+Use `dat[, -i.remove]` to drop specific columns. The comma separates **row** selection (left, empty = all rows) from **column** selection (right).
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c11">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 270
+library(shiny)
+CHUNK_ID <- "w2_c11"
+DAT <- data.frame(
+  age    = c(46, 29, 58),
+  chol   = c(203, 165, 228),
+  bp.2s  = c(NA, NA, NA),
+  time.ppn = c(NA, NA, NA)
+)
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Remove columns", value = "# Find indices of columns to remove\ni.remove <- which(colnames(dat) %in% c('bp.2s', 'time.ppn'))\ni.remove\n\n# Remove them (negative index = exclude)\ndat.clean <- dat[, -i.remove]\ndat.clean", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `apply()` — applying a function to every row or column
+
+`apply(X, MARGIN, FUN)` applies `FUN` to every row (`MARGIN = 1`) or column (`MARGIN = 2`) of matrix or dataframe `X`.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c12">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 270
+library(shiny)
+CHUNK_ID <- "w2_c12"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "apply()", value = "mat <- matrix(c(1,2,3, 4,5,6, 7,8,9), nrow=3, byrow=TRUE)\nmat\n\napply(mat, 1, sum)   # Sum of each ROW  (MARGIN=1)\napply(mat, 2, mean)  # Mean of each COLUMN (MARGIN=2)", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### Using `apply()` to find rows with missing values
+
+Combining `apply()`, `is.na()`, and `sum()` gives you the number of `NA` values **per row** (= per patient). This is the standard pattern for finding rows to remove.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c13">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID <- "w2_c13"
+DAT <- data.frame(
+  age    = c(46, NA, 58, 67),
+  chol   = c(203, 165, NA, 259),
+  weight = c(202, 122, 165, NA)
+)
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "NAs per row", value = "# Count NAs in each row (= each patient)\nnb_NA <- apply(dat, 1, function(x) sum(is.na(x)))\nnb_NA\n\n# Which rows have at least 1 NA?\nwhich(nb_NA > 0)", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### The full cleanup pipeline
+
+Putting it all together — this is the workflow you will apply to the real diabetes dataset in your RStudio exercises.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c14">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 330
+library(shiny)
+CHUNK_ID <- "w2_c14"
+DAT <- data.frame(
+  age      = c(46, 29, 58, 67, 64, 34),
+  chol     = c(203, 165, NA, 259, 294, 155),
+  weight   = c(202, NA, 165, 189, 170, 125),
+  bp.2s    = c(NA, NA, NA, NA, NA, NA),
+  time.ppn = c(NA, NA, NA, NA, NA, NA)
+)
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Full cleanup", value = "cat('Before:', nrow(dat), 'rows,', ncol(dat), 'cols\\n')\n\n# Step 1: Save original, remove unneeded columns\ndat.original <- dat\ni.remove <- which(colnames(dat) %in% c('bp.2s', 'time.ppn'))\ndat <- dat[, -i.remove]\n\n# Step 2: Remove rows with any NA\nnb_NA <- apply(dat, 1, function(x) sum(is.na(x)))\ndat   <- dat[-which(nb_NA > 0), ]\n\ncat('After: ', nrow(dat), 'rows,', ncol(dat), 'cols\\n')\ndat", width = '100%', height = '170px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## 3 – Visualising Data
+
+Once the data is clean, visualisation helps you understand **distributions**, **outliers**, and **relationships** between variables.
+
+### `hist()` — histograms
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c15">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 390
+library(shiny)
+CHUNK_ID <- "w2_c15"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "hist()", value = "stab.glu <- c(87,97,105,90,200,82,91,107,139,95,\n               112,88,145,97,83,125,110,93,78,155)\nhist(stab.glu,\n     main   = 'Stabilized Glucose',\n     xlab   = 'Glucose concentration',\n     col    = '#a8d5a2',\n     border = 'white')", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "220px")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### Controlling bin width with `breaks`
+
+More `breaks` = more (narrower) bins = more detail. Fewer = less detail. Try different values to see the effect.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c16">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 390
+library(shiny)
+CHUNK_ID <- "w2_c16"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "hist() with breaks", value = "stab.glu <- c(87,97,105,90,200,82,91,107,139,95,\n               112,88,145,97,83,125,110,93,78,155)\npar(mfrow = c(1, 2))\nhist(stab.glu, breaks = 4,  main = 'breaks=4',  col = '#a8d5a2', xlab = 'Glucose')\nhist(stab.glu, breaks = 15, main = 'breaks=15', col = '#1a4d1a', xlab = 'Glucose')", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "220px")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `density()` + `plot()` — smooth density curves
+
+`density()` estimates a smooth probability density function. The `bw` parameter controls smoothing — smaller values reveal more detail.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c17">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 390
+library(shiny)
+CHUNK_ID <- "w2_c17"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "density() + plot()", value = "bp.1s <- c(118,110,142,138,180,100,128,132,155,108,\n           135,119,161,122,105,143,127,115,95,168)\nd <- density(bp.1s, bw = 10)  # bw controls smoothing\nplot(d,\n     main = 'Density of Systolic Blood Pressure',\n     xlab = 'Blood Pressure (mmHg)',\n     col  = '#1a4d1a', lwd = 2)", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "220px")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `boxplot()` — visualising one variable
+
+A boxplot shows the **median** (central line), **interquartile range** (box = Q1 to Q3), and **outliers** (individual points beyond the whiskers).
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c18">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 380
+library(shiny)
+CHUNK_ID <- "w2_c18"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "boxplot() — single variable", value = "chol <- c(203,165,228,259,294,155,170,205,221,188,\n          240,175,310,198,162,235,190,208,177,245)\nboxplot(chol,\n        main   = 'Cholesterol Distribution',\n        ylab   = 'Cholesterol (mg/dL)',\n        col    = '#a8d5a2',\n        border = '#1a4d1a')", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "210px")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `boxplot(y ~ group)` — comparing groups
+
+The formula notation `y ~ group` creates **side-by-side boxplots** — one per group. This is one of the most common plots for comparing distributions.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c19">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 400
+library(shiny)
+CHUNK_ID <- "w2_c19"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "boxplot(y ~ group)", value = "set.seed(1)\ndat <- data.frame(\n  chol   = c(rnorm(15, 200, 30), rnorm(15, 215, 28)),\n  gender = c(rep('male', 15), rep('female', 15))\n)\nboxplot(chol ~ gender,\n        data   = dat,\n        main   = 'Cholesterol by Gender',\n        ylab   = 'Cholesterol (mg/dL)',\n        col    = c('#a8d5a2', '#2d7a2d'),\n        border = '#1a4d1a')", width = '100%', height = '150px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "210px")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+### `qqnorm()` + `qqline()` — testing for normality
+
+A **Q-Q plot** compares your data's quantiles to those of a theoretical normal distribution. Points on the diagonal line = data is approximately normal. Deviations = skewness or heavy tails.
+
+```{=html}
+<div class="chunk-track" data-chunk-id="w2_c20">
+```
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 410
+library(shiny)
+CHUNK_ID <- "w2_c20"
+ui <- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "qqnorm() + qqline()", value = "bp.1s  <- c(118,110,142,138,180,100,128,132,155,108,135,119,161,122,105,143,127,115,95,168)\nskewed <- c(1,1,2,2,2,3,3,5,8,13,21,34,55,89)\n\npar(mfrow = c(1, 2))\nqqnorm(bp.1s,  main = 'Blood Pressure (normal?)', col='#1a4d1a', pch=16); qqline(bp.1s,  col='#d9534f', lwd=2)\nqqnorm(skewed, main = 'Skewed data',              col='#1a4d1a', pch=16); qqline(skewed, col='#d9534f', lwd=2)", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "230px")
+)
+server <- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+```{=html}
+</div>
+```
+
+---
+
+## EXERCISES — Data Cleanup & Visualisation
+
+Answer all questions correctly to save your progress. Use the sandboxes to experiment in R first!
+
+---
+
+### Exercise 1: Loading and Exploring
+
+```{=html}
+<div class="quiz-card">
+  <h5>QUIZ: DATA LOADING</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", "Sandbox", value = "dat <- data.frame(age=c(46,29,58,67,64), gender=c('f','f','f','m','m'), chol=c(203,165,228,259,294))\n# Try: dim(), head(), summary(), colnames() ...", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text=input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> What does <code>dim(dat)</code> return for a dataframe with 400 rows and 17 columns?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1a"><label class="form-check-label" for="l1a"><code>c(17, 400)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1b"><label class="form-check-label" for="l1b"><code>c(400, 17)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1c"><label class="form-check-label" for="l1c"><code>400</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l1" id="l1d"><label class="form-check-label" for="l1d"><code>6800</code></label></div>
+    <div id="l1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What does <code>head(dat)</code> show by default?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2a"><label class="form-check-label" for="l2a">The last 6 rows</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2b"><label class="form-check-label" for="l2b">The first 6 rows</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2c"><label class="form-check-label" for="l2c">A summary of all columns</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l2" id="l2d"><label class="form-check-label" for="l2d">The first row only</label></div>
+    <div id="l2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> How do you access the column <code>age</code> from a dataframe <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3a"><label class="form-check-label" for="l3a"><code>dat[age]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3b"><label class="form-check-label" for="l3b"><code>dat$age</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3c"><label class="form-check-label" for="l3c"><code>dat["age", ]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l3" id="l3d"><label class="form-check-label" for="l3d"><code>get(dat, "age")</code></label></div>
+    <div id="l3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkLoadingQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="loading-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkLoadingQuiz() {
+  var score = 0, total = 3;
+  var l1 = document.querySelector('input[name="l1"]:checked'), l1f = document.getElementById('l1-feedback');
+  if (l1 && l1.id === 'l1b') { l1f.innerHTML = '✅ Correct! dim() always returns (rows, columns) — rows first!'; l1f.style.color = '#1a4d1a'; score++; }
+  else if (l1) { l1f.innerHTML = '❌ Not quite. dim() returns c(rows, cols). 400 patients, 17 variables → c(400, 17).'; l1f.style.color = '#d9534f'; }
+  var l2 = document.querySelector('input[name="l2"]:checked'), l2f = document.getElementById('l2-feedback');
+  if (l2 && l2.id === 'l2b') { l2f.innerHTML = '✅ Exactly! head(dat) shows the first 6 rows. Use head(dat, n) for a custom number.'; l2f.style.color = '#1a4d1a'; score++; }
+  else if (l2) { l2f.innerHTML = '❌ Not right. head() shows the beginning of the data — default is 6 rows.'; l2f.style.color = '#d9534f'; }
+  var l3 = document.querySelector('input[name="l3"]:checked'), l3f = document.getElementById('l3-feedback');
+  if (l3 && l3.id === 'l3b') { l3f.innerHTML = '✅ Correct! dat$age is the standard way to access a column by name in R.'; l3f.style.color = '#1a4d1a'; score++; }
+  else if (l3) { l3f.innerHTML = '❌ Try dat$age or dat[, "age"] in the sandbox!'; l3f.style.color = '#d9534f'; }
+  var res = document.getElementById('loading-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_loading'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+```
+
+---
+
+### Exercise 2: Data Cleanup
+
+```{=html}
+<div class="quiz-card">
+  <h5>QUIZ: DATA CLEANUP</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", "Sandbox", value = "x <- c(2, 8, 3, 7, 1)\nwhich(x > 5)\n# Also try: %in%, is.na(), apply() ...", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text=input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> <code>which(x > 5)</code> for <code>x &lt;- c(2, 8, 3, 7, 1)</code> returns…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1a"><label class="form-check-label" for="c1a"><code>c(8, 7)</code> — the values greater than 5</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1b"><label class="form-check-label" for="c1b"><code>c(2, 4)</code> — the indices (positions) where the condition is TRUE</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1c"><label class="form-check-label" for="c1c"><code>c(FALSE, TRUE, FALSE, TRUE, FALSE)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c1" id="c1d"><label class="form-check-label" for="c1d">An error</label></div>
+    <div id="c1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> How do you remove columns 3 and 7 from dataframe <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2a"><label class="form-check-label" for="c2a"><code>dat[-c(3,7)]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2b"><label class="form-check-label" for="c2b"><code>dat[, -c(3,7)]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2c"><label class="form-check-label" for="c2c"><code>dat[c(3,7), ]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c2" id="c2d"><label class="form-check-label" for="c2d"><code>dat - c(3,7)</code></label></div>
+    <div id="c2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> <code>apply(dat, 1, function(x) sum(is.na(x)))</code> counts the NAs…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3a"><label class="form-check-label" for="c3a">Per column (one value per variable)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3b"><label class="form-check-label" for="c3b">Per row (one value per patient)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3c"><label class="form-check-label" for="c3c">In the entire dataframe (one total)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c3" id="c3d"><label class="form-check-label" for="c3d">Per cell (one value per element)</label></div>
+    <div id="c3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkCleanupQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="cleanup-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkCleanupQuiz() {
+  var score = 0, total = 3;
+  var c1 = document.querySelector('input[name="c1"]:checked'), c1f = document.getElementById('c1-feedback');
+  if (c1 && c1.id === 'c1b') { c1f.innerHTML = '✅ Correct! which() returns INDICES — try x[which(x > 5)] to get the values.'; c1f.style.color = '#1a4d1a'; score++; }
+  else if (c1) { c1f.innerHTML = '❌ which() returns positions, not values. Run it in the sandbox!'; c1f.style.color = '#d9534f'; }
+  var c2 = document.querySelector('input[name="c2"]:checked'), c2f = document.getElementById('c2-feedback');
+  if (c2 && c2.id === 'c2b') { c2f.innerHTML = '✅ Right! The comma separates rows (left, empty = all) from columns (right). Negative = exclude.'; c2f.style.color = '#1a4d1a'; score++; }
+  else if (c2) { c2f.innerHTML = '❌ Remember: dat[rows, columns]. To select columns use dat[, ...]. Negative index removes.'; c2f.style.color = '#d9534f'; }
+  var c3 = document.querySelector('input[name="c3"]:checked'), c3f = document.getElementById('c3-feedback');
+  if (c3 && c3.id === 'c3b') { c3f.innerHTML = '✅ Exactly! MARGIN=1 means row-wise. Each result value = NA count for one patient.'; c3f.style.color = '#1a4d1a'; score++; }
+  else if (c3) { c3f.innerHTML = '❌ MARGIN=1 applies the function to each row. MARGIN=2 would be column-wise.'; c3f.style.color = '#d9534f'; }
+  var res = document.getElementById('cleanup-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_cleanup'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+```
+
+---
+
+### Exercise 3: Visualisation
+
+```{=html}
+<div class="quiz-card">
+  <h5>QUIZ: VISUALISATION</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 320
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", "Sandbox", value = "x <- c(87,97,105,90,200,82,91,107,139,95,112,88,145,97,83)\nhist(x, breaks=10, col='#a8d5a2')\n# Also try: density(), boxplot(), qqnorm()+qqline() ...", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  plotOutput("plot", height="180px")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$plot <- renderPlot({
+      exprs <- parse(text=input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> What does the <code>breaks</code> parameter in <code>hist()</code> control?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1a"><label class="form-check-label" for="v1a">The colour of the bars</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1b"><label class="form-check-label" for="v1b">The number of bins</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1c"><label class="form-check-label" for="v1c">The y-axis range</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v1" id="v1d"><label class="form-check-label" for="v1d">The x-axis title</label></div>
+    <div id="v1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In a boxplot, the central line inside the box represents…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2a"><label class="form-check-label" for="v2a">The mean</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2b"><label class="form-check-label" for="v2b">The median (50th percentile)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2c"><label class="form-check-label" for="v2c">The standard deviation</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v2" id="v2d"><label class="form-check-label" for="v2d">The minimum value</label></div>
+    <div id="v2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> What does a Q-Q plot tell you?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3a"><label class="form-check-label" for="v3a">The correlation between two variables</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3b"><label class="form-check-label" for="v3b">How many outliers the data has</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3c"><label class="form-check-label" for="v3c">How closely the data follows a theoretical distribution (e.g. normal)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v3" id="v3d"><label class="form-check-label" for="v3d">The distribution of each group separately</label></div>
+    <div id="v3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkVizQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="viz-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkVizQuiz() {
+  var score = 0, total = 3;
+  var v1 = document.querySelector('input[name="v1"]:checked'), v1f = document.getElementById('v1-feedback');
+  if (v1 && v1.id === 'v1b') { v1f.innerHTML = '✅ Correct! More breaks = more (narrower) bins. Fewer breaks = broader view.'; v1f.style.color = '#1a4d1a'; score++; }
+  else if (v1) { v1f.innerHTML = '❌ Try hist(x, breaks=3) vs hist(x, breaks=20) in the sandbox and compare!'; v1f.style.color = '#d9534f'; }
+  var v2 = document.querySelector('input[name="v2"]:checked'), v2f = document.getElementById('v2-feedback');
+  if (v2 && v2.id === 'v2b') { v2f.innerHTML = '✅ Right! The box spans Q1–Q3 (middle 50%), the line is the median, whiskers extend to 1.5×IQR.'; v2f.style.color = '#1a4d1a'; score++; }
+  else if (v2) { v2f.innerHTML = '❌ The central line in a boxplot is always the median — not the mean!'; v2f.style.color = '#d9534f'; }
+  var v3 = document.querySelector('input[name="v3"]:checked'), v3f = document.getElementById('v3-feedback');
+  if (v3 && v3.id === 'v3c') { v3f.innerHTML = '✅ Exactly! Points on the diagonal = matches the normal distribution. Curves away = skewed or heavy tails.'; v3f.style.color = '#1a4d1a'; score++; }
+  else if (v3) { v3f.innerHTML = '❌ A Q-Q plot compares your data\'s quantiles to a theoretical distribution (usually normal).'; v3f.style.color = '#d9534f'; }
+  var res = document.getElementById('viz-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_viz'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+```
+
+---
+
+### Exercise 4: Putting it all together
+
+```{=html}
+<div class="quiz-card">
+  <h5>QUIZ: APPLYING CONCEPTS</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", "Sandbox", value = "# Try combining the tools you've learned!\ndat <- data.frame(a=c(1,NA,3), b=c('x','y',NA))\nnb_NA <- apply(dat, 1, function(x) sum(is.na(x)))\ndat[-which(nb_NA > 0), ]", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text=input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> Which function creates a smooth probability density curve (not a histogram)?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1a"><label class="form-check-label" for="e1a"><code>hist()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1b"><label class="form-check-label" for="e1b"><code>density()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1c"><label class="form-check-label" for="e1c"><code>curve()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e1" id="e1d"><label class="form-check-label" for="e1d"><code>smooth()</code></label></div>
+    <div id="e1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> You identified rows with NAs: <code>i.missing &lt;- which(nb_NA &gt; 0)</code>. How do you remove them?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2a"><label class="form-check-label" for="e2a"><code>dat[i.missing, ]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2b"><label class="form-check-label" for="e2b"><code>dat[-i.missing, ]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2c"><label class="form-check-label" for="e2c"><code>dat[, -i.missing]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e2" id="e2d"><label class="form-check-label" for="e2d"><code>na.omit(i.missing)</code></label></div>
+    <div id="e2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> The operator <code>%in%</code> is used to…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3a"><label class="form-check-label" for="e3a">Calculate percentages</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3b"><label class="form-check-label" for="e3b">Test if elements of one vector appear in another</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3c"><label class="form-check-label" for="e3c">Apply a function to each element</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e3" id="e3d"><label class="form-check-label" for="e3d">Check exact equality of two vectors</label></div>
+    <div id="e3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkExerciseQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="exercise-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkExerciseQuiz() {
+  var score = 0, total = 3;
+  var e1 = document.querySelector('input[name="e1"]:checked'), e1f = document.getElementById('e1-feedback');
+  if (e1 && e1.id === 'e1b') { e1f.innerHTML = '✅ Correct! density() estimates the curve, then plot(density(x)) draws it.'; e1f.style.color = '#1a4d1a'; score++; }
+  else if (e1) { e1f.innerHTML = '❌ hist() makes bars. density() makes a smooth curve — pass its result to plot().'; e1f.style.color = '#d9534f'; }
+  var e2 = document.querySelector('input[name="e2"]:checked'), e2f = document.getElementById('e2-feedback');
+  if (e2 && e2.id === 'e2b') { e2f.innerHTML = '✅ Right! Negative row index removes those rows. dat[-i.missing, ] keeps everyone else.'; e2f.style.color = '#1a4d1a'; score++; }
+  else if (e2) { e2f.innerHTML = '❌ dat[i.missing, ] would KEEP those rows. Add a - to REMOVE them: dat[-i.missing, ].'; e2f.style.color = '#d9534f'; }
+  var e3 = document.querySelector('input[name="e3"]:checked'), e3f = document.getElementById('e3-feedback');
+  if (e3 && e3.id === 'e3b') { e3f.innerHTML = '✅ Exactly! c("a","b","c") %in% c("b","d") → c(FALSE,TRUE,FALSE). Useful for finding columns by name.'; e3f.style.color = '#1a4d1a'; score++; }
+  else if (e3) { e3f.innerHTML = '❌ %in% tests membership — TRUE if the element appears anywhere in the right-hand vector.'; e3f.style.color = '#d9534f'; }
+  var res = document.getElementById('exercise-result');
+  if (score === total) { res.innerHTML = '🎉 Week 2 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_exercises'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+```

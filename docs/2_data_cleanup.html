@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 2: Data Cleanup &amp; Visualisation – METHODS IN DATA ANALYSIS</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/run-python-blocks.js" type="module"></script>
+<link href="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/shinylive.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function applyFinalStyle() {
+      // Wir suchen alle Links in der Navbar
+      const links = document.querySelectorAll('.navbar-nav .nav-link');
+      let pyBtn, rBtn;
+  
+      links.forEach(link => {
+        if (link.textContent.trim() === 'PYTHON') pyBtn = link;
+        if (link.textContent.trim() === 'R') rBtn = link;
+      });
+  
+      if (!pyBtn || !rBtn) {
+        setTimeout(applyFinalStyle, 200);
+        return;
+      }
+  
+      const darkGreen = "#1a4d1a";
+  
+      function updateView(lang) {
+        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+        
+        // Style Python
+        pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+        
+        // Style R
+        rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+        
+        localStorage.setItem('da_course_lang', lang);
+      }
+  
+      pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
+      rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
+  
+      updateView(localStorage.getItem('da_course_lang') || 'python');
+    }
+    applyFinalStyle();
+  });
+
+  // Funktion zum Markieren einer Aufgabe als erledigt
+  function markTaskDone(taskId) {
+      localStorage.setItem('task_' + taskId, 'true');
+      updateGlobalProgress();
+  }
+
+  // Berechnet den Gesamtfortschritt und aktualisiert den Balken
+  function updateGlobalProgress() {
+      const totalWeeks = 12; // Deine Anzahl an Wochen
+      let doneCount = 0;
+      
+      for (let i = 1; i <= totalWeeks; i++) {
+          if (localStorage.getItem('task_woche' + i) === 'true') {
+              doneCount++;
+          }
+      }
+      
+      const percent = Math.round((doneCount / totalWeeks) * 100);
+      const bar = document.getElementById('course-progress-bar');
+      const text = document.getElementById('progress-text');
+      
+      if (bar && text) {
+          bar.style.width = percent + '%';
+          bar.innerText = percent + '%';
+          text.innerText = doneCount + ' von ' + totalWeeks + ' Wochen bearbeitet';
+      }
+  }
+
+  // Beim Laden der Seite den Balken initialisieren
+  document.addEventListener('DOMContentLoaded', updateGlobalProgress);
+  </script>
+
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">METHODS IN DATA ANALYSIS</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">PYTHON</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">R</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./2_data_cleanup.html">WEEK 2: Data Cleanup</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WELCOME</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">COURSE-CONTENTS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./0_markdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WEEK 1: Datatypes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_data_cleanup.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">WEEK 2: Data Cleanup</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./2_data_cleanup.html">WEEK 2: Data Cleanup</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Week 2: Data Cleanup &amp; Visualisation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+let sbClient;
+let _initialized = false;
+
+(function waitForSupabase() {
+  if (typeof supabase === 'undefined') return setTimeout(waitForSupabase, 100);
+  if (_initialized) return;
+  _initialized = true;
+
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+      updateWeekBar();
+    }
+    if (event === 'SIGNED_OUT') {
+      sessionStorage.removeItem('sb-session');
+      updateWeekBar();
+    }
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(updateWeekBar, 300));
+  } else {
+    setTimeout(updateWeekBar, 300);
+  }
+})();
+
+var W2_CHUNK_COUNT = 20;
+var W2_QUIZ_IDS = ['w2_q_loading', 'w2_q_cleanup', 'w2_q_viz', 'w2_q_exercises'];
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { error } = await sbClient.from('progress').upsert({ id: user.id, key: key, value: value });
+      if (error) console.error("Supabase Error:", error.message);
+    }
+  } catch (err) { console.error("System Error:", err); }
+}
+
+async function markChunkDone(chunkId) {
+  const key = 'chunk_r_' + chunkId;
+  await sbSaveProgress(key, 'true');
+  updateWeekBar();
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w2_' + quizId;
+  await sbSaveProgress(key, 'true');
+  updateWeekBar();
+}
+
+async function updateWeekBar() {
+  var total = W2_CHUNK_COUNT + W2_QUIZ_IDS.length;
+  var done = 0;
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    let progressMap = {};
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key, value').eq('id', user.id);
+      if (data) data.forEach(row => { progressMap[row.key] = row.value === 'true'; });
+    }
+    const isDone = (key) => progressMap[key] === true || localStorage.getItem(key) === 'true';
+    for (var i = 1; i <= W2_CHUNK_COUNT; i++) {
+      if (isDone('chunk_r_w2_c' + i)) done++;
+    }
+    W2_QUIZ_IDS.forEach(id => {
+      if (isDone('quiz_r_w2_' + id)) done++;
+    });
+    var pct = Math.round((done / total) * 100);
+    var bar = document.getElementById('week2-progress-bar');
+    var txt = document.getElementById('week2-progress-text');
+    if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+    if (txt) { txt.innerText = done + ' of ' + total + ' tasks completed (R)'; }
+  } catch (err) { console.error("Update Bar Error:", err); }
+}
+
+var _observedChunks = {};
+
+function resetObservers() {
+  _observedChunks = {};
+  setTimeout(scanChunkWrappers, 300);
+}
+
+function observeChunkWrapper(wrapper) {
+  var chunkId = wrapper.getAttribute('data-chunk-id');
+  if (!chunkId || _observedChunks[chunkId]) return;
+  _observedChunks[chunkId] = true;
+
+  function tryAttach() {
+    var iframe = wrapper.querySelector('iframe');
+    if (!iframe) { setTimeout(tryAttach, 500); return; }
+    function tryObserve() {
+      try {
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (!doc || !doc.body || doc.body.innerHTML.trim() === '') {
+          setTimeout(tryObserve, 600); return;
+        }
+        var obs = new MutationObserver(function() {
+          try {
+            var pres = doc.querySelectorAll('pre');
+            var hasOutput = false;
+            pres.forEach(function(p) { if (p.innerText && p.innerText.trim()) hasOutput = true; });
+            if (hasOutput) { obs.disconnect(); markChunkDone(chunkId); }
+          } catch(e) {}
+        });
+        obs.observe(doc.body, { childList: true, subtree: true, characterData: true });
+      } catch(e) { setTimeout(tryObserve, 800); }
+    }
+    tryObserve();
+  }
+  tryAttach();
+}
+
+function scanChunkWrappers() {
+  document.querySelectorAll('.chunk-track[data-chunk-id]').forEach(observeChunkWrapper);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(scanChunkWrappers, 500);
+  setTimeout(scanChunkWrappers, 2000);
+  new MutationObserver(function(muts) {
+    let found = false;
+    muts.forEach(m => {
+      m.addedNodes.forEach(n => {
+        if (n.nodeType === 1 && (n.classList?.contains('chunk-track') || n.querySelector?.('.chunk-track'))) found = true;
+      });
+    });
+    if (found) setTimeout(scanChunkWrappers, 300);
+  }).observe(document.body, { childList: true, subtree: true });
+});
+
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'chunkDone' && e.data.chunkId) markChunkDone(e.data.chunkId);
+});
+</script>
+
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 2 Progress</strong>
+      <div id="week2-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week2-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+  <div style="font-size:0.75rem;opacity:0.7;margin-top:6px;">This week is R only — complete all sandboxes and quizzes to reach 100%</div>
+</div>
+<p>In this week you will work with a real diabetes dataset and learn how to <strong>prepare raw data for analysis</strong>. Good data cleanup is the foundation of any reliable result.</p>
+<blockquote class="blockquote">
+<p>💡 <strong>Course dataset:</strong> Load the real data in RStudio with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">'https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The sandboxes below use a <strong>small 8-row sample</strong> so you can experiment directly in the browser.</p>
+</blockquote>
+<hr>
+<section id="loading-and-exploring-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-and-exploring-data">1 – Loading and Exploring Data</h2>
+<p>When you receive a dataset for the first time, your first goal is to <strong>understand its structure</strong> before doing any analysis.</p>
+<section id="head-and-tail-your-first-look" class="level3">
+<h3 class="anchored" data-anchor-id="head-and-tail-your-first-look"><code>head()</code> and <code>tail()</code> — your first look</h3>
+<div class="chunk-track" data-chunk-id="w2_c1">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 310
+library(shiny)
+CHUNK_ID &lt;- "w2_c1"
+DAT &lt;- data.frame(
+  age    = c(46, 29, 58, 67, 64, 34, 30, 37),
+  gender = c("female","female","female","male","male","female","male","male"),
+  chol   = c(203, 165, 228, 259, 294, 155, 170, 205),
+  weight = c(202, 122, 165, 189, 170, 125, 143, 156),
+  bp.2s  = as.numeric(rep(NA, 8)),
+  location = c("Louisa","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa")
+)
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "head() / tail()", value = "head(dat)      # First 6 rows (default)\nhead(dat, 3)   # First 3 rows\ntail(dat, 2)   # Last 2 rows", width = '100%', height = '80px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="dim-nrow-ncol-how-big-is-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="dim-nrow-ncol-how-big-is-the-data"><code>dim()</code>, <code>nrow()</code>, <code>ncol()</code> — how big is the data?</h3>
+<div class="chunk-track" data-chunk-id="w2_c2">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 240
+library(shiny)
+CHUNK_ID &lt;- "w2_c2"
+DAT &lt;- data.frame(
+  age    = c(46, 29, 58, 67, 64, 34, 30, 37),
+  gender = c("female","female","female","male","male","female","male","male"),
+  chol   = c(203, 165, 228, 259, 294, 155, 170, 205),
+  weight = c(202, 122, 165, 189, 170, 125, 143, 156)
+)
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "dim / nrow / ncol", value = "dim(dat)     # c(rows, columns)\nnrow(dat)    # Row count only\nncol(dat)    # Column count only", width = '100%', height = '70px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="colnames-what-are-the-variables" class="level3">
+<h3 class="anchored" data-anchor-id="colnames-what-are-the-variables"><code>colnames()</code> — what are the variables?</h3>
+<div class="chunk-track" data-chunk-id="w2_c3">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+CHUNK_ID &lt;- "w2_c3"
+DAT &lt;- data.frame(age = c(46, 29, 58), gender = c("female","female","male"), chol = c(203, 165, 228), weight = c(202, 122, 165))
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "colnames()", value = "colnames(dat)        # All column names\ncolnames(dat)[2]     # Name of second column\nnrow(dat)            # Can you also check row count?", width = '100%', height = '70px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="summary-a-full-statistical-overview" class="level3">
+<h3 class="anchored" data-anchor-id="summary-a-full-statistical-overview"><code>summary()</code> — a full statistical overview</h3>
+<p><code>summary()</code> is one of the most useful first steps: it shows <strong>min, quartiles, mean, median, max</strong> for numeric columns, and <strong>counts</strong> for categorical columns. It also reveals how many <code>NA</code> values exist in each column.</p>
+<div class="chunk-track" data-chunk-id="w2_c4">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 340
+library(shiny)
+CHUNK_ID &lt;- "w2_c4"
+DAT &lt;- data.frame(
+  age    = c(46, 29, 58, 67, 64, 34, 30, 37),
+  gender = c("female","female","female","male","male","female","male","male"),
+  chol   = c(203, 165, 228, 259, 294, 155, 170, 205),
+  glyhb  = c(4.31, 4.86, 5.06, 5.40, 11.93, NA, 5.12, 4.95)
+)
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "summary()", value = "summary(dat)   # Notice the NA's count in glyhb!", width = '100%', height = '50px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="min-max-range-mean-sd" class="level3">
+<h3 class="anchored" data-anchor-id="min-max-range-mean-sd"><code>min()</code>, <code>max()</code>, <code>range()</code>, <code>mean()</code>, <code>sd()</code></h3>
+<div class="chunk-track" data-chunk-id="w2_c5">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 250
+library(shiny)
+CHUNK_ID &lt;- "w2_c5"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Basic statistics", value = "age &lt;- c(46, 29, 58, 67, 64, 34, 30, 37)\nmin(age)    # Youngest\nmax(age)    # Oldest\nrange(age)  # c(min, max)\nmean(age)   # Average\nsd(age)     # Standard deviation", width = '100%', height = '130px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="accessing-columns-and-rows-with-and" class="level3">
+<h3 class="anchored" data-anchor-id="accessing-columns-and-rows-with-and">Accessing columns and rows with <code>$</code> and <code>[]</code></h3>
+<div class="chunk-track" data-chunk-id="w2_c6">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 290
+library(shiny)
+CHUNK_ID &lt;- "w2_c6"
+DAT &lt;- data.frame(age = c(46, 29, 58, 67), gender = c("female","female","male","male"), chol = c(203, 165, 228, 259))
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Subsetting", value = "dat$age           # Column by name\ndat[, 1]          # First column by index\ndat[1, ]          # First row\ndat[1:2, ]        # First two rows\ndat[dat$age &gt; 50, ] # Rows where age &gt; 50", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+<hr>
+</section>
+</section>
+<section id="data-cleanup" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleanup">2 – Data Cleanup</h2>
+<p>Raw data is rarely analysis-ready. You typically need to remove irrelevant columns, handle missing values (<code>NA</code>), and reorder variables. Four functions are essential for this: <code>which()</code>, <code>%in%</code>, <code>is.na()</code>, and <code>apply()</code>.</p>
+<section id="which-finding-positions" class="level3">
+<h3 class="anchored" data-anchor-id="which-finding-positions"><code>which()</code> — finding positions</h3>
+<p><code>which()</code> returns the <strong>indices</strong> (positions) of elements where a condition is <code>TRUE</code> — not the values themselves.</p>
+<div class="chunk-track" data-chunk-id="w2_c7">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 240
+library(shiny)
+CHUNK_ID &lt;- "w2_c7"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "which()", value = "x &lt;- c(10, 3, 7, 15, 2, 8)\nwhich(x &gt; 5)     # Positions where condition is TRUE\nwhich.min(x)     # Position of smallest value\nwhich.max(x)     # Position of largest value\nx[which(x &gt; 5)]  # The actual values at those positions", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="in-testing-membership" class="level3">
+<h3 class="anchored" data-anchor-id="in-testing-membership"><code>%in%</code> — testing membership</h3>
+<p><code>%in%</code> checks whether each element of one vector appears in a second vector. Combined with <code>which()</code>, it is the standard way to find columns by name.</p>
+<div class="chunk-track" data-chunk-id="w2_c8">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID &lt;- "w2_c8"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "%in%", value = "fruits &lt;- c('apple', 'banana', 'cherry', 'date')\nfruits %in% c('banana', 'date')         # Logical vector\nwhich(fruits %in% c('banana', 'date'))  # Positions\n\n# Practical: find column indices to remove\ncols &lt;- c('age', 'bp.2s', 'chol', 'time.ppn')\nwhich(cols %in% c('bp.2s', 'time.ppn'))", width = '100%', height = '130px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="is.na-detecting-missing-values" class="level3">
+<h3 class="anchored" data-anchor-id="is.na-detecting-missing-values"><code>is.na()</code> — detecting missing values</h3>
+<p><code>NA</code> (“Not Available”) is R’s representation of a missing value. <code>is.na()</code> returns <code>TRUE</code> wherever a value is missing.</p>
+<div class="chunk-track" data-chunk-id="w2_c9">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 230
+library(shiny)
+CHUNK_ID &lt;- "w2_c9"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "is.na()", value = "x &lt;- c(1, NA, 3, NA, 5)\nis.na(x)       # TRUE where value is missing\n!is.na(x)      # TRUE where value is present\nx[!is.na(x)]  # Keep only non-missing values", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="counting-nas-with-sumis.na" class="level3">
+<h3 class="anchored" data-anchor-id="counting-nas-with-sumis.na">Counting NAs with <code>sum(is.na())</code></h3>
+<p>Because <code>TRUE</code> = 1 and <code>FALSE</code> = 0, you can count <code>NA</code> values by calling <code>sum()</code> on the result of <code>is.na()</code>.</p>
+<div class="chunk-track" data-chunk-id="w2_c10">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID &lt;- "w2_c10"
+DAT &lt;- data.frame(age = c(46, NA, 58), chol = c(203, 165, NA), weight = c(202, 122, 165))
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "sum(is.na())", value = "x &lt;- c(1, NA, 3, NA, 5)\nsum(is.na(x))       # Count NAs in a vector\n\n# In a dataframe:\nsum(is.na(dat))              # Total NAs in whole dataframe\nsum(is.na(dat$chol))         # NAs in one column", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="removing-columns-with-negative-indexing" class="level3">
+<h3 class="anchored" data-anchor-id="removing-columns-with-negative-indexing">Removing columns with negative indexing</h3>
+<p>Use <code>dat[, -i.remove]</code> to drop specific columns. The comma separates <strong>row</strong> selection (left, empty = all rows) from <strong>column</strong> selection (right).</p>
+<div class="chunk-track" data-chunk-id="w2_c11">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 270
+library(shiny)
+CHUNK_ID &lt;- "w2_c11"
+DAT &lt;- data.frame(
+  age    = c(46, 29, 58),
+  chol   = c(203, 165, 228),
+  bp.2s  = c(NA, NA, NA),
+  time.ppn = c(NA, NA, NA)
+)
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Remove columns", value = "# Find indices of columns to remove\ni.remove &lt;- which(colnames(dat) %in% c('bp.2s', 'time.ppn'))\ni.remove\n\n# Remove them (negative index = exclude)\ndat.clean &lt;- dat[, -i.remove]\ndat.clean", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="apply-applying-a-function-to-every-row-or-column" class="level3">
+<h3 class="anchored" data-anchor-id="apply-applying-a-function-to-every-row-or-column"><code>apply()</code> — applying a function to every row or column</h3>
+<p><code>apply(X, MARGIN, FUN)</code> applies <code>FUN</code> to every row (<code>MARGIN = 1</code>) or column (<code>MARGIN = 2</code>) of matrix or dataframe <code>X</code>.</p>
+<div class="chunk-track" data-chunk-id="w2_c12">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 270
+library(shiny)
+CHUNK_ID &lt;- "w2_c12"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "apply()", value = "mat &lt;- matrix(c(1,2,3, 4,5,6, 7,8,9), nrow=3, byrow=TRUE)\nmat\n\napply(mat, 1, sum)   # Sum of each ROW  (MARGIN=1)\napply(mat, 2, mean)  # Mean of each COLUMN (MARGIN=2)", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="using-apply-to-find-rows-with-missing-values" class="level3">
+<h3 class="anchored" data-anchor-id="using-apply-to-find-rows-with-missing-values">Using <code>apply()</code> to find rows with missing values</h3>
+<p>Combining <code>apply()</code>, <code>is.na()</code>, and <code>sum()</code> gives you the number of <code>NA</code> values <strong>per row</strong> (= per patient). This is the standard pattern for finding rows to remove.</p>
+<div class="chunk-track" data-chunk-id="w2_c13">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 260
+library(shiny)
+CHUNK_ID &lt;- "w2_c13"
+DAT &lt;- data.frame(
+  age    = c(46, NA, 58, 67),
+  chol   = c(203, 165, NA, 259),
+  weight = c(202, 122, 165, NA)
+)
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "NAs per row", value = "# Count NAs in each row (= each patient)\nnb_NA &lt;- apply(dat, 1, function(x) sum(is.na(x)))\nnb_NA\n\n# Which rows have at least 1 NA?\nwhich(nb_NA &gt; 0)", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="the-full-cleanup-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="the-full-cleanup-pipeline">The full cleanup pipeline</h3>
+<p>Putting it all together — this is the workflow you will apply to the real diabetes dataset in your RStudio exercises.</p>
+<div class="chunk-track" data-chunk-id="w2_c14">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 330
+library(shiny)
+CHUNK_ID &lt;- "w2_c14"
+DAT &lt;- data.frame(
+  age      = c(46, 29, 58, 67, 64, 34),
+  chol     = c(203, 165, NA, 259, 294, 155),
+  weight   = c(202, NA, 165, 189, 170, 125),
+  bp.2s    = c(NA, NA, NA, NA, NA, NA),
+  time.ppn = c(NA, NA, NA, NA, NA, NA)
+)
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "Full cleanup", value = "cat('Before:', nrow(dat), 'rows,', ncol(dat), 'cols\\n')\n\n# Step 1: Save original, remove unneeded columns\ndat.original &lt;- dat\ni.remove &lt;- which(colnames(dat) %in% c('bp.2s', 'time.ppn'))\ndat &lt;- dat[, -i.remove]\n\n# Step 2: Remove rows with any NA\nnb_NA &lt;- apply(dat, 1, function(x) sum(is.na(x)))\ndat   &lt;- dat[-which(nb_NA &gt; 0), ]\n\ncat('After: ', nrow(dat), 'rows,', ncol(dat), 'cols\\n')\ndat", width = '100%', height = '170px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+<hr>
+</section>
+</section>
+<section id="visualising-data" class="level2">
+<h2 class="anchored" data-anchor-id="visualising-data">3 – Visualising Data</h2>
+<p>Once the data is clean, visualisation helps you understand <strong>distributions</strong>, <strong>outliers</strong>, and <strong>relationships</strong> between variables.</p>
+<section id="hist-histograms" class="level3">
+<h3 class="anchored" data-anchor-id="hist-histograms"><code>hist()</code> — histograms</h3>
+<div class="chunk-track" data-chunk-id="w2_c15">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 390
+library(shiny)
+CHUNK_ID &lt;- "w2_c15"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "hist()", value = "stab.glu &lt;- c(87,97,105,90,200,82,91,107,139,95,\n               112,88,145,97,83,125,110,93,78,155)\nhist(stab.glu,\n     main   = 'Stabilized Glucose',\n     xlab   = 'Glucose concentration',\n     col    = '#a8d5a2',\n     border = 'white')", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "220px")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="controlling-bin-width-with-breaks" class="level3">
+<h3 class="anchored" data-anchor-id="controlling-bin-width-with-breaks">Controlling bin width with <code>breaks</code></h3>
+<p>More <code>breaks</code> = more (narrower) bins = more detail. Fewer = less detail. Try different values to see the effect.</p>
+<div class="chunk-track" data-chunk-id="w2_c16">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 390
+library(shiny)
+CHUNK_ID &lt;- "w2_c16"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "hist() with breaks", value = "stab.glu &lt;- c(87,97,105,90,200,82,91,107,139,95,\n               112,88,145,97,83,125,110,93,78,155)\npar(mfrow = c(1, 2))\nhist(stab.glu, breaks = 4,  main = 'breaks=4',  col = '#a8d5a2', xlab = 'Glucose')\nhist(stab.glu, breaks = 15, main = 'breaks=15', col = '#1a4d1a', xlab = 'Glucose')", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "220px")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="density-plot-smooth-density-curves" class="level3">
+<h3 class="anchored" data-anchor-id="density-plot-smooth-density-curves"><code>density()</code> + <code>plot()</code> — smooth density curves</h3>
+<p><code>density()</code> estimates a smooth probability density function. The <code>bw</code> parameter controls smoothing — smaller values reveal more detail.</p>
+<div class="chunk-track" data-chunk-id="w2_c17">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 390
+library(shiny)
+CHUNK_ID &lt;- "w2_c17"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "density() + plot()", value = "bp.1s &lt;- c(118,110,142,138,180,100,128,132,155,108,\n           135,119,161,122,105,143,127,115,95,168)\nd &lt;- density(bp.1s, bw = 10)  # bw controls smoothing\nplot(d,\n     main = 'Density of Systolic Blood Pressure',\n     xlab = 'Blood Pressure (mmHg)',\n     col  = '#1a4d1a', lwd = 2)", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "220px")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="boxplot-visualising-one-variable" class="level3">
+<h3 class="anchored" data-anchor-id="boxplot-visualising-one-variable"><code>boxplot()</code> — visualising one variable</h3>
+<p>A boxplot shows the <strong>median</strong> (central line), <strong>interquartile range</strong> (box = Q1 to Q3), and <strong>outliers</strong> (individual points beyond the whiskers).</p>
+<div class="chunk-track" data-chunk-id="w2_c18">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 380
+library(shiny)
+CHUNK_ID &lt;- "w2_c18"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "boxplot() — single variable", value = "chol &lt;- c(203,165,228,259,294,155,170,205,221,188,\n          240,175,310,198,162,235,190,208,177,245)\nboxplot(chol,\n        main   = 'Cholesterol Distribution',\n        ylab   = 'Cholesterol (mg/dL)',\n        col    = '#a8d5a2',\n        border = '#1a4d1a')", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "210px")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="boxploty-group-comparing-groups" class="level3">
+<h3 class="anchored" data-anchor-id="boxploty-group-comparing-groups"><code>boxplot(y ~ group)</code> — comparing groups</h3>
+<p>The formula notation <code>y ~ group</code> creates <strong>side-by-side boxplots</strong> — one per group. This is one of the most common plots for comparing distributions.</p>
+<div class="chunk-track" data-chunk-id="w2_c19">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 400
+library(shiny)
+CHUNK_ID &lt;- "w2_c19"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "boxplot(y ~ group)", value = "set.seed(1)\ndat &lt;- data.frame(\n  chol   = c(rnorm(15, 200, 30), rnorm(15, 215, 28)),\n  gender = c(rep('male', 15), rep('female', 15))\n)\nboxplot(chol ~ gender,\n        data   = dat,\n        main   = 'Cholesterol by Gender',\n        ylab   = 'Cholesterol (mg/dL)',\n        col    = c('#a8d5a2', '#2d7a2d'),\n        border = '#1a4d1a')", width = '100%', height = '150px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "210px")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+</section>
+<section id="qqnorm-qqline-testing-for-normality" class="level3">
+<h3 class="anchored" data-anchor-id="qqnorm-qqline-testing-for-normality"><code>qqnorm()</code> + <code>qqline()</code> — testing for normality</h3>
+<p>A <strong>Q-Q plot</strong> compares your data’s quantiles to those of a theoretical normal distribution. Points on the diagonal line = data is approximately normal. Deviations = skewness or heavy tails.</p>
+<div class="chunk-track" data-chunk-id="w2_c20">
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 410
+library(shiny)
+CHUNK_ID &lt;- "w2_c20"
+ui &lt;- fluidPage(
+  tags$script('Shiny.addCustomMessageHandler("chunkRun",function(m){window.parent.postMessage({type:"chunkDone",chunkId:m.chunkId},"*");});'),
+  textAreaInput("code", "qqnorm() + qqline()", value = "bp.1s  &lt;- c(118,110,142,138,180,100,128,132,155,108,135,119,161,122,105,143,127,115,95,168)\nskewed &lt;- c(1,1,2,2,2,3,3,5,8,13,21,34,55,89)\n\npar(mfrow = c(1, 2))\nqqnorm(bp.1s,  main = 'Blood Pressure (normal?)', col='#1a4d1a', pch=16); qqline(bp.1s,  col='#d9534f', lwd=2)\nqqnorm(skewed, main = 'Skewed data',              col='#1a4d1a', pch=16); qqline(skewed, col='#d9534f', lwd=2)", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "230px")
+)
+server &lt;- function(input, output, session) {
+  observeEvent(input$run, {
+    session$sendCustomMessage("chunkRun", list(chunkId = CHUNK_ID))
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+</div>
+<hr>
+</section>
+</section>
+<section id="exercises-data-cleanup-visualisation" class="level2">
+<h2 class="anchored" data-anchor-id="exercises-data-cleanup-visualisation">EXERCISES — Data Cleanup &amp; Visualisation</h2>
+<p>Answer all questions correctly to save your progress. Use the sandboxes to experiment in R first!</p>
+<hr>
+<section id="exercise-1-loading-and-exploring" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-loading-and-exploring">Exercise 1: Loading and Exploring</h3>
+<div class="quiz-card">
+  <h5 class="anchored">QUIZ: DATA LOADING</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "Sandbox", value = "dat &lt;- data.frame(age=c(46,29,58,67,64), gender=c('f','f','f','m','m'), chol=c(203,165,228,259,294))\n# Try: dim(), head(), summary(), colnames() ...", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text=input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> What does <code>dim(dat)</code> return for a dataframe with 400 rows and 17 columns?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1a"><label class="form-check-label" for="l1a"><code>c(17, 400)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1b"><label class="form-check-label" for="l1b"><code>c(400, 17)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1c"><label class="form-check-label" for="l1c"><code>400</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l1" id="l1d"><label class="form-check-label" for="l1d"><code>6800</code></label></div>
+    <div id="l1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What does <code>head(dat)</code> show by default?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2a"><label class="form-check-label" for="l2a">The last 6 rows</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2b"><label class="form-check-label" for="l2b">The first 6 rows</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2c"><label class="form-check-label" for="l2c">A summary of all columns</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l2" id="l2d"><label class="form-check-label" for="l2d">The first row only</label></div>
+    <div id="l2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> How do you access the column <code>age</code> from a dataframe <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3a"><label class="form-check-label" for="l3a"><code>dat[age]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3b"><label class="form-check-label" for="l3b"><code>dat$age</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3c"><label class="form-check-label" for="l3c"><code>dat["age", ]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l3" id="l3d"><label class="form-check-label" for="l3d"><code>get(dat, "age")</code></label></div>
+    <div id="l3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkLoadingQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="loading-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkLoadingQuiz() {
+  var score = 0, total = 3;
+  var l1 = document.querySelector('input[name="l1"]:checked'), l1f = document.getElementById('l1-feedback');
+  if (l1 && l1.id === 'l1b') { l1f.innerHTML = '✅ Correct! dim() always returns (rows, columns) — rows first!'; l1f.style.color = '#1a4d1a'; score++; }
+  else if (l1) { l1f.innerHTML = '❌ Not quite. dim() returns c(rows, cols). 400 patients, 17 variables → c(400, 17).'; l1f.style.color = '#d9534f'; }
+  var l2 = document.querySelector('input[name="l2"]:checked'), l2f = document.getElementById('l2-feedback');
+  if (l2 && l2.id === 'l2b') { l2f.innerHTML = '✅ Exactly! head(dat) shows the first 6 rows. Use head(dat, n) for a custom number.'; l2f.style.color = '#1a4d1a'; score++; }
+  else if (l2) { l2f.innerHTML = '❌ Not right. head() shows the beginning of the data — default is 6 rows.'; l2f.style.color = '#d9534f'; }
+  var l3 = document.querySelector('input[name="l3"]:checked'), l3f = document.getElementById('l3-feedback');
+  if (l3 && l3.id === 'l3b') { l3f.innerHTML = '✅ Correct! dat$age is the standard way to access a column by name in R.'; l3f.style.color = '#1a4d1a'; score++; }
+  else if (l3) { l3f.innerHTML = '❌ Try dat$age or dat[, "age"] in the sandbox!'; l3f.style.color = '#d9534f'; }
+  var res = document.getElementById('loading-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_loading'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+<hr>
+</section>
+<section id="exercise-2-data-cleanup" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-data-cleanup">Exercise 2: Data Cleanup</h3>
+<div class="quiz-card">
+  <h5 class="anchored">QUIZ: DATA CLEANUP</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "Sandbox", value = "x &lt;- c(2, 8, 3, 7, 1)\nwhich(x &gt; 5)\n# Also try: %in%, is.na(), apply() ...", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text=input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> <code>which(x &gt; 5)</code> for <code>x &lt;- c(2, 8, 3, 7, 1)</code> returns…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1a"><label class="form-check-label" for="c1a"><code>c(8, 7)</code> — the values greater than 5</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1b"><label class="form-check-label" for="c1b"><code>c(2, 4)</code> — the indices (positions) where the condition is TRUE</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1c"><label class="form-check-label" for="c1c"><code>c(FALSE, TRUE, FALSE, TRUE, FALSE)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c1" id="c1d"><label class="form-check-label" for="c1d">An error</label></div>
+    <div id="c1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> How do you remove columns 3 and 7 from dataframe <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2a"><label class="form-check-label" for="c2a"><code>dat[-c(3,7)]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2b"><label class="form-check-label" for="c2b"><code>dat[, -c(3,7)]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2c"><label class="form-check-label" for="c2c"><code>dat[c(3,7), ]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c2" id="c2d"><label class="form-check-label" for="c2d"><code>dat - c(3,7)</code></label></div>
+    <div id="c2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> <code>apply(dat, 1, function(x) sum(is.na(x)))</code> counts the NAs…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3a"><label class="form-check-label" for="c3a">Per column (one value per variable)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3b"><label class="form-check-label" for="c3b">Per row (one value per patient)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3c"><label class="form-check-label" for="c3c">In the entire dataframe (one total)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c3" id="c3d"><label class="form-check-label" for="c3d">Per cell (one value per element)</label></div>
+    <div id="c3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkCleanupQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="cleanup-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkCleanupQuiz() {
+  var score = 0, total = 3;
+  var c1 = document.querySelector('input[name="c1"]:checked'), c1f = document.getElementById('c1-feedback');
+  if (c1 && c1.id === 'c1b') { c1f.innerHTML = '✅ Correct! which() returns INDICES — try x[which(x > 5)] to get the values.'; c1f.style.color = '#1a4d1a'; score++; }
+  else if (c1) { c1f.innerHTML = '❌ which() returns positions, not values. Run it in the sandbox!'; c1f.style.color = '#d9534f'; }
+  var c2 = document.querySelector('input[name="c2"]:checked'), c2f = document.getElementById('c2-feedback');
+  if (c2 && c2.id === 'c2b') { c2f.innerHTML = '✅ Right! The comma separates rows (left, empty = all) from columns (right). Negative = exclude.'; c2f.style.color = '#1a4d1a'; score++; }
+  else if (c2) { c2f.innerHTML = '❌ Remember: dat[rows, columns]. To select columns use dat[, ...]. Negative index removes.'; c2f.style.color = '#d9534f'; }
+  var c3 = document.querySelector('input[name="c3"]:checked'), c3f = document.getElementById('c3-feedback');
+  if (c3 && c3.id === 'c3b') { c3f.innerHTML = '✅ Exactly! MARGIN=1 means row-wise. Each result value = NA count for one patient.'; c3f.style.color = '#1a4d1a'; score++; }
+  else if (c3) { c3f.innerHTML = '❌ MARGIN=1 applies the function to each row. MARGIN=2 would be column-wise.'; c3f.style.color = '#d9534f'; }
+  var res = document.getElementById('cleanup-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_cleanup'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+<hr>
+</section>
+<section id="exercise-3-visualisation" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-3-visualisation">Exercise 3: Visualisation</h3>
+<div class="quiz-card">
+  <h5 class="anchored">QUIZ: VISUALISATION</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 320
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "Sandbox", value = "x &lt;- c(87,97,105,90,200,82,91,107,139,95,112,88,145,97,83)\nhist(x, breaks=10, col='#a8d5a2')\n# Also try: density(), boxplot(), qqnorm()+qqline() ...", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  plotOutput("plot", height="180px")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text=input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> What does the <code>breaks</code> parameter in <code>hist()</code> control?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1a"><label class="form-check-label" for="v1a">The colour of the bars</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1b"><label class="form-check-label" for="v1b">The number of bins</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1c"><label class="form-check-label" for="v1c">The y-axis range</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v1" id="v1d"><label class="form-check-label" for="v1d">The x-axis title</label></div>
+    <div id="v1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In a boxplot, the central line inside the box represents…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2a"><label class="form-check-label" for="v2a">The mean</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2b"><label class="form-check-label" for="v2b">The median (50th percentile)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2c"><label class="form-check-label" for="v2c">The standard deviation</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v2" id="v2d"><label class="form-check-label" for="v2d">The minimum value</label></div>
+    <div id="v2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> What does a Q-Q plot tell you?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3a"><label class="form-check-label" for="v3a">The correlation between two variables</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3b"><label class="form-check-label" for="v3b">How many outliers the data has</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3c"><label class="form-check-label" for="v3c">How closely the data follows a theoretical distribution (e.g. normal)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v3" id="v3d"><label class="form-check-label" for="v3d">The distribution of each group separately</label></div>
+    <div id="v3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkVizQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="viz-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkVizQuiz() {
+  var score = 0, total = 3;
+  var v1 = document.querySelector('input[name="v1"]:checked'), v1f = document.getElementById('v1-feedback');
+  if (v1 && v1.id === 'v1b') { v1f.innerHTML = '✅ Correct! More breaks = more (narrower) bins. Fewer breaks = broader view.'; v1f.style.color = '#1a4d1a'; score++; }
+  else if (v1) { v1f.innerHTML = '❌ Try hist(x, breaks=3) vs hist(x, breaks=20) in the sandbox and compare!'; v1f.style.color = '#d9534f'; }
+  var v2 = document.querySelector('input[name="v2"]:checked'), v2f = document.getElementById('v2-feedback');
+  if (v2 && v2.id === 'v2b') { v2f.innerHTML = '✅ Right! The box spans Q1–Q3 (middle 50%), the line is the median, whiskers extend to 1.5×IQR.'; v2f.style.color = '#1a4d1a'; score++; }
+  else if (v2) { v2f.innerHTML = '❌ The central line in a boxplot is always the median — not the mean!'; v2f.style.color = '#d9534f'; }
+  var v3 = document.querySelector('input[name="v3"]:checked'), v3f = document.getElementById('v3-feedback');
+  if (v3 && v3.id === 'v3c') { v3f.innerHTML = '✅ Exactly! Points on the diagonal = matches the normal distribution. Curves away = skewed or heavy tails.'; v3f.style.color = '#1a4d1a'; score++; }
+  else if (v3) { v3f.innerHTML = '❌ A Q-Q plot compares your data\'s quantiles to a theoretical distribution (usually normal).'; v3f.style.color = '#d9534f'; }
+  var res = document.getElementById('viz-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_viz'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+<hr>
+</section>
+<section id="exercise-4-putting-it-all-together" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-4-putting-it-all-together">Exercise 4: Putting it all together</h3>
+<div class="quiz-card">
+  <h5 class="anchored">QUIZ: APPLYING CONCEPTS</h5>
+  <p class="text-muted">🧪 Experiment here:</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 220
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "Sandbox", value = "# Try combining the tools you've learned!\ndat &lt;- data.frame(a=c(1,NA,3), b=c('x','y',NA))\nnb_NA &lt;- apply(dat, 1, function(x) sum(is.na(x)))\ndat[-which(nb_NA &gt; 0), ]", width='100%', height='100px'),
+  actionButton("run", "Run Code", class="btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text=input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+  <div class="mb-4 mt-3">
+    <p><strong>Question 1:</strong> Which function creates a smooth probability density curve (not a histogram)?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1a"><label class="form-check-label" for="e1a"><code>hist()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1b"><label class="form-check-label" for="e1b"><code>density()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1c"><label class="form-check-label" for="e1c"><code>curve()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e1" id="e1d"><label class="form-check-label" for="e1d"><code>smooth()</code></label></div>
+    <div id="e1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> You identified rows with NAs: <code>i.missing &lt;- which(nb_NA &gt; 0)</code>. How do you remove them?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2a"><label class="form-check-label" for="e2a"><code>dat[i.missing, ]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2b"><label class="form-check-label" for="e2b"><code>dat[-i.missing, ]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2c"><label class="form-check-label" for="e2c"><code>dat[, -i.missing]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e2" id="e2d"><label class="form-check-label" for="e2d"><code>na.omit(i.missing)</code></label></div>
+    <div id="e2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> The operator <code>%in%</code> is used to…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3a"><label class="form-check-label" for="e3a">Calculate percentages</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3b"><label class="form-check-label" for="e3b">Test if elements of one vector appear in another</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3c"><label class="form-check-label" for="e3c">Apply a function to each element</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e3" id="e3d"><label class="form-check-label" for="e3d">Check exact equality of two vectors</label></div>
+    <div id="e3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkExerciseQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="exercise-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<script>
+function checkExerciseQuiz() {
+  var score = 0, total = 3;
+  var e1 = document.querySelector('input[name="e1"]:checked'), e1f = document.getElementById('e1-feedback');
+  if (e1 && e1.id === 'e1b') { e1f.innerHTML = '✅ Correct! density() estimates the curve, then plot(density(x)) draws it.'; e1f.style.color = '#1a4d1a'; score++; }
+  else if (e1) { e1f.innerHTML = '❌ hist() makes bars. density() makes a smooth curve — pass its result to plot().'; e1f.style.color = '#d9534f'; }
+  var e2 = document.querySelector('input[name="e2"]:checked'), e2f = document.getElementById('e2-feedback');
+  if (e2 && e2.id === 'e2b') { e2f.innerHTML = '✅ Right! Negative row index removes those rows. dat[-i.missing, ] keeps everyone else.'; e2f.style.color = '#1a4d1a'; score++; }
+  else if (e2) { e2f.innerHTML = '❌ dat[i.missing, ] would KEEP those rows. Add a - to REMOVE them: dat[-i.missing, ].'; e2f.style.color = '#d9534f'; }
+  var e3 = document.querySelector('input[name="e3"]:checked'), e3f = document.getElementById('e3-feedback');
+  if (e3 && e3.id === 'e3b') { e3f.innerHTML = '✅ Exactly! c("a","b","c") %in% c("b","d") → c(FALSE,TRUE,FALSE). Useful for finding columns by name.'; e3f.style.color = '#1a4d1a'; score++; }
+  else if (e3) { e3f.innerHTML = '❌ %in% tests membership — TRUE if the element appears anywhere in the right-hand vector.'; e3f.style.color = '#d9534f'; }
+  var res = document.getElementById('exercise-result');
+  if (score === total) { res.innerHTML = '🎉 Week 2 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_exercises'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lisaduttenhoefer\.github\.io\/data-analysis-course");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
