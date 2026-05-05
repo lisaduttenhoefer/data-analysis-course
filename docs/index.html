@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-01da5fc7f5f8b7d1358d37245db9850e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-a41b458f1011ba3c226b0830ccc04989.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -360,50 +360,56 @@ async function render() {
     const sessionRes = await sbClient.auth.getSession();
     const user = sessionRes.data.session?.user || null;
 
+    // Elemente referenzieren
     const progContent = document.getElementById('progress-content');
     const loginOverlay = document.getElementById('login-overlay');
     const leadContent = document.getElementById('leaderboard-content');
     const nickOverlayBtn = document.getElementById('nickname-overlay-btn');
     const leadSection = document.getElementById('leaderboard-section');
     const mainContent = document.querySelector('main.content');
+    const cardsGrid = document.getElementById('week-cards-grid');
 
     let dbData = null;
 
     if (!user) {
-      // --- PHASE 1: NICHT EINGELOGGT ---
+      // --- ZUSTAND: NICHT EINGELOGGT ---
       if(mainContent) mainContent.classList.add('content-locked-down');
       progContent.classList.add('tile-locked');
       loginOverlay.style.display = 'flex'; // Zeige Login-Button
       
       leadSection.classList.add('tile-locked');
-      nickOverlayBtn.style.display = 'none'; 
+      nickOverlayBtn.style.display = 'none'; // Nickname-Button noch versteckt
+      
+      if(cardsGrid) cardsGrid.classList.add('auth-locked-cards');
     } else {
-      // --- PHASE 2: EINGELOGGT ---
+      // --- ZUSTAND: EINGELOGGT ---
       if(mainContent) mainContent.classList.remove('content-locked-down');
       progContent.classList.remove('tile-locked');
-      loginOverlay.style.display = 'none'; // VERSTECKE Login-Button nach Login
+      loginOverlay.style.display = 'none'; // WICHTIG: Login-Button verstecken!
+      
+      if(cardsGrid) cardsGrid.classList.remove('auth-locked-cards');
 
-      // Nickname Check für das Leaderboard
+      // Nickname Check
       const { data: profile } = await sbClient.from('profiles').select('nickname').eq('id', user.id).maybeSingle();
       
       if (!profile || !profile.nickname) {
-        // Noch kein Nickname gewählt
+        // Eingeloggt, aber noch kein Nickname
         leadContent.classList.add('tile-locked');
         nickOverlayBtn.style.display = 'flex'; // Zeige Nickname-Button
       } else {
-        // Nickname ist da!
+        // Alles erledigt!
         leadContent.classList.remove('tile-locked');
-        nickOverlayBtn.style.display = 'none'; // VERSTECKE Nickname-Button
+        nickOverlayBtn.style.display = 'none'; // WICHTIG: Nickname-Button verstecken!
         loadLeaderboard();
       }
 
-      // Progress Daten laden
+      // Daten laden
       const { data: rows } = await sbClient.from('progress').select('key, value').eq('id', user.id);
       if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = (r.value === 'true'); return acc; }, {});
     }
 
-    // WICHTIG: Diese Aufrufe müssen am Ende stehen, um die UI zu füllen
-    updateAuthUI(user); 
+    // UI-Komponenten aktualisieren
+    updateAuthUI(user);
     renderWeekCards(dbData);
     updateGlobalUI(dbData);
 
