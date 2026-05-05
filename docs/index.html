@@ -357,64 +357,61 @@ async function render() {
   _isRendering = true;
 
   try {
-    const sessionRes = await sbClient.auth.getSession();
-    const user = sessionRes.data.session?.user || null;
+    const { data: { session } } = await sbClient.auth.getSession();
+    const user = session?.user || null;
 
-    // Elemente referenzieren
-    const progContent = document.getElementById('progress-content');
+    // 1. Elemente definieren
     const loginOverlay = document.getElementById('login-overlay');
-    const leadContent = document.getElementById('leaderboard-content');
     const nickOverlayBtn = document.getElementById('nickname-overlay-btn');
-    const leadSection = document.getElementById('leaderboard-section');
-    const mainContent = document.querySelector('main.content');
     const cardsGrid = document.getElementById('week-cards-grid');
+    const mainContent = document.querySelector('main.content');
+    const progContent = document.getElementById('progress-content');
+    const leadContent = document.getElementById('leaderboard-content');
 
     let dbData = null;
 
+    // 2. Logik-Zweige
     if (!user) {
-      // --- ZUSTAND: NICHT EINGELOGGT ---
-      if(mainContent) mainContent.classList.add('content-locked-down');
-      progContent.classList.add('tile-locked');
-      loginOverlay.style.display = 'flex'; // Zeige Login-Button
-      
-      leadSection.classList.add('tile-locked');
-      nickOverlayBtn.style.display = 'none'; // Nickname-Button noch versteckt
-      
-      if(cardsGrid) cardsGrid.classList.add('auth-locked-cards');
-    } else {
-      // --- ZUSTAND: EINGELOGGT ---
-      if(mainContent) mainContent.classList.remove('content-locked-down');
-      progContent.classList.remove('tile-locked');
-      loginOverlay.style.display = 'none'; // WICHTIG: Login-Button verstecken!
-      
-      if(cardsGrid) cardsGrid.classList.remove('auth-locked-cards');
+      // --- NICHT EINGELOGGT ---
+      if (loginOverlay) loginOverlay.style.display = 'flex';
+      if (nickOverlayBtn) nickOverlayBtn.style.display = 'none';
+      if (cardsGrid) cardsGrid.classList.add('auth-locked-cards');
+      if (mainContent) mainContent.classList.add('content-locked-down');
+      if (progContent) progContent.classList.add('tile-locked');
+    } 
+    else {
+      // --- EINGELOGGT ---
+      if (loginOverlay) loginOverlay.style.display = 'none'; // Versteckt Login-Button
+      if (cardsGrid) cardsGrid.classList.remove('auth-locked-cards');
+      if (mainContent) mainContent.classList.remove('content-locked-down');
+      if (progContent) progContent.classList.remove('tile-locked');
 
-      // Nickname Check
+      // Nickname-Check für das Leaderboard
       const { data: profile } = await sbClient.from('profiles').select('nickname').eq('id', user.id).maybeSingle();
       
       if (!profile || !profile.nickname) {
-        // Eingeloggt, aber noch kein Nickname
-        leadContent.classList.add('tile-locked');
-        nickOverlayBtn.style.display = 'flex'; // Zeige Nickname-Button
+        if (nickOverlayBtn) nickOverlayBtn.style.display = 'flex';
+        if (leadContent) leadContent.classList.add('tile-locked');
       } else {
-        // Alles erledigt!
-        leadContent.classList.remove('tile-locked');
-        nickOverlayBtn.style.display = 'none'; // WICHTIG: Nickname-Button verstecken!
+        if (nickOverlayBtn) nickOverlayBtn.style.display = 'none'; // Versteckt Nickname-Button
+        if (leadContent) leadContent.classList.remove('tile-locked');
         loadLeaderboard();
       }
 
-      // Daten laden
+      // Progress-Daten laden
       const { data: rows } = await sbClient.from('progress').select('key, value').eq('id', user.id);
-      if (rows) dbData = rows.reduce((acc, r) => { acc[r.key] = (r.value === 'true'); return acc; }, {});
+      if (rows) {
+        dbData = rows.reduce((acc, r) => { acc[r.key] = (r.value === 'true'); return acc; }, {});
+      }
     }
 
-    // UI-Komponenten aktualisieren
+    // 3. UI Zeichnen
     updateAuthUI(user);
-    renderWeekCards(dbData);
+    renderWeekCards(dbData); // Diese Funktion MUSS dbData verarbeiten können
     updateGlobalUI(dbData);
 
   } catch (err) {
-    console.error("Render error:", err);
+    console.error("Render Error:", err);
   } finally {
     _isRendering = false;
   }
@@ -422,22 +419,28 @@ async function render() {
 
 function renderWeekCards(dbData) {
   const grid = document.getElementById('week-cards-grid');
-  grid.innerHTML = '';
+  if (!grid) return;
+  grid.innerHTML = ''; // Leert das Grid bevor neu gezeichnet wird
+
   WEEKS.forEach(week => {
-    const p = calculateWeekProgress(week, dbData);
+    // Falls dbData null ist (Gast), wird calculateWeekProgress damit umgehen
+    const p = calculateWeekProgress(week, dbData); 
     const col = document.createElement('div');
     col.className = 'g-col-12 g-col-sm-6 g-col-md-4';
+    
     const isLocked = !!week.locked;
     const card = document.createElement(isLocked ? 'div' : 'a');
     card.className = 'week-card p-3' + (isLocked ? ' opacity-50' : '');
     if (!isLocked && week.href) card.href = week.href;
+
     const pct = p ? p.pct : 0;
     card.innerHTML = `
       <div class="week-card-title">${week.title}</div>
       <div class="week-card-topics">${week.topics}</div>
       <div class="week-card-status">${statusLabel(p, isLocked)}</div>
-      ${p ? `<div class="week-card-progress-bar-bg mt-2"><div class="week-card-progress-fill" style="width:${pct}%"></div></div><div style="font-size:0.73rem;color:#6c757d;margin-top:4px;">${pct}% complete</div>` : ''}
+      ${p ? `<div class="week-card-progress-bar-bg mt-2"><div class="week-card-progress-fill" style="width:${pct}%"></div></div>` : ''}
     `;
+    col.appendChild(card);
     grid.appendChild(col);
   });
 }
