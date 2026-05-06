@@ -235,7 +235,7 @@ These files contain the same content as this page and can be opened and executed
 
 ```{=html}
 <div class="d-flex gap-3 mb-3 flex-wrap">
-  <a href="WEEK1/01_data_cleanup.md" download class="btn btn-outline-success">
+  <a href="WEEK1/_01_data_cleanup.md" download class="btn btn-outline-success">
      Week 2 – Data Cleanup (Markdown)
   </a>
 </div>
