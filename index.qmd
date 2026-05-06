@@ -74,8 +74,8 @@ let allLeaderboardData = [];
 let isLeaderboardExpanded = false;
 
 const WEEKS = [
-  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
-  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", chunkCount:20, quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" }
+  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", exerciseHref:"exercises/week1_exercises.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
+  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", exerciseHref:"exercises/week2_exercises.html", chunkCount:20, quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" }
 ];
 
 // 2. INITIALISIERUNG
@@ -176,21 +176,29 @@ function renderWeekCards(dbData) {
 
   WEEKS.forEach(week => {
     // Falls dbData null ist (Gast), wird calculateWeekProgress damit umgehen
-    const p = calculateWeekProgress(week, dbData); 
+    const p = calculateWeekProgress(week, dbData);
     const col = document.createElement('div');
     col.className = 'g-col-12 g-col-sm-6 g-col-md-4';
-    
+
     const isLocked = !!week.locked;
-    const card = document.createElement(isLocked ? 'div' : 'a');
+    const card = document.createElement('div');
     card.className = 'week-card p-3' + (isLocked ? ' opacity-50' : '');
-    if (!isLocked && week.href) card.href = week.href;
+    if (!isLocked && week.href) {
+      card.style.cursor = 'pointer';
+      card.onclick = () => { window.location.href = week.href; };
+    }
 
     const pct = p ? p.pct : 0;
+    const exerciseBtn = (!isLocked && week.exerciseHref)
+      ? `<a href="${week.exerciseHref}" onclick="event.stopPropagation()" class="btn btn-sm mt-3 d-inline-block" style="background:#1a4d1a;color:white;border-radius:50px;font-weight:700;font-size:0.78rem;padding:5px 16px;">Exercises →</a>`
+      : '';
+
     card.innerHTML = `
       <div class="week-card-title">${week.title}</div>
       <div class="week-card-topics">${week.topics}</div>
       <div class="week-card-status">${statusLabel(p, isLocked)}</div>
       ${p ? `<div class="week-card-progress-bar-bg mt-2"><div class="week-card-progress-fill" style="width:${pct}%"></div></div>` : ''}
+      ${exerciseBtn}
     `;
     col.appendChild(card);
     grid.appendChild(col);

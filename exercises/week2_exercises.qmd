@@ -1,0 +1,469 @@
+---
+title: "Exercises – Week 2: Data Cleanup & Visualisation"
+---
+
+```{=html}
+<script>
+function toggleSolution(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+```
+
+> 💡 The sandboxes use a **20-row sample** of the diabetes dataset. To work with the full dataset (400+ patients), load it in RStudio:
+> ```r
+> dat <- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1')
+> ```
+
+---
+
+:::: {.lang-r}
+
+## Exercise Sheet — Data Exploration & Visualisation
+
+### Exercise 1: Data Exploration and Summary Statistics
+
+The `summary()` function gives a quick overview, but sometimes you need more specific information. Using the diabetes dataset `dat`:
+
+1. Calculate the **mean and standard deviation** of the `hdl` (High Density Lipoprotein) column using `mean()` and `sd()`.
+2. Create a new column `bmi` using the formula: BMI = weight (lbs) / height² (in) × 703. Add it with `dat$bmi <- ...`
+3. Use the `table()` function on the `location` column to count how many patients come from each location. Which location has the most patients?
+4. Calculate the **median age** separately for male and female patients. Are they similar?
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 320
+library(shiny)
+DAT <- data.frame(
+  age    = c(46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56),
+  gender = c("female","female","female","male","male","female","male","male","female","male","male","female","male","female","male","female","male","male","female","male"),
+  chol   = c(203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233),
+  hdl    = c(56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51),
+  weight = c(202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170),
+  height = c(66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69),
+  location = c("Louisa","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham")
+)
+ui <- fluidPage(
+  textAreaInput("code", NULL, value = "dat <- DAT\n", width = '100%', height = '160px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('r_w2_sol1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_sol1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – mean and sd of hdl
+mean(dat$hdl)
+sd(dat$hdl)
+
+# Task 2 – create bmi column
+dat$bmi <- dat$weight / dat$height^2 * 703
+head(dat$bmi)
+
+# Task 3 – count patients per location
+table(dat$location)
+
+# Task 4 – median age by gender
+median(dat$age[dat$gender == "male"])
+median(dat$age[dat$gender == "female"])</code></pre>
+</div>
+```
+
+---
+
+### Exercise 2: Visualising Relationships Between Variables
+
+Using the cleaned `dat` dataset, explore relationships between clinical measurements:
+
+1. Create a **scatter plot** of `weight` vs `height` using `plot()`. Change the point style with `pch = 20`.
+2. **Colour the points** by gender using the `col` parameter. *Hint: `col = as.factor(dat$gender)`*. Does the weight–height relationship differ between men and women?
+3. Use `cor()` to calculate the **correlation coefficient** between `weight` and `height`. How strong is the relationship?
+4. Create **side-by-side boxplots** of cholesterol by gender: `boxplot(chol ~ gender, data = dat)`. What differences do you observe? Try other variables!
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 440
+library(shiny)
+DAT <- data.frame(
+  age    = c(46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56),
+  gender = c("female","female","female","male","male","female","male","male","female","male","male","female","male","female","male","female","male","male","female","male"),
+  chol   = c(203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233),
+  hdl    = c(56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51),
+  weight = c(202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170),
+  height = c(66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69)
+)
+ui <- fluidPage(
+  textAreaInput("code", NULL, value = "dat <- DAT\n", width = '100%', height = '130px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "260px")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$plot <- renderPlot({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('r_w2_sol2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_sol2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – scatter plot
+plot(dat$height, dat$weight, pch = 20,
+     xlab = "Height (in)", ylab = "Weight (lbs)")
+
+# Task 2 – colour by gender
+plot(dat$height, dat$weight, pch = 20,
+     col = as.factor(dat$gender),
+     xlab = "Height (in)", ylab = "Weight (lbs)")
+legend("topleft", legend = levels(as.factor(dat$gender)),
+       col = 1:2, pch = 20)
+
+# Task 3 – correlation
+cor(dat$weight, dat$height)
+
+# Task 4 – boxplots by gender
+boxplot(chol ~ gender, data = dat,
+        main = "Cholesterol by Gender", ylab = "Cholesterol (mg/dL)")</code></pre>
+</div>
+```
+
+---
+
+### Going Further: Advanced Data Manipulation ⭐
+
+These tasks are more challenging and work best with the full dataset in RStudio.
+
+1. Create a categorical variable `age_group` that classifies patients as `"young"` (age < 40), `"middle"` (40 ≤ age < 60), or `"senior"` (age ≥ 60). Add it as a new column to `dat`. *Hint: use the `cut()` function.*
+2. Calculate the **mean cholesterol** for each combination of `gender` and `age_group`. *Hint: `tapply(dat$chol, list(dat$gender, dat$age_group), mean)`*
+3. Write a function `standardize()` that takes a numeric vector and returns its **z-score** (subtract mean, divide by sd). Apply it to all numeric columns in `dat` to create `dat.scaled`. *Hint: `apply()` with `MARGIN = 2`, skip non-numeric columns.*
+4. Using `dat.scaled`, identify which patient has the most **extreme standardised BMI** (highest or lowest). Print all their clinical information.
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 340
+library(shiny)
+DAT <- data.frame(
+  age    = c(46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56),
+  gender = c("female","female","female","male","male","female","male","male","female","male","male","female","male","female","male","female","male","male","female","male"),
+  chol   = c(203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233),
+  hdl    = c(56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51),
+  weight = c(202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170),
+  height = c(66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69)
+)
+DAT$bmi <- DAT$weight / DAT$height^2 * 703
+ui <- fluidPage(
+  textAreaInput("code", NULL, value = "dat <- DAT\n# dat already has a bmi column\n", width = '100%', height = '170px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      dat <- DAT
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('r_w2_sol3')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_sol3" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – age_group
+dat$age_group <- cut(dat$age,
+                     breaks = c(0, 40, 60, Inf),
+                     labels = c("young", "middle", "senior"),
+                     right  = FALSE)
+
+# Task 2 – mean chol by gender × age_group
+tapply(dat$chol, list(dat$gender, dat$age_group), mean)
+
+# Task 3 – standardize function
+standardize <- function(x) (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+
+numeric_cols <- sapply(dat, is.numeric)
+dat.scaled <- dat
+dat.scaled[, numeric_cols] <- apply(dat[, numeric_cols], 2, standardize)
+
+# Task 4 – most extreme standardised BMI
+extreme_idx <- which.max(abs(dat.scaled$bmi))
+dat[extreme_idx, ]</code></pre>
+</div>
+```
+
+---
+
+## Plenum Questions
+
+### Question 1: Which measure of spread is most robust to outliers?
+
+Create two datasets — one clean and one with three extreme outliers added. For both, compute the following spread measures and compare how much they change:
+
+- Standard deviation (`sd()`)
+- 10%–90% quantile spread (`quantile()`)
+- MAD (`mad()`)
+- Range (`max() - min()`)
+
+Which measure changes the least when outliers are added?
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", NULL, value = "set.seed(123)\ndata1 <- rnorm(100, mean = 50, sd = 5)\ndata2 <- c(data1, 80, 100, 120)\n", width = '100%', height = '140px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$out <- renderPrint({
+      exprs <- parse(text = input$code)
+      for (e in exprs) { res <- withVisible(eval(e)); if (!is.null(res$value) && res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('r_w2_q1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>set.seed(123)
+data1 <- rnorm(100, mean = 50, sd = 5)
+data2 <- c(data1, 80, 100, 120)
+
+# Measures without outliers
+measures1 <- c(
+  SD     = sd(data1),
+  Spread = as.numeric(quantile(data1, 0.9) - quantile(data1, 0.1)),
+  MAD    = mad(data1),
+  Range  = max(data1) - min(data1)
+)
+
+# Measures with outliers
+measures2 <- c(
+  SD     = sd(data2),
+  Spread = as.numeric(quantile(data2, 0.9) - quantile(data2, 0.1)),
+  MAD    = mad(data2),
+  Range  = max(data2) - min(data2)
+)
+
+rbind(Without_outliers = measures1,
+      With_outliers    = measures2)</code></pre>
+</div>
+```
+
+---
+
+### Question 2: How do Mode, Median, and Mean relate in differently shaped distributions?
+
+For three theoretical distributions — symmetric (Normal), right-skewed (Exponential), and left-skewed (Beta) — create line plots that include vertical lines for the **Mean**, **Median**, and **Mode**. What pattern do you observe about the order of these three measures depending on the direction of the skew?
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 560
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", NULL, value = "# Distribution parameters:\n# Symmetric:   Normal(mean=100, sd=15)\n# Right-skewed: Exponential(rate=1/50)\n# Left-skewed:  Beta(shape1=5, shape2=2) × 100\n", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "400px")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('r_w2_q2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>par(mfrow = c(3, 1), mar = c(4, 4, 3, 2))
+
+# 1. Symmetric (Normal)
+sym_x <- seq(40, 160, length.out = 1000)
+sym_y <- dnorm(sym_x, mean = 100, sd = 15)
+plot(sym_x, sym_y, type = "l", col = "steelblue", lwd = 2,
+     main = "Symmetric (Normal)", xlab = "Value", ylab = "Density")
+abline(v = 100, col = "red",    lwd = 2, lty = 1)  # mean
+abline(v = 100, col = "green",  lwd = 2, lty = 2)  # median
+abline(v = 100, col = "orange", lwd = 2, lty = 3)  # mode
+legend("topright", c("Mean","Median","Mode"),
+       col = c("red","green","orange"), lty = 1:3, lwd = 2, cex = 0.8)
+
+# 2. Right-skewed (Exponential)
+right_x      <- seq(0, 300, length.out = 1000)
+right_y      <- dexp(right_x, rate = 1/50)
+right_mean   <- 50
+right_median <- 50 * log(2)
+right_mode   <- 0
+plot(right_x, right_y, type = "l", col = "steelblue", lwd = 2,
+     main = "Right-Skewed (Exponential)", xlab = "Value", ylab = "Density")
+abline(v = right_mean,   col = "red",    lwd = 2, lty = 1)
+abline(v = right_median, col = "green",  lwd = 2, lty = 2)
+abline(v = right_mode,   col = "orange", lwd = 2, lty = 3)
+legend("topright", c("Mean","Median","Mode"),
+       col = c("red","green","orange"), lty = 1:3, lwd = 2, cex = 0.8)
+
+# 3. Left-skewed (Beta × 100)
+left_x      <- seq(0, 100, length.out = 1000)
+left_y      <- dbeta(left_x / 100, shape1 = 5, shape2 = 2) / 100
+left_mean   <- (5 / (5 + 2)) * 100
+left_median <- qbeta(0.5, 5, 2) * 100
+left_mode   <- ((5 - 1) / (5 + 2 - 2)) * 100
+plot(left_x, left_y, type = "l", col = "steelblue", lwd = 2,
+     main = "Left-Skewed (Beta)", xlab = "Value", ylab = "Density")
+abline(v = left_mean,   col = "red",    lwd = 2, lty = 1)
+abline(v = left_median, col = "green",  lwd = 2, lty = 2)
+abline(v = left_mode,   col = "orange", lwd = 2, lty = 3)
+legend("topleft", c("Mean","Median","Mode"),
+       col = c("red","green","orange"), lty = 1:3, lwd = 2, cex = 0.8)</code></pre>
+</div>
+```
+
+---
+
+### Question 4: Mean–Variance relationship in gene expression data
+
+Simulate expression counts for 200 genes across 10 samples using a negative binomial distribution (common for RNA-seq data). Plot the **mean expression** against the **variance** per gene. Add a reference line for the Poisson expectation (variance = mean). What do you observe?
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 440
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", NULL, value = "set.seed(123)\nn_genes   <- 200\nn_samples <- 10\ngene_means <- runif(n_genes, min = 1, max = 100)\n", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "280px")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('r_w2_q4')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q4" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>set.seed(123)
+n_genes   <- 200
+n_samples <- 10
+gene_means <- runif(n_genes, min = 1, max = 100)
+
+# Simulate expression matrix (negative binomial)
+expr_mat <- matrix(0, nrow = n_genes, ncol = n_samples)
+for (i in 1:n_genes) {
+  expr_mat[i, ] <- rnbinom(n_samples, mu = gene_means[i], size = 5)
+}
+
+mean_expr <- rowMeans(expr_mat)
+var_expr  <- apply(expr_mat, 1, var)
+
+plot(mean_expr, var_expr,
+     xlab = "Mean Expression", ylab = "Variance",
+     main = "Mean-Variance Relationship in Gene Expression",
+     pch = 16, col = "blue")
+abline(a = 0, b = 1,    col = "red",   lty = 2, lwd = 2)  # Poisson
+abline(lm(var_expr ~ mean_expr), col = "green", lwd = 2)   # actual trend
+legend("topleft",
+       legend = c("Genes", "Poisson (Var=Mean)", "Actual trend"),
+       col = c("blue", "red", "green"), pch = c(16, NA, NA),
+       lty = c(NA, 2, 1), lwd = c(NA, 2, 2))</code></pre>
+</div>
+```
+
+---
+
+### Question 5: When do standard boxplots fail?
+
+Create four datasets with different characteristics (normal, bimodal, small n, skewed). First plot them as standard boxplots — what information is hidden? Then add jittered individual points on top. What do the improved plots reveal that the plain boxplots missed?
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 520
+library(shiny)
+ui <- fluidPage(
+  textAreaInput("code", NULL, value = "set.seed(123)\ndata1 <- rnorm(100, mean = 50, sd = 10)               # Normal\ndata2 <- c(rnorm(50, mean = 40, sd = 3),\n           rnorm(50, mean = 60, sd = 3))               # Bimodal\ndata3 <- rnorm(20,  mean = 50, sd = 10)               # Small n\ndata4 <- rgamma(100, shape = 2, rate = 0.04)           # Skewed\n", width = '100%', height = '145px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "320px")
+)
+server <- function(input, output) {
+  observeEvent(input$run, {
+    output$plot <- renderPlot({
+      exprs <- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('r_w2_q5')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q5" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>set.seed(123)
+data1 <- rnorm(100, mean = 50, sd = 10)
+data2 <- c(rnorm(50, mean = 40, sd = 3), rnorm(50, mean = 60, sd = 3))
+data3 <- rnorm(20,  mean = 50, sd = 10)
+data4 <- rgamma(100, shape = 2, rate = 0.04)
+
+par(mfrow = c(2, 4), mar = c(3, 3, 3, 1))
+
+# Row 1: Standard boxplots
+boxplot(data1, main = "Normal (n=100)",  ylim = c(20, 80))
+boxplot(data2, main = "Bimodal (n=100)", ylim = c(20, 80))
+boxplot(data3, main = "Normal (n=20)",   ylim = c(20, 80))
+boxplot(data4, main = "Skewed (n=100)",  ylim = c(20, 80))
+
+# Row 2: Boxplots + jittered points
+boxplot(data1, main = "Normal + points", ylim = c(20, 80))
+points(jitter(rep(1, 100), 0.2), data1, col = rgb(0,0,1,0.4), pch = 16, cex = 0.6)
+
+boxplot(data2, main = "Bimodal revealed!", ylim = c(20, 80))
+points(jitter(rep(1, 100), 0.2), data2, col = rgb(1,0,0,0.4), pch = 16, cex = 0.6)
+
+boxplot(data3, main = "Small n visible", ylim = c(20, 80))
+points(jitter(rep(1, 20),  0.2), data3, col = rgb(0,0,0,0.6), pch = 16, cex = 0.6)
+
+boxplot(data4, main = "Skew visible", ylim = c(20, 80))
+points(jitter(rep(1, 100), 0.2), data4, col = rgb(0.5,0,0.5,0.4), pch = 16, cex = 0.6)</code></pre>
+</div>
+```
+
+::::
+
+---
+
+:::: {.lang-python}
+
+*Python exercises for Week 2 coming soon.*
+
+::::

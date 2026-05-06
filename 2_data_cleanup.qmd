@@ -208,6 +208,39 @@ window.addEventListener('pagehide', () => {
 
 In this week you will work with a real diabetes dataset and learn how to **prepare raw data for analysis**. Good data cleanup is the foundation of any reliable result.
 
+---
+
+## Offline Materials
+
+### Lecture Material
+
+These are the slides used in the lecture of Week 2 and the videos of the matching lecture.
+
+```{=html}
+<div class="d-flex gap-3 mb-3 flex-wrap">
+  <a href="WEEK1/week1_lecture_slides.pdf" download class="btn btn-outline-success">
+     Week 2 – Describing & Visualizing data (PDF)
+  </a>
+</div>
+```
+
+* **Video 1/4:** [Which data?](https://youtu.be/itBBBH1gEGc)
+* **Video 2/4:** [Visualization of data](https://youtu.be/JMoE2lpBsPg)
+* **Video 3/4:** [Describing data 1](https://youtu.be/DU3IEnVr2kA)
+* **Video 4/4:** [Describing data 2](https://youtu.be/jFt72U7xiHk)
+  
+### Markdown Files (R only)
+
+These files contain the same content as this page and can be opened and executed directly in RStudio:
+
+```{=html}
+<div class="d-flex gap-3 mb-3 flex-wrap">
+  <a href="WEEK1/01_data_cleanup.md" download class="btn btn-outline-success">
+     Week 2 – Data Cleanup (Markdown)
+  </a>
+</div>
+```
+
 :::: {.lang-r}
 
 > 💡 **Course dataset:** Load the real data in RStudio with:
@@ -934,17 +967,16 @@ shinyApp(ui, server)
 
 ---
 
-## EXERCISES — Data Cleanup & Visualisation
+## QUIZ — Data Cleanup & Visualisation
 
 Answer all questions correctly to save your progress. Use the sandboxes to experiment in R first!
 
 ---
 
-### Exercise 1: Loading and Exploring
+### Quiz 1: Loading and Exploring
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: DATA LOADING</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -1017,11 +1049,10 @@ function checkLoadingQuiz() {
 
 ---
 
-### Exercise 2: Data Cleanup
+### Quiz 2: Data Cleanup
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: DATA CLEANUP</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -1094,11 +1125,10 @@ function checkCleanupQuiz() {
 
 ---
 
-### Exercise 3: Visualisation
+### Quiz 3: Visualisation
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: VISUALISATION</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -1171,11 +1201,10 @@ function checkVizQuiz() {
 
 ---
 
-### Exercise 4: Putting it all together
+### Quiz 4: Putting it all together
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: APPLYING CONCEPTS</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -2168,17 +2197,16 @@ app = App(app_ui, server)
 
 ---
 
-## EXERCISES — Data Cleanup & Visualisation
+## QUIZ — Data Cleanup & Visualisation
 
 Answer all questions correctly to save your progress. Use the sandboxes to experiment in Python first!
 
 ---
 
-### Exercise 1: Loading and Exploring
+### Quiz 1: Loading and Exploring
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: DATA LOADING</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -2260,11 +2288,10 @@ function checkPyLoadingQuiz() {
 
 ---
 
-### Exercise 2: Data Cleanup
+### Quiz 2: Data Cleanup
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: DATA CLEANUP</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -2347,11 +2374,10 @@ function checkPyCleanupQuiz() {
 
 ---
 
-### Exercise 3: Visualisation
+### Quiz 3: Visualisation
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: VISUALISATION</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -2432,11 +2458,10 @@ function checkPyVizQuiz() {
 
 ---
 
-### Exercise 4: Putting it all together
+### Quiz 4: Putting it all together
 
 ```{=html}
 <div class="quiz-card">
-  <h5>QUIZ: APPLYING CONCEPTS</h5>
   <p class="text-muted">🧪 Experiment here:</p>
 ```
 
@@ -2517,3 +2542,4 @@ function checkPyExerciseQuiz() {
 ```
 
 ::::
+

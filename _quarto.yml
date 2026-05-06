@@ -22,10 +22,18 @@ website:
         contents:
           - text: "Getting started"
             href: 0_markdown.qmd
-          - text: "WEEK 1: Datatypes"
-            href: 1_datentypen.qmd
-          - text: "WEEK 2: Data Cleanup"
-            href: 2_data_cleanup.qmd
+          - section: "WEEK 1: Datatypes"
+            contents:
+              - text: "Content"
+                href: 1_datentypen.qmd
+              - text: "Exercises – Week 1"
+                href: exercises/week1_exercises.qmd
+          - section: "WEEK 2: Data Cleanup"
+            contents:
+              - text: "Content"
+                href: 2_data_cleanup.qmd
+              - text: "Exercises – Week 2"
+                href: exercises/week2_exercises.qmd
 
   navbar:
     background: "#ffffff"
