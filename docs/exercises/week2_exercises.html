@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Exercises – Week 2 – METHODS IN DATA ANALYSIS</title>
+<title>Exercises – Week 2: Data Cleanup &amp; Visualisation – METHODS IN DATA ANALYSIS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +22,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -43,6 +78,11 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content="..">
+<script src="../site_libs/quarto-contrib/shinylive-0.10.8/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="../site_libs/quarto-contrib/shinylive-0.10.8/shinylive/run-python-blocks.js" type="module"></script>
+<link href="../site_libs/quarto-contrib/shinylive-0.10.8/shinylive/shinylive.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -274,7 +314,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="../2_data_cleanup.html">WEEK 2: Data Cleanup</a></li><li class="breadcrumb-item"><a href="../exercises/week2_exercises.html">Exercises – Week 2</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Exercises – Week 2</h1>
+<h1 class="title">Exercises – Week 2: Data Cleanup &amp; Visualisation</h1>
 </div>
 
 
@@ -291,6 +331,912 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<script>
+function toggleSolution(id) {
+  var el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+<blockquote class="blockquote">
+<p>💡 The sandboxes use a <strong>20-row sample</strong> of the diabetes dataset. To work with the full dataset (400+ patients), load it in RStudio:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">'https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</blockquote>
+<hr>
+<div class="lang-r">
+<section id="exercise-sheet-data-exploration-visualisation" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-sheet-data-exploration-visualisation">Exercise Sheet — Data Exploration &amp; Visualisation</h2>
+<section id="exercise-1-data-exploration-and-summary-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-data-exploration-and-summary-statistics">Exercise 1: Data Exploration and Summary Statistics</h3>
+<p>The <code>summary()</code> function gives a quick overview, but sometimes you need more specific information. Using the diabetes dataset <code>dat</code>:</p>
+<ol type="1">
+<li>Calculate the <strong>mean and standard deviation</strong> of the <code>hdl</code> (High Density Lipoprotein) column using <code>mean()</code> and <code>sd()</code>.</li>
+<li>Create a new column <code>bmi</code> using the formula: BMI = weight (lbs) / height² (in) × 703. Add it with <code>dat$bmi &lt;- ...</code></li>
+<li>Use the <code>table()</code> function on the <code>location</code> column to count how many patients come from each location. Which location has the most patients?</li>
+<li>Calculate the <strong>median age</strong> separately for male and female patients. Are they similar?</li>
+</ol>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 320
+library(shiny)
+DAT &lt;- data.frame(
+  age    = c(46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56),
+  gender = c("female","female","female","male","male","female","male","male","female","male","male","female","male","female","male","female","male","male","female","male"),
+  chol   = c(203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233),
+  hdl    = c(56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51),
+  weight = c(202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170),
+  height = c(66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69),
+  location = c("Louisa","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham","Louisa","Louisa","Buckingham","Louisa","Buckingham","Louisa","Buckingham")
+)
+ui &lt;- fluidPage(
+  textAreaInput("code", NULL, value = "dat &lt;- DAT\n", width = '100%', height = '160px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+<button onclick="toggleSolution('r_w2_sol1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_sol1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – mean and sd of hdl
+mean(dat$hdl)
+sd(dat$hdl)
+
+# Task 2 – create bmi column
+dat$bmi &lt;- dat$weight / dat$height^2 * 703
+head(dat$bmi)
+
+# Task 3 – count patients per location
+table(dat$location)
+
+# Task 4 – median age by gender
+median(dat$age[dat$gender == "male"])
+median(dat$age[dat$gender == "female"])</code></pre>
+</div>
+<hr>
+</section>
+<section id="exercise-2-visualising-relationships-between-variables" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-visualising-relationships-between-variables">Exercise 2: Visualising Relationships Between Variables</h3>
+<p>Using the cleaned <code>dat</code> dataset, explore relationships between clinical measurements:</p>
+<ol type="1">
+<li>Create a <strong>scatter plot</strong> of <code>weight</code> vs <code>height</code> using <code>plot()</code>. Change the point style with <code>pch = 20</code>.</li>
+<li><strong>Colour the points</strong> by gender using the <code>col</code> parameter. <em>Hint: <code>col = as.factor(dat$gender)</code></em>. Does the weight–height relationship differ between men and women?</li>
+<li>Use <code>cor()</code> to calculate the <strong>correlation coefficient</strong> between <code>weight</code> and <code>height</code>. How strong is the relationship?</li>
+<li>Create <strong>side-by-side boxplots</strong> of cholesterol by gender: <code>boxplot(chol ~ gender, data = dat)</code>. What differences do you observe? Try other variables!</li>
+</ol>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 440
+library(shiny)
+DAT &lt;- data.frame(
+  age    = c(46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56),
+  gender = c("female","female","female","male","male","female","male","male","female","male","male","female","male","female","male","female","male","male","female","male"),
+  chol   = c(203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233),
+  hdl    = c(56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51),
+  weight = c(202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170),
+  height = c(66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69)
+)
+ui &lt;- fluidPage(
+  textAreaInput("code", NULL, value = "dat &lt;- DAT\n", width = '100%', height = '130px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "260px")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$plot &lt;- renderPlot({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+<button onclick="toggleSolution('r_w2_sol2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_sol2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – scatter plot
+plot(dat$height, dat$weight, pch = 20,
+     xlab = "Height (in)", ylab = "Weight (lbs)")
+
+# Task 2 – colour by gender
+plot(dat$height, dat$weight, pch = 20,
+     col = as.factor(dat$gender),
+     xlab = "Height (in)", ylab = "Weight (lbs)")
+legend("topleft", legend = levels(as.factor(dat$gender)),
+       col = 1:2, pch = 20)
+
+# Task 3 – correlation
+cor(dat$weight, dat$height)
+
+# Task 4 – boxplots by gender
+boxplot(chol ~ gender, data = dat,
+        main = "Cholesterol by Gender", ylab = "Cholesterol (mg/dL)")</code></pre>
+</div>
+<hr>
+</section>
+<section id="going-further-advanced-data-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="going-further-advanced-data-manipulation">Going Further: Advanced Data Manipulation ⭐</h3>
+<p>These tasks are more challenging and work best with the full dataset in RStudio.</p>
+<ol type="1">
+<li>Create a categorical variable <code>age_group</code> that classifies patients as <code>"young"</code> (age &lt; 40), <code>"middle"</code> (40 ≤ age &lt; 60), or <code>"senior"</code> (age ≥ 60). Add it as a new column to <code>dat</code>. <em>Hint: use the <code>cut()</code> function.</em></li>
+<li>Calculate the <strong>mean cholesterol</strong> for each combination of <code>gender</code> and <code>age_group</code>. <em>Hint: <code>tapply(dat$chol, list(dat$gender, dat$age_group), mean)</code></em></li>
+<li>Write a function <code>standardize()</code> that takes a numeric vector and returns its <strong>z-score</strong> (subtract mean, divide by sd). Apply it to all numeric columns in <code>dat</code> to create <code>dat.scaled</code>. <em>Hint: <code>apply()</code> with <code>MARGIN = 2</code>, skip non-numeric columns.</em></li>
+<li>Using <code>dat.scaled</code>, identify which patient has the most <strong>extreme standardised BMI</strong> (highest or lowest). Print all their clinical information.</li>
+</ol>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 340
+library(shiny)
+DAT &lt;- data.frame(
+  age    = c(46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56),
+  gender = c("female","female","female","male","male","female","male","male","female","male","male","female","male","female","male","female","male","male","female","male"),
+  chol   = c(203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233),
+  hdl    = c(56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51),
+  weight = c(202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170),
+  height = c(66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69)
+)
+DAT$bmi &lt;- DAT$weight / DAT$height^2 * 703
+ui &lt;- fluidPage(
+  textAreaInput("code", NULL, value = "dat &lt;- DAT\n# dat already has a bmi column\n", width = '100%', height = '170px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$out &lt;- renderPrint({
+      dat &lt;- DAT
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+<button onclick="toggleSolution('r_w2_sol3')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_sol3" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – age_group
+dat$age_group &lt;- cut(dat$age,
+                     breaks = c(0, 40, 60, Inf),
+                     labels = c("young", "middle", "senior"),
+                     right  = FALSE)
+
+# Task 2 – mean chol by gender × age_group
+tapply(dat$chol, list(dat$gender, dat$age_group), mean)
+
+# Task 3 – standardize function
+standardize &lt;- function(x) (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+
+numeric_cols &lt;- sapply(dat, is.numeric)
+dat.scaled &lt;- dat
+dat.scaled[, numeric_cols] &lt;- apply(dat[, numeric_cols], 2, standardize)
+
+# Task 4 – most extreme standardised BMI
+extreme_idx &lt;- which.max(abs(dat.scaled$bmi))
+dat[extreme_idx, ]</code></pre>
+</div>
+<hr>
+</section>
+</section>
+<section id="plenum-questions" class="level2">
+<h2 class="anchored" data-anchor-id="plenum-questions">Plenum Questions</h2>
+<section id="question-1-which-measure-of-spread-is-most-robust-to-outliers" class="level3">
+<h3 class="anchored" data-anchor-id="question-1-which-measure-of-spread-is-most-robust-to-outliers">Question 1: Which measure of spread is most robust to outliers?</h3>
+<p>Create two datasets — one clean and one with three extreme outliers added. For both, compute the following spread measures and compare how much they change:</p>
+<ul>
+<li>Standard deviation (<code>sd()</code>)</li>
+<li>10%–90% quantile spread (<code>quantile()</code>)</li>
+<li>MAD (<code>mad()</code>)</li>
+<li>Range (<code>max() - min()</code>)</li>
+</ul>
+<p>Which measure changes the least when outliers are added?</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", NULL, value = "set.seed(123)\ndata1 &lt;- rnorm(100, mean = 50, sd = 5)\ndata2 &lt;- c(data1, 80, 100, 120)\n", width = '100%', height = '140px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$out &lt;- renderPrint({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) { res &lt;- withVisible(eval(e)); if (!is.null(res$value) &amp;&amp; res$visible) print(res$value) }
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+<button onclick="toggleSolution('r_w2_q1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>set.seed(123)
+data1 &lt;- rnorm(100, mean = 50, sd = 5)
+data2 &lt;- c(data1, 80, 100, 120)
+
+# Measures without outliers
+measures1 &lt;- c(
+  SD     = sd(data1),
+  Spread = as.numeric(quantile(data1, 0.9) - quantile(data1, 0.1)),
+  MAD    = mad(data1),
+  Range  = max(data1) - min(data1)
+)
+
+# Measures with outliers
+measures2 &lt;- c(
+  SD     = sd(data2),
+  Spread = as.numeric(quantile(data2, 0.9) - quantile(data2, 0.1)),
+  MAD    = mad(data2),
+  Range  = max(data2) - min(data2)
+)
+
+rbind(Without_outliers = measures1,
+      With_outliers    = measures2)</code></pre>
+</div>
+<hr>
+</section>
+<section id="question-2-how-do-mode-median-and-mean-relate-in-differently-shaped-distributions" class="level3">
+<h3 class="anchored" data-anchor-id="question-2-how-do-mode-median-and-mean-relate-in-differently-shaped-distributions">Question 2: How do Mode, Median, and Mean relate in differently shaped distributions?</h3>
+<p>For three theoretical distributions — symmetric (Normal), right-skewed (Exponential), and left-skewed (Beta) — create line plots that include vertical lines for the <strong>Mean</strong>, <strong>Median</strong>, and <strong>Mode</strong>. What pattern do you observe about the order of these three measures depending on the direction of the skew?</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 560
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", NULL, value = "# Distribution parameters:\n# Symmetric:   Normal(mean=100, sd=15)\n# Right-skewed: Exponential(rate=1/50)\n# Left-skewed:  Beta(shape1=5, shape2=2) × 100\n", width = '100%', height = '110px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "400px")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+<button onclick="toggleSolution('r_w2_q2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>par(mfrow = c(3, 1), mar = c(4, 4, 3, 2))
+
+# 1. Symmetric (Normal)
+sym_x &lt;- seq(40, 160, length.out = 1000)
+sym_y &lt;- dnorm(sym_x, mean = 100, sd = 15)
+plot(sym_x, sym_y, type = "l", col = "steelblue", lwd = 2,
+     main = "Symmetric (Normal)", xlab = "Value", ylab = "Density")
+abline(v = 100, col = "red",    lwd = 2, lty = 1)  # mean
+abline(v = 100, col = "green",  lwd = 2, lty = 2)  # median
+abline(v = 100, col = "orange", lwd = 2, lty = 3)  # mode
+legend("topright", c("Mean","Median","Mode"),
+       col = c("red","green","orange"), lty = 1:3, lwd = 2, cex = 0.8)
+
+# 2. Right-skewed (Exponential)
+right_x      &lt;- seq(0, 300, length.out = 1000)
+right_y      &lt;- dexp(right_x, rate = 1/50)
+right_mean   &lt;- 50
+right_median &lt;- 50 * log(2)
+right_mode   &lt;- 0
+plot(right_x, right_y, type = "l", col = "steelblue", lwd = 2,
+     main = "Right-Skewed (Exponential)", xlab = "Value", ylab = "Density")
+abline(v = right_mean,   col = "red",    lwd = 2, lty = 1)
+abline(v = right_median, col = "green",  lwd = 2, lty = 2)
+abline(v = right_mode,   col = "orange", lwd = 2, lty = 3)
+legend("topright", c("Mean","Median","Mode"),
+       col = c("red","green","orange"), lty = 1:3, lwd = 2, cex = 0.8)
+
+# 3. Left-skewed (Beta × 100)
+left_x      &lt;- seq(0, 100, length.out = 1000)
+left_y      &lt;- dbeta(left_x / 100, shape1 = 5, shape2 = 2) / 100
+left_mean   &lt;- (5 / (5 + 2)) * 100
+left_median &lt;- qbeta(0.5, 5, 2) * 100
+left_mode   &lt;- ((5 - 1) / (5 + 2 - 2)) * 100
+plot(left_x, left_y, type = "l", col = "steelblue", lwd = 2,
+     main = "Left-Skewed (Beta)", xlab = "Value", ylab = "Density")
+abline(v = left_mean,   col = "red",    lwd = 2, lty = 1)
+abline(v = left_median, col = "green",  lwd = 2, lty = 2)
+abline(v = left_mode,   col = "orange", lwd = 2, lty = 3)
+legend("topleft", c("Mean","Median","Mode"),
+       col = c("red","green","orange"), lty = 1:3, lwd = 2, cex = 0.8)</code></pre>
+</div>
+<hr>
+</section>
+<section id="question-4-meanvariance-relationship-in-gene-expression-data" class="level3">
+<h3 class="anchored" data-anchor-id="question-4-meanvariance-relationship-in-gene-expression-data">Question 4: Mean–Variance relationship in gene expression data</h3>
+<p>Simulate expression counts for 200 genes across 10 samples using a negative binomial distribution (common for RNA-seq data). Plot the <strong>mean expression</strong> against the <strong>variance</strong> per gene. Add a reference line for the Poisson expectation (variance = mean). What do you observe?</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 440
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", NULL, value = "set.seed(123)\nn_genes   &lt;- 200\nn_samples &lt;- 10\ngene_means &lt;- runif(n_genes, min = 1, max = 100)\n", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "280px")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+<button onclick="toggleSolution('r_w2_q4')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q4" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>set.seed(123)
+n_genes   &lt;- 200
+n_samples &lt;- 10
+gene_means &lt;- runif(n_genes, min = 1, max = 100)
+
+# Simulate expression matrix (negative binomial)
+expr_mat &lt;- matrix(0, nrow = n_genes, ncol = n_samples)
+for (i in 1:n_genes) {
+  expr_mat[i, ] &lt;- rnbinom(n_samples, mu = gene_means[i], size = 5)
+}
+
+mean_expr &lt;- rowMeans(expr_mat)
+var_expr  &lt;- apply(expr_mat, 1, var)
+
+plot(mean_expr, var_expr,
+     xlab = "Mean Expression", ylab = "Variance",
+     main = "Mean-Variance Relationship in Gene Expression",
+     pch = 16, col = "blue")
+abline(a = 0, b = 1,    col = "red",   lty = 2, lwd = 2)  # Poisson
+abline(lm(var_expr ~ mean_expr), col = "green", lwd = 2)   # actual trend
+legend("topleft",
+       legend = c("Genes", "Poisson (Var=Mean)", "Actual trend"),
+       col = c("blue", "red", "green"), pch = c(16, NA, NA),
+       lty = c(NA, 2, 1), lwd = c(NA, 2, 2))</code></pre>
+</div>
+<hr>
+</section>
+<section id="question-5-when-do-standard-boxplots-fail" class="level3">
+<h3 class="anchored" data-anchor-id="question-5-when-do-standard-boxplots-fail">Question 5: When do standard boxplots fail?</h3>
+<p>Create four datasets with different characteristics (normal, bimodal, small n, skewed). First plot them as standard boxplots — what information is hidden? Then add jittered individual points on top. What do the improved plots reveal that the plain boxplots missed?</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 520
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", NULL, value = "set.seed(123)\ndata1 &lt;- rnorm(100, mean = 50, sd = 10)               # Normal\ndata2 &lt;- c(rnorm(50, mean = 40, sd = 3),\n           rnorm(50, mean = 60, sd = 3))               # Bimodal\ndata3 &lt;- rnorm(20,  mean = 50, sd = 10)               # Small n\ndata4 &lt;- rgamma(100, shape = 2, rate = 0.04)           # Skewed\n", width = '100%', height = '145px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  plotOutput("plot", height = "320px")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, {
+    output$plot &lt;- renderPlot({
+      exprs &lt;- parse(text = input$code)
+      for (e in exprs) eval(e)
+    })
+  })
+}
+shinyApp(ui, server)</code></pre>
+<button onclick="toggleSolution('r_w2_q5')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="r_w2_q5" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>set.seed(123)
+data1 &lt;- rnorm(100, mean = 50, sd = 10)
+data2 &lt;- c(rnorm(50, mean = 40, sd = 3), rnorm(50, mean = 60, sd = 3))
+data3 &lt;- rnorm(20,  mean = 50, sd = 10)
+data4 &lt;- rgamma(100, shape = 2, rate = 0.04)
+
+par(mfrow = c(2, 4), mar = c(3, 3, 3, 1))
+
+# Row 1: Standard boxplots
+boxplot(data1, main = "Normal (n=100)",  ylim = c(20, 80))
+boxplot(data2, main = "Bimodal (n=100)", ylim = c(20, 80))
+boxplot(data3, main = "Normal (n=20)",   ylim = c(20, 80))
+boxplot(data4, main = "Skewed (n=100)",  ylim = c(20, 80))
+
+# Row 2: Boxplots + jittered points
+boxplot(data1, main = "Normal + points", ylim = c(20, 80))
+points(jitter(rep(1, 100), 0.2), data1, col = rgb(0,0,1,0.4), pch = 16, cex = 0.6)
+
+boxplot(data2, main = "Bimodal revealed!", ylim = c(20, 80))
+points(jitter(rep(1, 100), 0.2), data2, col = rgb(1,0,0,0.4), pch = 16, cex = 0.6)
+
+boxplot(data3, main = "Small n visible", ylim = c(20, 80))
+points(jitter(rep(1, 20),  0.2), data3, col = rgb(0,0,0,0.6), pch = 16, cex = 0.6)
+
+boxplot(data4, main = "Skew visible", ylim = c(20, 80))
+points(jitter(rep(1, 100), 0.2), data4, col = rgb(0.5,0,0.5,0.4), pch = 16, cex = 0.6)</code></pre>
+</div>
+</section>
+</section>
+</div>
+<hr>
+<div class="lang-python">
+<section id="exercise-sheet-data-exploration-visualisation-1" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-sheet-data-exploration-visualisation-1">Exercise Sheet — Data Exploration &amp; Visualisation</h2>
+<section id="exercise-1-data-exploration-and-summary-statistics-1" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-data-exploration-and-summary-statistics-1">Exercise 1: Data Exploration and Summary Statistics</h3>
+<p>The <code>.describe()</code> method gives a quick overview, but sometimes you need more targeted statistics. Using the diabetes dataset <code>dat</code>:</p>
+<ol type="1">
+<li>Calculate the <strong>mean and standard deviation</strong> of the <code>hdl</code> column using <code>.mean()</code> and <code>.std()</code>.</li>
+<li>Create a new column <code>bmi</code> using the formula: BMI = weight (lbs) / height² (in) × 703. Use <code>dat['bmi'] = ...</code></li>
+<li>Use <code>.value_counts()</code> on the <code>location</code> column to count patients per location. Which location has more patients?</li>
+<li>Calculate the <strong>median age</strong> separately for male and female patients using <code>.groupby()</code>. Are they similar?</li>
+</ol>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 320
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+import pandas as pd
+
+DAT = pd.DataFrame({
+    'age':      [46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56],
+    'gender':   ['female','female','female','male','male','female','male','male','female','male','male','female','male','female','male','female','male','male','female','male'],
+    'chol':     [203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233],
+    'hdl':      [56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51],
+    'weight':   [202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170],
+    'height':   [66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69],
+    'location': ['Louisa','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham']
+})
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="dat = DAT.copy()\n", width='100%', height='160px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO()
+        ns = {"np": np, "pd": pd, "DAT": DAT}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'&lt;s&gt;','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'&lt;s&gt;','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)</code></pre>
+<button onclick="toggleSolution('py_w2_sol1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_sol1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – mean and std of hdl
+print(dat['hdl'].mean())
+print(dat['hdl'].std())
+
+# Task 2 – create bmi column
+dat['bmi'] = dat['weight'] / dat['height']**2 * 703
+print(dat['bmi'].head())
+
+# Task 3 – count patients per location
+print(dat['location'].value_counts())
+
+# Task 4 – median age by gender
+print(dat.groupby('gender')['age'].median())</code></pre>
+</div>
+<hr>
+</section>
+<section id="exercise-2-visualising-relationships-between-variables-1" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-visualising-relationships-between-variables-1">Exercise 2: Visualising Relationships Between Variables</h3>
+<p>Using the <code>dat</code> dataset, explore relationships between clinical measurements:</p>
+<ol type="1">
+<li>Create a <strong>scatter plot</strong> of <code>weight</code> vs <code>height</code> using <code>plt.scatter()</code>. Add axis labels.</li>
+<li><strong>Colour the points</strong> by gender using <code>dat['gender'].map({'female': 'red', 'male': 'blue'})</code>. Does the relationship differ between groups?</li>
+<li>Use <code>.corr()</code> to calculate the <strong>correlation</strong> between <code>weight</code> and <code>height</code>. How strong is the relationship?</li>
+<li>Create <strong>side-by-side boxplots</strong> of cholesterol by gender. What differences do you observe? Try other variables!</li>
+</ol>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 440
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+DAT = pd.DataFrame({
+    'age':    [46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56],
+    'gender': ['female','female','female','male','male','female','male','male','female','male','male','female','male','female','male','female','male','male','female','male'],
+    'chol':   [203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233],
+    'hdl':    [56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51],
+    'weight': [202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170],
+    'height': [66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69]
+})
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="dat = DAT.copy()\n", width='100%', height='130px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="260px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "pd": pd, "plt": plt, "DAT": DAT}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)</code></pre>
+<button onclick="toggleSolution('py_w2_sol2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_sol2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Tasks 1 &amp; 2 – scatter coloured by gender
+colors = dat['gender'].map({'female': 'red', 'male': 'blue'})
+axes[0].scatter(dat['height'], dat['weight'], c=colors, s=40)
+axes[0].set_xlabel('Height (in)')
+axes[0].set_ylabel('Weight (lbs)')
+r = dat['weight'].corr(dat['height'])
+axes[0].set_title(f"Weight vs Height (r = {r:.2f})")
+
+# Task 4 – boxplot chol by gender
+female_chol = dat[dat['gender']=='female']['chol']
+male_chol   = dat[dat['gender']=='male']['chol']
+axes[1].boxplot([female_chol, male_chol], labels=['female', 'male'])
+axes[1].set_title('Cholesterol by Gender')
+axes[1].set_ylabel('Cholesterol (mg/dL)')
+
+plt.tight_layout()</code></pre>
+</div>
+<hr>
+</section>
+<section id="going-further-advanced-data-manipulation-1" class="level3">
+<h3 class="anchored" data-anchor-id="going-further-advanced-data-manipulation-1">Going Further: Advanced Data Manipulation ⭐</h3>
+<p>These tasks are more challenging and work best with the full dataset in your Python environment.</p>
+<ol type="1">
+<li>Create a categorical column <code>age_group</code> classifying patients as <code>"young"</code> (age &lt; 40), <code>"middle"</code> (40 ≤ age &lt; 60), or <code>"senior"</code> (age ≥ 60). Use <code>pd.cut()</code>.</li>
+<li>Calculate <strong>mean cholesterol</strong> for each combination of <code>gender</code> and <code>age_group</code> using <code>.groupby()</code>.</li>
+<li>Write a function <code>standardize()</code> that takes a numeric Series and returns its <strong>z-score</strong> (subtract mean, divide by std). Apply it to all numeric columns to create <code>dat_scaled</code>.</li>
+<li>Using <code>dat_scaled</code>, identify which patient has the most <strong>extreme standardised BMI</strong>. Print their row from the original <code>dat</code>.</li>
+</ol>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 340
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+import pandas as pd
+
+DAT = pd.DataFrame({
+    'age':    [46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56],
+    'gender': ['female','female','female','male','male','female','male','male','female','male','male','female','male','female','male','female','male','male','female','male'],
+    'chol':   [203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233],
+    'hdl':    [56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51],
+    'weight': [202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170],
+    'height': [66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69]
+})
+DAT['bmi'] = DAT['weight'] / DAT['height']**2 * 703
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="dat = DAT.copy()\n# dat already has a bmi column\n", width='100%', height='170px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO()
+        ns = {"np": np, "pd": pd, "DAT": DAT}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'&lt;s&gt;','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'&lt;s&gt;','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)</code></pre>
+<button onclick="toggleSolution('py_w2_sol3')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_sol3" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – age_group
+dat['age_group'] = pd.cut(dat['age'],
+                          bins=[0, 40, 60, float('inf')],
+                          labels=['young', 'middle', 'senior'],
+                          right=False)
+
+# Task 2 – mean chol by gender × age_group
+print(dat.groupby(['gender', 'age_group'])['chol'].mean().unstack())
+
+# Task 3 – standardize function
+def standardize(series):
+    return (series - series.mean()) / series.std()
+
+numeric_cols = dat.select_dtypes(include='number').columns
+dat_scaled = dat.copy()
+dat_scaled[numeric_cols] = dat[numeric_cols].apply(standardize)
+
+# Task 4 – most extreme standardised BMI
+extreme_idx = dat_scaled['bmi'].abs().idxmax()
+print(dat.loc[extreme_idx])</code></pre>
+</div>
+<hr>
+</section>
+</section>
+<section id="plenum-questions-1" class="level2">
+<h2 class="anchored" data-anchor-id="plenum-questions-1">Plenum Questions</h2>
+<section id="question-1-which-measure-of-spread-is-most-robust-to-outliers-1" class="level3">
+<h3 class="anchored" data-anchor-id="question-1-which-measure-of-spread-is-most-robust-to-outliers-1">Question 1: Which measure of spread is most robust to outliers?</h3>
+<p>Create two datasets — one clean and one with three extreme outliers added. For both, compute the following spread measures and compare how much they change:</p>
+<ul>
+<li>Standard deviation (<code>np.std(..., ddof=1)</code>)</li>
+<li>10%–90% quantile spread (<code>np.percentile()</code>)</li>
+<li>MAD (median absolute deviation)</li>
+<li>Range (<code>np.max() - np.min()</code>)</li>
+</ul>
+<p>Which measure changes the least when outliers are added?</p>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+import pandas as pd
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="np.random.seed(123)\ndata1 = np.random.normal(50, 5, 100)\ndata2 = np.concatenate([data1, [80, 100, 120]])\n", width='100%', height='140px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO()
+        ns = {"np": np, "pd": pd}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'&lt;s&gt;','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'&lt;s&gt;','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)</code></pre>
+<button onclick="toggleSolution('py_w2_q1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>np.random.seed(123)
+data1 = np.random.normal(50, 5, 100)
+data2 = np.concatenate([data1, [80, 100, 120]])
+
+def mad(x): return np.median(np.abs(x - np.median(x)))
+
+def spread_measures(x, label):
+    return pd.Series({
+        'SD':     np.std(x, ddof=1),
+        'Spread': np.percentile(x, 90) - np.percentile(x, 10),
+        'MAD':    mad(x),
+        'Range':  np.max(x) - np.min(x)
+    }, name=label)
+
+result = pd.concat([spread_measures(data1, 'Without_outliers'),
+                    spread_measures(data2, 'With_outliers')], axis=1)
+print(result.T)</code></pre>
+</div>
+<hr>
+</section>
+<section id="question-2-how-do-mode-median-and-mean-relate-in-differently-shaped-distributions-1" class="level3">
+<h3 class="anchored" data-anchor-id="question-2-how-do-mode-median-and-mean-relate-in-differently-shaped-distributions-1">Question 2: How do Mode, Median, and Mean relate in differently shaped distributions?</h3>
+<p>For three theoretical distributions — symmetric (Normal), right-skewed (Exponential), and left-skewed (Beta) — create line plots with vertical lines for <strong>Mean</strong>, <strong>Median</strong>, and <strong>Mode</strong>. Use <code>scipy.stats</code>. What pattern do you observe depending on the direction of the skew?</p>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 560
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from scipy import stats
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="# Distribution parameters:\n# Symmetric:   Normal(loc=100, scale=15)\n# Right-skewed: Exponential(scale=50)\n# Left-skewed:  Beta(a=5, b=2) × 100\n", width='100%', height='110px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="400px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "plt": plt, "stats": stats}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)</code></pre>
+<button onclick="toggleSolution('py_w2_q2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>fig, axes = plt.subplots(3, 1, figsize=(8, 10))
+plt.subplots_adjust(hspace=0.5)
+
+# 1. Symmetric (Normal)
+x = np.linspace(40, 160, 1000)
+axes[0].plot(x, stats.norm.pdf(x, 100, 15), color='steelblue', lw=2)
+axes[0].axvline(100, color='red',    lw=2, ls='-',  label='Mean')
+axes[0].axvline(100, color='green',  lw=2, ls='--', label='Median')
+axes[0].axvline(100, color='orange', lw=2, ls=':',  label='Mode')
+axes[0].set_title('Symmetric (Normal)')
+axes[0].legend(fontsize=8)
+
+# 2. Right-skewed (Exponential)
+x = np.linspace(0, 300, 1000)
+axes[1].plot(x, stats.expon.pdf(x, scale=50), color='steelblue', lw=2)
+axes[1].axvline(50,             color='red',    lw=2, ls='-',  label='Mean')
+axes[1].axvline(50*np.log(2),   color='green',  lw=2, ls='--', label='Median')
+axes[1].axvline(0,              color='orange', lw=2, ls=':',  label='Mode')
+axes[1].set_title('Right-Skewed (Exponential)')
+axes[1].legend(fontsize=8)
+
+# 3. Left-skewed (Beta × 100)
+x = np.linspace(0, 100, 1000)
+a, b = 5, 2
+axes[2].plot(x, stats.beta.pdf(x/100, a, b)/100, color='steelblue', lw=2)
+axes[2].axvline(a/(a+b)*100,                  color='red',    lw=2, ls='-',  label='Mean')
+axes[2].axvline(stats.beta.ppf(0.5, a, b)*100, color='green', lw=2, ls='--', label='Median')
+axes[2].axvline((a-1)/(a+b-2)*100,            color='orange', lw=2, ls=':',  label='Mode')
+axes[2].set_title('Left-Skewed (Beta)')
+axes[2].legend(fontsize=8)</code></pre>
+</div>
+<hr>
+</section>
+<section id="question-4-meanvariance-relationship-in-gene-expression-data-1" class="level3">
+<h3 class="anchored" data-anchor-id="question-4-meanvariance-relationship-in-gene-expression-data-1">Question 4: Mean–Variance relationship in gene expression data</h3>
+<p>Simulate expression counts for 200 genes across 10 samples using a negative binomial distribution (common for RNA-seq data). Plot the <strong>mean expression</strong> against the <strong>variance</strong> per gene. Add a reference line for the Poisson expectation (variance = mean). What do you observe?</p>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 440
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="np.random.seed(123)\nn_genes   = 200\nn_samples = 10\ngene_means = np.random.uniform(1, 100, n_genes)\n", width='100%', height='120px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="280px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "plt": plt}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)</code></pre>
+<button onclick="toggleSolution('py_w2_q4')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q4" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>np.random.seed(123)
+n_genes   = 200
+n_samples = 10
+gene_means = np.random.uniform(1, 100, n_genes)
+
+# Simulate expression matrix (negative binomial)
+size = 5
+expr_mat = np.zeros((n_genes, n_samples))
+for i in range(n_genes):
+    mu = gene_means[i]
+    p  = size / (size + mu)
+    expr_mat[i, :] = np.random.negative_binomial(size, p, n_samples)
+
+mean_expr = expr_mat.mean(axis=1)
+var_expr  = expr_mat.var(axis=1, ddof=1)
+
+plt.scatter(mean_expr, var_expr, color='blue', alpha=0.6, s=20)
+plt.plot([0, mean_expr.max()], [0, mean_expr.max()],
+         'r--', lw=2, label='Poisson (Var = Mean)')
+m, b = np.polyfit(mean_expr, var_expr, 1)
+x_fit = np.linspace(0, mean_expr.max(), 200)
+plt.plot(x_fit, m*x_fit + b, 'g-', lw=2, label='Actual trend')
+plt.xlabel('Mean Expression')
+plt.ylabel('Variance')
+plt.title('Mean–Variance Relationship in Gene Expression')
+plt.legend()</code></pre>
+</div>
+<hr>
+</section>
+<section id="question-5-when-do-standard-boxplots-fail-1" class="level3">
+<h3 class="anchored" data-anchor-id="question-5-when-do-standard-boxplots-fail-1">Question 5: When do standard boxplots fail?</h3>
+<p>Create four datasets with different characteristics (normal, bimodal, small n, skewed). First plot them as standard boxplots — what information is hidden? Then add jittered individual points on top. What do the improved plots reveal that the plain boxplots missed?</p>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 520
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="np.random.seed(123)\ndata1 = np.random.normal(50, 10, 100)                        # Normal\ndata2 = np.concatenate([np.random.normal(40, 3, 50),\n                        np.random.normal(60, 3, 50)])         # Bimodal\ndata3 = np.random.normal(50, 10, 20)                         # Small n\ndata4 = np.random.gamma(2, 25, 100)                          # Skewed\n", width='100%', height='145px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="320px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "plt": plt}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)</code></pre>
+<button onclick="toggleSolution('py_w2_q5')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q5" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>np.random.seed(123)
+data1 = np.random.normal(50, 10, 100)
+data2 = np.concatenate([np.random.normal(40, 3, 50), np.random.normal(60, 3, 50)])
+data3 = np.random.normal(50, 10, 20)
+data4 = np.random.gamma(2, 25, 100)
+
+datasets = [data1, data2, data3, data4]
+titles   = ['Normal (n=100)', 'Bimodal (n=100)', 'Normal (n=20)', 'Skewed (n=100)']
+titles2  = ['Normal + points', 'Bimodal revealed!', 'Small n visible', 'Skew visible']
+colors   = ['blue', 'red', 'black', 'purple']
+
+fig, axes = plt.subplots(2, 4, figsize=(12, 6))
+plt.subplots_adjust(wspace=0.4, hspace=0.4)
+
+for i, (d, t) in enumerate(zip(datasets, titles)):
+    axes[0, i].boxplot(d)
+    axes[0, i].set_title(t, fontsize=9)
+    axes[0, i].set_ylim(0, 130)
+
+for i, (d, t, c) in enumerate(zip(datasets, titles2, colors)):
+    axes[1, i].boxplot(d)
+    jitter = np.random.uniform(-0.15, 0.15, len(d))
+    axes[1, i].scatter(1 + jitter, d, alpha=0.4, color=c, s=12)
+    axes[1, i].set_title(t, fontsize=9)
+    axes[1, i].set_ylim(0, 130)</code></pre>
+</div>
+</section>
+</section>
+</div>
 
 
 

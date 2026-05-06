@@ -464,6 +464,500 @@ points(jitter(rep(1, 100), 0.2), data4, col = rgb(0.5,0,0.5,0.4), pch = 16, cex 
 
 :::: {.lang-python}
 
-*Python exercises for Week 2 coming soon.*
+## Exercise Sheet — Data Exploration & Visualisation
+
+### Exercise 1: Data Exploration and Summary Statistics
+
+The `.describe()` method gives a quick overview, but sometimes you need more targeted statistics. Using the diabetes dataset `dat`:
+
+1. Calculate the **mean and standard deviation** of the `hdl` column using `.mean()` and `.std()`.
+2. Create a new column `bmi` using the formula: BMI = weight (lbs) / height² (in) × 703. Use `dat['bmi'] = ...`
+3. Use `.value_counts()` on the `location` column to count patients per location. Which location has more patients?
+4. Calculate the **median age** separately for male and female patients using `.groupby()`. Are they similar?
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 320
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+import pandas as pd
+
+DAT = pd.DataFrame({
+    'age':      [46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56],
+    'gender':   ['female','female','female','male','male','female','male','male','female','male','male','female','male','female','male','female','male','male','female','male'],
+    'chol':     [203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233],
+    'hdl':      [56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51],
+    'weight':   [202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170],
+    'height':   [66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69],
+    'location': ['Louisa','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham','Louisa','Louisa','Buckingham','Louisa','Buckingham','Louisa','Buckingham']
+})
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="dat = DAT.copy()\n", width='100%', height='160px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO()
+        ns = {"np": np, "pd": pd, "DAT": DAT}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('py_w2_sol1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_sol1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – mean and std of hdl
+print(dat['hdl'].mean())
+print(dat['hdl'].std())
+
+# Task 2 – create bmi column
+dat['bmi'] = dat['weight'] / dat['height']**2 * 703
+print(dat['bmi'].head())
+
+# Task 3 – count patients per location
+print(dat['location'].value_counts())
+
+# Task 4 – median age by gender
+print(dat.groupby('gender')['age'].median())</code></pre>
+</div>
+```
+
+---
+
+### Exercise 2: Visualising Relationships Between Variables
+
+Using the `dat` dataset, explore relationships between clinical measurements:
+
+1. Create a **scatter plot** of `weight` vs `height` using `plt.scatter()`. Add axis labels.
+2. **Colour the points** by gender using `dat['gender'].map({'female': 'red', 'male': 'blue'})`. Does the relationship differ between groups?
+3. Use `.corr()` to calculate the **correlation** between `weight` and `height`. How strong is the relationship?
+4. Create **side-by-side boxplots** of cholesterol by gender. What differences do you observe? Try other variables!
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 440
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+DAT = pd.DataFrame({
+    'age':    [46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56],
+    'gender': ['female','female','female','male','male','female','male','male','female','male','male','female','male','female','male','female','male','male','female','male'],
+    'chol':   [203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233],
+    'hdl':    [56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51],
+    'weight': [202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170],
+    'height': [66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69]
+})
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="dat = DAT.copy()\n", width='100%', height='130px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="260px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "pd": pd, "plt": plt, "DAT": DAT}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('py_w2_sol2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_sol2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Tasks 1 & 2 – scatter coloured by gender
+colors = dat['gender'].map({'female': 'red', 'male': 'blue'})
+axes[0].scatter(dat['height'], dat['weight'], c=colors, s=40)
+axes[0].set_xlabel('Height (in)')
+axes[0].set_ylabel('Weight (lbs)')
+r = dat['weight'].corr(dat['height'])
+axes[0].set_title(f"Weight vs Height (r = {r:.2f})")
+
+# Task 4 – boxplot chol by gender
+female_chol = dat[dat['gender']=='female']['chol']
+male_chol   = dat[dat['gender']=='male']['chol']
+axes[1].boxplot([female_chol, male_chol], labels=['female', 'male'])
+axes[1].set_title('Cholesterol by Gender')
+axes[1].set_ylabel('Cholesterol (mg/dL)')
+
+plt.tight_layout()</code></pre>
+</div>
+```
+
+---
+
+### Going Further: Advanced Data Manipulation ⭐
+
+These tasks are more challenging and work best with the full dataset in your Python environment.
+
+1. Create a categorical column `age_group` classifying patients as `"young"` (age < 40), `"middle"` (40 ≤ age < 60), or `"senior"` (age ≥ 60). Use `pd.cut()`.
+2. Calculate **mean cholesterol** for each combination of `gender` and `age_group` using `.groupby()`.
+3. Write a function `standardize()` that takes a numeric Series and returns its **z-score** (subtract mean, divide by std). Apply it to all numeric columns to create `dat_scaled`.
+4. Using `dat_scaled`, identify which patient has the most **extreme standardised BMI**. Print their row from the original `dat`.
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 340
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+import pandas as pd
+
+DAT = pd.DataFrame({
+    'age':    [46,29,58,67,64,34,30,37,52,44,61,39,55,48,33,71,27,63,41,56],
+    'gender': ['female','female','female','male','male','female','male','male','female','male','male','female','male','female','male','female','male','male','female','male'],
+    'chol':   [203,165,228,259,294,155,170,205,218,192,275,148,240,201,189,262,158,281,175,233],
+    'hdl':    [56,42,63,48,45,71,53,55,60,44,52,68,47,58,49,62,65,43,72,51],
+    'weight': [202,122,165,189,170,125,143,156,178,145,201,115,188,160,135,175,130,195,140,170],
+    'height': [66,62,68,71,72,63,69,67,64,70,73,61,72,65,68,66,70,71,64,69]
+})
+DAT['bmi'] = DAT['weight'] / DAT['height']**2 * 703
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="dat = DAT.copy()\n# dat already has a bmi column\n", width='100%', height='170px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO()
+        ns = {"np": np, "pd": pd, "DAT": DAT}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('py_w2_sol3')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_sol3" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code># Task 1 – age_group
+dat['age_group'] = pd.cut(dat['age'],
+                          bins=[0, 40, 60, float('inf')],
+                          labels=['young', 'middle', 'senior'],
+                          right=False)
+
+# Task 2 – mean chol by gender × age_group
+print(dat.groupby(['gender', 'age_group'])['chol'].mean().unstack())
+
+# Task 3 – standardize function
+def standardize(series):
+    return (series - series.mean()) / series.std()
+
+numeric_cols = dat.select_dtypes(include='number').columns
+dat_scaled = dat.copy()
+dat_scaled[numeric_cols] = dat[numeric_cols].apply(standardize)
+
+# Task 4 – most extreme standardised BMI
+extreme_idx = dat_scaled['bmi'].abs().idxmax()
+print(dat.loc[extreme_idx])</code></pre>
+</div>
+```
+
+---
+
+## Plenum Questions
+
+### Question 1: Which measure of spread is most robust to outliers?
+
+Create two datasets — one clean and one with three extreme outliers added. For both, compute the following spread measures and compare how much they change:
+
+- Standard deviation (`np.std(..., ddof=1)`)
+- 10%–90% quantile spread (`np.percentile()`)
+- MAD (median absolute deviation)
+- Range (`np.max() - np.min()`)
+
+Which measure changes the least when outliers are added?
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 300
+from shiny import App, ui, render, reactive
+import io, contextlib, ast
+import numpy as np
+import pandas as pd
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="np.random.seed(123)\ndata1 = np.random.normal(50, 5, 100)\ndata2 = np.concatenate([data1, [80, 100, 120]])\n", width='100%', height='140px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    async def out():
+        f = io.StringIO()
+        ns = {"np": np, "pd": pd}
+        with contextlib.redirect_stdout(f):
+            try:
+                tree = ast.parse(input.code())
+                for node in tree.body:
+                    if isinstance(node, ast.Expr):
+                        val = eval(compile(ast.Expression(node.value),'<s>','eval'), ns)
+                        if val is not None: print(val)
+                    else: exec(compile(ast.Module([node],[]),'<s>','exec'), ns)
+            except Exception as e: print(f"Error: {e}")
+        return f.getvalue()
+app = App(app_ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('py_w2_q1')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q1" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>np.random.seed(123)
+data1 = np.random.normal(50, 5, 100)
+data2 = np.concatenate([data1, [80, 100, 120]])
+
+def mad(x): return np.median(np.abs(x - np.median(x)))
+
+def spread_measures(x, label):
+    return pd.Series({
+        'SD':     np.std(x, ddof=1),
+        'Spread': np.percentile(x, 90) - np.percentile(x, 10),
+        'MAD':    mad(x),
+        'Range':  np.max(x) - np.min(x)
+    }, name=label)
+
+result = pd.concat([spread_measures(data1, 'Without_outliers'),
+                    spread_measures(data2, 'With_outliers')], axis=1)
+print(result.T)</code></pre>
+</div>
+```
+
+---
+
+### Question 2: How do Mode, Median, and Mean relate in differently shaped distributions?
+
+For three theoretical distributions — symmetric (Normal), right-skewed (Exponential), and left-skewed (Beta) — create line plots with vertical lines for **Mean**, **Median**, and **Mode**. Use `scipy.stats`. What pattern do you observe depending on the direction of the skew?
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 560
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from scipy import stats
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="# Distribution parameters:\n# Symmetric:   Normal(loc=100, scale=15)\n# Right-skewed: Exponential(scale=50)\n# Left-skewed:  Beta(a=5, b=2) × 100\n", width='100%', height='110px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="400px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "plt": plt, "stats": stats}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('py_w2_q2')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q2" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>fig, axes = plt.subplots(3, 1, figsize=(8, 10))
+plt.subplots_adjust(hspace=0.5)
+
+# 1. Symmetric (Normal)
+x = np.linspace(40, 160, 1000)
+axes[0].plot(x, stats.norm.pdf(x, 100, 15), color='steelblue', lw=2)
+axes[0].axvline(100, color='red',    lw=2, ls='-',  label='Mean')
+axes[0].axvline(100, color='green',  lw=2, ls='--', label='Median')
+axes[0].axvline(100, color='orange', lw=2, ls=':',  label='Mode')
+axes[0].set_title('Symmetric (Normal)')
+axes[0].legend(fontsize=8)
+
+# 2. Right-skewed (Exponential)
+x = np.linspace(0, 300, 1000)
+axes[1].plot(x, stats.expon.pdf(x, scale=50), color='steelblue', lw=2)
+axes[1].axvline(50,             color='red',    lw=2, ls='-',  label='Mean')
+axes[1].axvline(50*np.log(2),   color='green',  lw=2, ls='--', label='Median')
+axes[1].axvline(0,              color='orange', lw=2, ls=':',  label='Mode')
+axes[1].set_title('Right-Skewed (Exponential)')
+axes[1].legend(fontsize=8)
+
+# 3. Left-skewed (Beta × 100)
+x = np.linspace(0, 100, 1000)
+a, b = 5, 2
+axes[2].plot(x, stats.beta.pdf(x/100, a, b)/100, color='steelblue', lw=2)
+axes[2].axvline(a/(a+b)*100,                  color='red',    lw=2, ls='-',  label='Mean')
+axes[2].axvline(stats.beta.ppf(0.5, a, b)*100, color='green', lw=2, ls='--', label='Median')
+axes[2].axvline((a-1)/(a+b-2)*100,            color='orange', lw=2, ls=':',  label='Mode')
+axes[2].set_title('Left-Skewed (Beta)')
+axes[2].legend(fontsize=8)</code></pre>
+</div>
+```
+
+---
+
+### Question 4: Mean–Variance relationship in gene expression data
+
+Simulate expression counts for 200 genes across 10 samples using a negative binomial distribution (common for RNA-seq data). Plot the **mean expression** against the **variance** per gene. Add a reference line for the Poisson expectation (variance = mean). What do you observe?
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 440
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="np.random.seed(123)\nn_genes   = 200\nn_samples = 10\ngene_means = np.random.uniform(1, 100, n_genes)\n", width='100%', height='120px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="280px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "plt": plt}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('py_w2_q4')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q4" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>np.random.seed(123)
+n_genes   = 200
+n_samples = 10
+gene_means = np.random.uniform(1, 100, n_genes)
+
+# Simulate expression matrix (negative binomial)
+size = 5
+expr_mat = np.zeros((n_genes, n_samples))
+for i in range(n_genes):
+    mu = gene_means[i]
+    p  = size / (size + mu)
+    expr_mat[i, :] = np.random.negative_binomial(size, p, n_samples)
+
+mean_expr = expr_mat.mean(axis=1)
+var_expr  = expr_mat.var(axis=1, ddof=1)
+
+plt.scatter(mean_expr, var_expr, color='blue', alpha=0.6, s=20)
+plt.plot([0, mean_expr.max()], [0, mean_expr.max()],
+         'r--', lw=2, label='Poisson (Var = Mean)')
+m, b = np.polyfit(mean_expr, var_expr, 1)
+x_fit = np.linspace(0, mean_expr.max(), 200)
+plt.plot(x_fit, m*x_fit + b, 'g-', lw=2, label='Actual trend')
+plt.xlabel('Mean Expression')
+plt.ylabel('Variance')
+plt.title('Mean–Variance Relationship in Gene Expression')
+plt.legend()</code></pre>
+</div>
+```
+
+---
+
+### Question 5: When do standard boxplots fail?
+
+Create four datasets with different characteristics (normal, bimodal, small n, skewed). First plot them as standard boxplots — what information is hidden? Then add jittered individual points on top. What do the improved plots reveal that the plain boxplots missed?
+
+```{shinylive-python}
+#| standalone: true
+#| viewerHeight: 520
+from shiny import App, ui, render, reactive
+import ast
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", None, value="np.random.seed(123)\ndata1 = np.random.normal(50, 10, 100)                        # Normal\ndata2 = np.concatenate([np.random.normal(40, 3, 50),\n                        np.random.normal(60, 3, 50)])         # Bimodal\ndata3 = np.random.normal(50, 10, 20)                         # Small n\ndata4 = np.random.gamma(2, 25, 100)                          # Skewed\n", width='100%', height='145px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_plot("plot", height="320px")
+)
+def server(input, output, session):
+    @render.plot
+    @reactive.event(input.run)
+    def plot():
+        plt.clf()
+        ns = {"np": np, "plt": plt}
+        try:
+            exec(input.code(), ns)
+        except Exception as e:
+            plt.text(0.5, 0.5, f"Error: {e}", ha='center', va='center')
+app = App(app_ui, server)
+```
+
+```{=html}
+<button onclick="toggleSolution('py_w2_q5')" class="btn btn-outline-success mt-2">Show / Hide Solution</button>
+<div id="py_w2_q5" style="display:none;background:#f8f9fa;border-radius:8px;padding:14px;margin-top:10px;">
+<pre><code>np.random.seed(123)
+data1 = np.random.normal(50, 10, 100)
+data2 = np.concatenate([np.random.normal(40, 3, 50), np.random.normal(60, 3, 50)])
+data3 = np.random.normal(50, 10, 20)
+data4 = np.random.gamma(2, 25, 100)
+
+datasets = [data1, data2, data3, data4]
+titles   = ['Normal (n=100)', 'Bimodal (n=100)', 'Normal (n=20)', 'Skewed (n=100)']
+titles2  = ['Normal + points', 'Bimodal revealed!', 'Small n visible', 'Skew visible']
+colors   = ['blue', 'red', 'black', 'purple']
+
+fig, axes = plt.subplots(2, 4, figsize=(12, 6))
+plt.subplots_adjust(wspace=0.4, hspace=0.4)
+
+for i, (d, t) in enumerate(zip(datasets, titles)):
+    axes[0, i].boxplot(d)
+    axes[0, i].set_title(t, fontsize=9)
+    axes[0, i].set_ylim(0, 130)
+
+for i, (d, t, c) in enumerate(zip(datasets, titles2, colors)):
+    axes[1, i].boxplot(d)
+    jitter = np.random.uniform(-0.15, 0.15, len(d))
+    axes[1, i].scatter(1 + jitter, d, alpha=0.4, color=c, s=12)
+    axes[1, i].set_title(t, fontsize=9)
+    axes[1, i].set_ylim(0, 130)</code></pre>
+</div>
+```
 
 ::::
