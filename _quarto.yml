@@ -1,9 +1,13 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - "WEEK1/*.md"
+    - "WEEK1/*.pdf"
   render:
     - "*.qmd"
     - "!test_qmds/"
+    - "!**/*.md"
 
 filters:
   - shinylive
