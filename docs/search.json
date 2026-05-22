@@ -567,7 +567,7 @@
     "href": "admin.html",
     "title": "Course Admin",
     "section": "",
-    "text": "⏳ Loading…\n\n\n\n\n\n  🔓 Week Access Control\n  Click a button to toggle access. Changes take effect immediately for all students.\n  \n\n\n\nWeek\nContent\nExercises\n\n\n\n\n\n\n  `;\n}\n\nasync function sbLogin() {\n  await sbClient.auth.signInWithOAuth({\n    provider: 'github',\n    options: { redirectTo: window.location.href }\n  });\n}\n\n// Wait for DOM then start\nif (document.readyState === 'loading') {\n  document.addEventListener('DOMContentLoaded', loadSupabaseAndInit);\n} else {\n  loadSupabaseAndInit();\n}"
+    "text": "⏳ Loading…\n\n\n\n\n\n  🔓 Week Access Control\n  Click a button to toggle access. Changes take effect immediately for all students.\n  \n\n\n\nWeek\nContent\nExercises\n\n\n\n\n\n\n\n  📊 Student Progress\n  Loading…"
   },
   {
     "objectID": "exercises/week2_exercises.html",

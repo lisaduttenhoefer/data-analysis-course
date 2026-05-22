@@ -392,7 +392,131 @@ ul.task-list li input[type="checkbox"] {
 </tbody>
 </table>
 
-  `;
+
+  <h3 class="anchored">📊 Student Progress</h3>
+  <div id="stats-area"><p style="color:#888;">Loading…</p></div>
+
+</div>
+
+
+
+</main> <!-- /main -->
+<script>
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+// ── Add GitHub usernames of admins here ──
+const ADMINS = ['lisaduttenhoefer'];
+
+const WEEK_LABELS = {
+  1:'Week 1: Basic Data Structures',
+  2:'Week 2: Data Cleanup & Visualisation',
+  3:'Week 3', 4:'Week 4', 5:'Week 5',
+  6:'Week 6', 7:'Week 7', 8:'Week 8', 9:'Week 9'
+};
+
+let sbClient;
+
+function loadSupabaseAndInit() {
+  if (typeof supabase !== 'undefined') { runInit(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s.onload  = runInit;
+  s.onerror = () => showMessage('❌ Error', 'Failed to load Supabase library.', '');
+  document.head.appendChild(s);
+}
+
+function runInit() {
+  try { sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); }
+  catch(e) { showMessage('❌ Error', 'Could not connect: ' + e.message, ''); return; }
+
+  sbClient.auth.getSession()
+    .then(({ data, error }) => {
+      if (error) { showMessage('❌ Auth Error', error.message, ''); return; }
+      const session = data?.session;
+      if (!session) {
+        showMessage(
+          '🔐 Admin Login',
+          'Please log in with the admin GitHub account to continue.',
+          '<button class="admin-login-btn" onclick="sbLogin()">Login with GitHub</button>'
+        );
+        return;
+      }
+      const username = session.user.user_metadata?.user_name || '';
+      if (!ADMINS.includes(username)) {
+        showMessage('⛔ Access Denied', `Your account (<strong>${username}</strong>) is not an admin.`, '');
+        return;
+      }
+      document.getElementById('admin-message').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      loadSchedule();
+      loadStats();
+    })
+    .catch(e => showMessage('❌ Error', e.message, ''));
+}
+
+function showMessage(title, body, extra) {
+  const el = document.getElementById('admin-message');
+  el.style.display = 'block';
+  el.innerHTML = `<h3>${title}</h3><p style="color:#555;">${body}</p>${extra}`;
+}
+
+async function loadSchedule() {
+  const { data } = await sbClient.from('course_schedule').select('*').order('week');
+  renderSchedule(data || []);
+}
+
+function renderSchedule(rows) {
+  document.getElementById('schedule-body').innerHTML = rows.map(row => `
+    <tr>
+      <td style="font-weight:700;">${WEEK_LABELS[row.week] || 'Week ' + row.week}</td>
+      <td>
+        <button class="toggle-btn ${row.content_unlocked ? 'btn-unlocked' : 'btn-locked'}"
+                onclick="toggle(${row.week}, 'content_unlocked', ${!row.content_unlocked})">
+          ${row.content_unlocked ? '✅ Unlocked' : '🔒 Locked'}
+        </button>
+      </td>
+      <td>
+        <button class="toggle-btn ${row.exercises_unlocked ? 'btn-unlocked' : 'btn-locked'}"
+                onclick="toggle(${row.week}, 'exercises_unlocked', ${!row.exercises_unlocked})">
+          ${row.exercises_unlocked ? '✅ Unlocked' : '🔒 Locked'}
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function toggle(week, field, newValue) {
+  await sbClient.from('course_schedule').update({ [field]: newValue }).eq('week', week);
+  loadSchedule();
+}
+
+async function loadStats() {
+  const { data, error } = await sbClient.rpc('get_course_stats');
+  const area = document.getElementById('stats-area');
+  if (error || !data) { area.innerHTML = '<p style="color:#888;">No student data yet.</p>'; return; }
+
+  const total  = data.total_students || 0;
+  const byWeek = data.by_week || [];
+
+  const weekRows = byWeek.map(w => {
+    const pct = total > 0 ? Math.round(w.students_active / total * 100) : 0;
+    return `<tr>
+      <td style="font-weight:700;">${WEEK_LABELS[w.week_num] || 'Week ' + w.week_num}</td>
+      <td>${w.students_active} / ${total}</td>
+      <td><div class="progress-mini"><div style="width:${pct}%">${pct}%</div></div></td>
+    </tr>`;
+  }).join('');
+
+  area.innerHTML = `
+    <div class="stat-card">
+      <div class="number">${total}</div>
+      <div class="label">students registered</div>
+    </div>
+    <table id="stats-table">
+      <thead><tr><th>Week</th><th>Students active</th><th>% of class</th></tr></thead>
+      <tbody>${weekRows || '<tr><td colspan="3" style="color:#888;">No activity yet.</td></tr>'}</tbody>
+    </table>`;
 }
 
 async function sbLogin() {
@@ -402,17 +526,8 @@ async function sbLogin() {
   });
 }
 
-// Wait for DOM then start
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadSupabaseAndInit);
-} else {
-  loadSupabaseAndInit();
-}
-
-
-
-
-</div></main> <!-- /main -->
+loadSupabaseAndInit();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
