@@ -1,5 +1,9 @@
 ---
 title: "Course Admin"
+format:
+  html:
+    include-in-header:
+      - language-switch.html
 ---
 
 ```{=html}
