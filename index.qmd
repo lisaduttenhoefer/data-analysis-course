@@ -72,10 +72,18 @@ let _initialized = false;
 let _isRendering = false;
 let allLeaderboardData = [];
 let isLeaderboardExpanded = false;
+let courseSchedule = {};
 
 const WEEKS = [
   { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", exerciseHref:"exercises/week1_exercises.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
-  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", exerciseHref:"exercises/week2_exercises.html", chunkCount:20, quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" }
+  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", exerciseHref:"exercises/week2_exercises.html", chunkCount:20, quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
+  { n:3, title:"Week 3", topics:"Coming soon" },
+  { n:4, title:"Week 4", topics:"Coming soon" },
+  { n:5, title:"Week 5", topics:"Coming soon" },
+  { n:6, title:"Week 6", topics:"Coming soon" },
+  { n:7, title:"Week 7", topics:"Coming soon" },
+  { n:8, title:"Week 8", topics:"Coming soon" },
+  { n:9, title:"Week 9", topics:"Coming soon" }
 ];
 
 // 2. INITIALISIERUNG
@@ -109,6 +117,13 @@ async function render() {
   _isRendering = true;
 
   try {
+    // Load course schedule (public – no auth needed)
+    const { data: scheduleData } = await sbClient.from('course_schedule').select('*');
+    if (scheduleData) {
+      courseSchedule = {};
+      scheduleData.forEach(row => { courseSchedule[row.week] = row; });
+    }
+
     const { data: { session } } = await sbClient.auth.getSession();
     const user = session?.user || null;
 
@@ -180,23 +195,26 @@ function renderWeekCards(dbData) {
     const col = document.createElement('div');
     col.className = 'g-col-12 g-col-sm-6 g-col-md-4';
 
-    const isLocked = !!week.locked;
+    const sched = courseSchedule[week.n];
+    const contentLocked   = !(sched ? sched.content_unlocked   : false);
+    const exercisesLocked = !(sched ? sched.exercises_unlocked : false);
+
     const card = document.createElement('div');
-    card.className = 'week-card p-3' + (isLocked ? ' opacity-50' : '');
-    if (!isLocked && week.href) {
+    card.className = 'week-card p-3' + (contentLocked ? ' opacity-50' : '');
+    if (!contentLocked && week.href) {
       card.style.cursor = 'pointer';
       card.onclick = () => { window.location.href = week.href; };
     }
 
     const pct = p ? p.pct : 0;
-    const exerciseBtn = (!isLocked && week.exerciseHref)
+    const exerciseBtn = (!exercisesLocked && week.exerciseHref)
       ? `<a href="${week.exerciseHref}" onclick="event.stopPropagation()" class="btn btn-sm mt-3 d-inline-block" style="background:#1a4d1a;color:white;border-radius:50px;font-weight:700;font-size:0.78rem;padding:5px 16px;">Exercises →</a>`
       : '';
 
     card.innerHTML = `
       <div class="week-card-title">${week.title}</div>
       <div class="week-card-topics">${week.topics}</div>
-      <div class="week-card-status">${statusLabel(p, isLocked)}</div>
+      <div class="week-card-status">${statusLabel(p, contentLocked)}</div>
       ${p ? `<div class="week-card-progress-bar-bg mt-2"><div class="week-card-progress-fill" style="width:${pct}%"></div></div>` : ''}
       ${exerciseBtn}
     `;
@@ -207,7 +225,7 @@ function renderWeekCards(dbData) {
 
 function updateGlobalUI(dbData) {
   let total = 0, done = 0, completedW = 0;
-  WEEKS.filter(w => !w.locked && w.chunkCount).forEach(w => {
+  WEEKS.filter(w => courseSchedule[w.n]?.content_unlocked && w.chunkCount).forEach(w => {
     const p = calculateWeekProgress(w, dbData);
     if (p) { total += p.total; done += p.done; if(p.pct === 100) completedW++; }
   });

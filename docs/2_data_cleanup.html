@@ -110,78 +110,102 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     function applyFinalStyle() {
       // Wir suchen alle Links in der Navbar
       const links = document.querySelectorAll('.navbar-nav .nav-link');
       let pyBtn, rBtn;
-  
+
       links.forEach(link => {
         if (link.textContent.trim() === 'PYTHON') pyBtn = link;
         if (link.textContent.trim() === 'R') rBtn = link;
       });
-  
+
       if (!pyBtn || !rBtn) {
         setTimeout(applyFinalStyle, 200);
         return;
       }
-  
+
       const darkGreen = "#1a4d1a";
-  
+
       function updateView(lang) {
         document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
         document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
-        
+
         // Style Python
         pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
-        
+
         // Style R
         rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
-        
+
         localStorage.setItem('da_course_lang', lang);
       }
-  
+
       pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
       rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
-  
+
       updateView(localStorage.getItem('da_course_lang') || 'python');
     }
     applyFinalStyle();
   });
 
-  // Funktion zum Markieren einer Aufgabe als erledigt
-  function markTaskDone(taskId) {
-      localStorage.setItem('task_' + taskId, 'true');
-      updateGlobalProgress();
-  }
+  // Sub-page access lock check (reads course_schedule from Supabase)
+  (function() {
+    const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
 
-  // Berechnet den Gesamtfortschritt und aktualisiert den Balken
-  function updateGlobalProgress() {
-      const totalWeeks = 12; // Deine Anzahl an Wochen
-      let doneCount = 0;
-      
-      for (let i = 1; i <= totalWeeks; i++) {
-          if (localStorage.getItem('task_woche' + i) === 'true') {
-              doneCount++;
-          }
+    function getPageWeekInfo() {
+      const path = window.location.pathname;
+      // Exercise pages: .../exercises/week{n}_exercises.html
+      const exMatch = path.match(/week(\d+)_exercises/);
+      if (exMatch) return { week: parseInt(exMatch[1]), type: 'exercises' };
+      // Content pages: .../{n}_something.html (n >= 1)
+      const contentMatch = path.match(/\/(\d+)_[^/]+\.html/);
+      if (contentMatch) {
+        const n = parseInt(contentMatch[1]);
+        if (n >= 1) return { week: n, type: 'content' };
       }
-      
-      const percent = Math.round((doneCount / totalWeeks) * 100);
-      const bar = document.getElementById('course-progress-bar');
-      const text = document.getElementById('progress-text');
-      
-      if (bar && text) {
-          bar.style.width = percent + '%';
-          bar.innerText = percent + '%';
-          text.innerText = doneCount + ' von ' + totalWeeks + ' Wochen bearbeitet';
-      }
-  }
+      return null;
+    }
 
-  // Beim Laden der Seite den Balken initialisieren
-  document.addEventListener('DOMContentLoaded', updateGlobalProgress);
-  </script>
+    function redirectToRoot() {
+      const pathParts = window.location.pathname.split('/');
+      const isExercise = window.location.pathname.includes('/exercises/');
+      const depth = isExercise ? 2 : 1;
+      const rootPath = pathParts.slice(0, pathParts.length - depth).join('/') + '/';
+      window.location.href = window.location.origin + rootPath;
+    }
 
+    function doCheck() {
+      if (typeof supabase === 'undefined') { setTimeout(doCheck, 100); return; }
+      const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const pageInfo = getPageWeekInfo();
+      client.from('course_schedule')
+        .select('content_unlocked, exercises_unlocked')
+        .eq('week', pageInfo.week)
+        .single()
+        .then(({ data }) => {
+          if (!data) { redirectToRoot(); return; }
+          const unlocked = pageInfo.type === 'content'
+            ? data.content_unlocked
+            : data.exercises_unlocked;
+          if (!unlocked) redirectToRoot();
+        });
+    }
+
+    const pageInfo = getPageWeekInfo();
+    if (!pageInfo) return; // index, admin, getting-started — no locking
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', doCheck);
+    } else {
+      doCheck();
+    }
+  })();
+</script>
+<script src="coi-serviceworker.js"></script>
 
 
 </head>

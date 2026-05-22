@@ -2,23 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/index.html</loc>
-    <lastmod>2026-05-06T09:04:53.157Z</lastmod>
+    <lastmod>2026-05-22T11:23:48.972Z</lastmod>
   </url>
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/exercises/week1_exercises.html</loc>
     <lastmod>2026-05-06T09:18:35.427Z</lastmod>
   </url>
   <url>
-    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/1_datentypen.html</loc>
-    <lastmod>2026-05-06T12:39:41.626Z</lastmod>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/2_data_cleanup.html</loc>
+    <lastmod>2026-05-06T12:39:37.372Z</lastmod>
   </url>
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/0_markdown.html</loc>
     <lastmod>2026-04-24T09:08:36.016Z</lastmod>
   </url>
   <url>
-    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/2_data_cleanup.html</loc>
-    <lastmod>2026-05-06T12:39:37.372Z</lastmod>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/1_datentypen.html</loc>
+    <lastmod>2026-05-06T12:39:41.626Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/admin.html</loc>
+    <lastmod>2026-05-22T11:25:12.525Z</lastmod>
   </url>
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/exercises/week2_exercises.html</loc>
