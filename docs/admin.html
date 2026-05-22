@@ -369,8 +369,10 @@ ul.task-list li input[type="checkbox"] {
   .stat-card .label  { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
 </style>
 
-<!-- Login / access denied message -->
-<div id="admin-message" style="display:none;"></div>
+<!-- Login / access denied message – visible by default while loading -->
+<div id="admin-message">
+  <h3 class="anchored">⏳ Loading…</h3>
+</div>
 
 <!-- Admin panel (shown only to admins) -->
 <div id="admin-panel" style="display:none;">
