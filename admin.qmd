@@ -97,17 +97,33 @@ const WEEK_LABELS = {
 
 let sbClient;
 
-// ── Entry point ──
-function init() {
-  if (typeof supabase === 'undefined') { setTimeout(init, 100); return; }
+// ── Load Supabase dynamically (self-contained, no dependency on language-switch.html) ──
+function loadSupabaseAndInit() {
+  if (typeof supabase !== 'undefined') {
+    console.log('[Admin] Supabase already defined, running init');
+    runInit();
+    return;
+  }
+  console.log('[Admin] Loading Supabase CDN…');
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s.onload  = () => { console.log('[Admin] Supabase CDN loaded'); runInit(); };
+  s.onerror = () => showMessage('❌ Error', 'Failed to load Supabase library.', '');
+  document.head.appendChild(s);
+}
+
+function runInit() {
+  console.log('[Admin] Creating Supabase client…');
   try {
     sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   } catch(e) {
-    showMessage('❌ Error', 'Could not connect to Supabase: ' + e.message, '');
+    showMessage('❌ Error', 'Could not create Supabase client: ' + e.message, '');
     return;
   }
+  console.log('[Admin] Calling getSession…');
   sbClient.auth.getSession()
     .then(({ data, error }) => {
+      console.log('[Admin] getSession resolved', { data, error });
       if (error) { showMessage('❌ Auth Error', error.message, ''); return; }
       const session = data?.session;
       if (!session) {
@@ -119,6 +135,7 @@ function init() {
         return;
       }
       const username = session.user.user_metadata?.user_name || '';
+      console.log('[Admin] Logged in as:', username);
       if (!ADMINS.includes(username)) {
         showMessage('⛔ Access Denied', `Your account (<strong>${username}</strong>) is not an admin.`, '');
         return;
@@ -128,7 +145,7 @@ function init() {
       loadSchedule();
       loadStats();
     })
-    .catch(e => showMessage('❌ Error', e.message, ''));
+    .catch(e => { console.error('[Admin] getSession error:', e); showMessage('❌ Error', e.message, ''); });
 }
 
 function showMessage(title, body, extra) {
@@ -212,11 +229,11 @@ async function sbLogin() {
   });
 }
 
-// Wait for DOM + Supabase, then start
+// Wait for DOM then start
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', loadSupabaseAndInit);
 } else {
-  init();
+  loadSupabaseAndInit();
 }
 </script>
 ```

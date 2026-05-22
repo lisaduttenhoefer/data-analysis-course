@@ -402,11 +402,11 @@ async function sbLogin() {
   });
 }
 
-// Wait for DOM + Supabase, then start
+// Wait for DOM then start
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', loadSupabaseAndInit);
 } else {
-  init();
+  loadSupabaseAndInit();
 }
 
 
