@@ -3,8 +3,6 @@ title: "Course Admin"
 ---
 
 ```{=html}
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
   #admin-panel h3 { color: #1a4d1a; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; }
 
@@ -59,8 +57,10 @@ title: "Course Admin"
   .stat-card .label  { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
 </style>
 
-<!-- Login / access denied message -->
-<div id="admin-message" style="display:none;"></div>
+<!-- Login / access denied message – visible by default while loading -->
+<div id="admin-message">
+  <h3>⏳ Loading…</h3>
+</div>
 
 <!-- Admin panel (shown only to admins) -->
 <div id="admin-panel" style="display:none;">
@@ -96,25 +96,35 @@ let sbClient;
 // ── Entry point ──
 function init() {
   if (typeof supabase === 'undefined') { setTimeout(init, 100); return; }
-  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  sbClient.auth.getSession().then(({ data: { session } }) => {
-    if (!session) {
-      showMessage(
-        '🔐 Admin Login',
-        'Please log in with the admin GitHub account to continue.',
-        '<button class="admin-login-btn" onclick="sbLogin()">Login with GitHub</button>'
-      );
-      return;
-    }
-    const username = session.user.user_metadata?.user_name || '';
-    if (!ADMINS.includes(username)) {
-      showMessage('⛔ Access Denied', `Your account (<strong>${username}</strong>) is not an admin.`, '');
-      return;
-    }
-    document.getElementById('admin-panel').style.display = 'block';
-    loadSchedule();
-    loadStats();
-  });
+  try {
+    sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch(e) {
+    showMessage('❌ Error', 'Could not connect to Supabase: ' + e.message, '');
+    return;
+  }
+  sbClient.auth.getSession()
+    .then(({ data, error }) => {
+      if (error) { showMessage('❌ Auth Error', error.message, ''); return; }
+      const session = data?.session;
+      if (!session) {
+        showMessage(
+          '🔐 Admin Login',
+          'Please log in with the admin GitHub account to continue.',
+          '<button class="admin-login-btn" onclick="sbLogin()">Login with GitHub</button>'
+        );
+        return;
+      }
+      const username = session.user.user_metadata?.user_name || '';
+      if (!ADMINS.includes(username)) {
+        showMessage('⛔ Access Denied', `Your account (<strong>${username}</strong>) is not an admin.`, '');
+        return;
+      }
+      document.getElementById('admin-message').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      loadSchedule();
+      loadStats();
+    })
+    .catch(e => showMessage('❌ Error', e.message, ''));
 }
 
 function showMessage(title, body, extra) {
@@ -198,6 +208,11 @@ async function sbLogin() {
   });
 }
 
-init();
+// Wait for DOM + Supabase, then start
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 ```
