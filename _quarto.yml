@@ -28,14 +28,10 @@ website:
             href: 0_markdown.qmd
           - text: "Basics in Coding"
             href: coding_basics.qmd
-          - section: "WEEK 1: Datatypes"
-            contents:
-              - text: "Content"
-                href: 1_datentypen.qmd
-          - section: "WEEK 2: Data Cleanup"
-            contents:
-              - text: "Content"
-                href: 2_data_cleanup.qmd
+          - text: "Week 1: Datatypes"
+            href: 1_datentypen.qmd
+          - text: "Week 2: Data Cleanup"
+            href: 2_data_cleanup.qmd
 
   navbar:
     background: "#ffffff"
