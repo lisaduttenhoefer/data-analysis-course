@@ -305,9 +305,9 @@
   {
     "objectID": "1_datentypen.html",
     "href": "1_datentypen.html",
-    "title": "Week 1: Basic Data Structures & Data Manipulation",
+    "title": "Basics in Coding",
     "section": "",
-    "text": "Week 1 Progress\n      Loading…\n    \n    ← Dashboard\n  \n  \n    \n  \n  Complete either the R or the Python track to reach 100%\nLet’s explore how data is organised and displayed in R and Python! We will first introduce the basic concepts of datatypes and then how you can manipulate this structures. At the end of each section you will find a quiz to practise the learned content.",
+    "text": "Week 1 Progress\n      Loading…\n    \n    ← Dashboard\nIn this week you will learn the fundamental building blocks of R: how data is stored, organised, and accessed. These concepts underlie everything that comes later.\nWatch the three short lecture videos and download the slide deck. Check each item off as you go.\nDownload both R Markdown files and work through them in RStudio. Check each off when done.\nUseful reference PDFs (open in browser, no download needed):\nFour short quizzes — one per data structure. Each unlocks once you get all questions right.",
     "crumbs": [
       "PYTHON",
       "COURSE-CONTENTS",
@@ -632,6 +632,193 @@
       "COURSE-CONTENTS",
       "WEEK 2: Data Cleanup",
       "Exercises – Week 2"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#variables-assignments",
+    "href": "1_datentypen.html#variables-assignments",
+    "title": "Basics in Coding",
+    "section": "Variables & Assignments",
+    "text": "Variables & Assignments\n\nAssigning values\nUse &lt;- or = to assign a value to a variable. R is case-sensitive — hello and Hello are different objects.\na   &lt;- 2            # numeric\nb   &lt;- TRUE         # logical\nname &lt;- \"Rosalinde\" # character (string)\n\na + 3               # use in calculations: returns 5\nprint(name)         # explicitly print to console\n\n\n\nFunction\nWhat it does\n\n\nstr(x)\nShow structure and type of x\n\n\nls()\nList all objects in the environment\n\n\nrm(x)\nRemove variable x from the environment\n\n\nload(\"file.RData\")\nReload a saved environment",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "WEEK 1: Datatypes",
+      "Content"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#vectors",
+    "href": "1_datentypen.html#vectors",
+    "title": "Basics in Coding",
+    "section": "Vectors",
+    "text": "Vectors\n\nCreating & accessing vectors\nA vector is a sequence of values of the same type. When you mix types, R converts everything to the lowest common type (logical → numeric → character).\ny &lt;- c(9, 3, 7, 2)   # numeric vector of length 4\nlength(y)             # 4\n\n# Indexing\ny[3]          # 7        — third element\ny[2:4]        # 3 7 2    — elements 2 to 4\ny[-2]         # 9 7 2    — all except element 2\ny[y &lt; 5]      # 3 2      — elements where condition is TRUE\n\n# Logical tests (applied to each element)\ny &lt; 5         # FALSE TRUE FALSE TRUE\nsum(y &lt; 5)    # 2  — count of elements satisfying condition\n\n# Modifying\ny[1] &lt;- 10    # replace first element\n\n  TRUE / FALSE in arithmetic: R treats TRUE as 1 and FALSE as 0.\n  So sum(c(TRUE, FALSE, TRUE, TRUE)) = 3 — a quick way to count matching elements.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "WEEK 1: Datatypes",
+      "Content"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#matrices",
+    "href": "1_datentypen.html#matrices",
+    "title": "Basics in Coding",
+    "section": "Matrices",
+    "text": "Matrices\n\nCreating & accessing matrices\nA matrix is a 2-dimensional structure. All elements must be the same type. Indexing uses [row, column] — leave one side empty to select all.\nX &lt;- matrix(1:6, nrow = 2, ncol = 3, byrow = TRUE)\n#      [,1] [,2] [,3]\n# [1,]    1    2    3\n# [2,]    4    5    6\n\ndim(X)        # c(2, 3)  — rows, then columns\nX[1, 2]       # 2        — row 1, column 2\nX[2, ]        # 4 5 6    — entire second row\nX[, 1]        # 1 4      — entire first column\n\n# Building from vectors\nA &lt;- cbind(c(1,2), c(3,4), c(5,6))   # join as columns\nB &lt;- rbind(c(1,2,3), c(4,5,6))       # join as rows\n\n# Naming\nrownames(A) &lt;- c(\"r1\", \"r2\")\ncolnames(A) &lt;- c(\"p1\", \"p2\", \"p3\")\n\n\n\nFunction\nWhat it does\n\n\ndim(X)\nReturns c(rows, columns)\n\n\nnrow(X) / ncol(X)\nNumber of rows / columns\n\n\ncbind(x, y)\nCombine vectors as columns\n\n\nrbind(x, y)\nCombine vectors as rows\n\n\ncolnames(X)\nGet or set column names\n\n\nrownames(X)\nGet or set row names",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "WEEK 1: Datatypes",
+      "Content"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#lists",
+    "href": "1_datentypen.html#lists",
+    "title": "Basics in Coding",
+    "section": "Lists",
+    "text": "Lists\n\nCreating & accessing lists\nLists can hold elements of different types and lengths — unlike vectors or matrices. Access elements with $name or [[ ]].\nL &lt;- list(color = c(\"blue\", \"red\"), size = 5, active = TRUE)\n\n# Accessing content (returns the actual value)\nL$color           # \"blue\" \"red\"\nL[[\"color\"]]      # same — \"blue\" \"red\"\nL[[\"color\"]][2]   # \"red\"\n\n# Single brackets return a list, not the content\nL[\"color\"]        # a list of length 1 (not the vector!)\nlength(L[\"color\"])   # 1\nlength(L[[\"color\"]]) # 2\n\n# Modifying & deleting\nL[[\"size\"]] &lt;- 10     # change an element\nL[[\"new\"]]  &lt;- \"hi\"   # add a new element\nL[[3]] &lt;- NULL         # delete third element\n\n  [ ] vs [[ ]]: Single brackets always return a list.\n  Double brackets return the content. Use [[ ]] when you want to work with the value.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "WEEK 1: Datatypes",
+      "Content"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#dataframes",
+    "href": "1_datentypen.html#dataframes",
+    "title": "Basics in Coding",
+    "section": "Dataframes",
+    "text": "Dataframes\n\nCreating & accessing dataframes\nA dataframe is like a table: rows are observations, columns are variables. Unlike matrices, different columns can have different types.\nName   &lt;- c(\"Ben\", \"Alice\", \"Daniel\", \"Charlie\")\nYear   &lt;- c(1990, 1992, 1995, 1993)\nOption &lt;- c(\"Biology\", \"Physics\", \"Chemistry\", \"Mathematics\")\n\ndf &lt;- data.frame(First_Name = Name, Year = Year, Options = Option)\n\n# Accessing columns\ndf$Year           # 1990 1992 1995 1993\ndf[[\"Year\"]]      # same\ndf[, 2]           # same — all rows, column 2\n\n# Accessing elements\ndf$Options[3]     # \"Chemistry\"\ndf[2:3, 3]        # \"Physics\" \"Chemistry\"\n\n# Merging two dataframes\nFull_Names &lt;- data.frame(First_Name = c(\"Alice\",\"Ben\"),\n                         Last_Name  = c(\"Parker\",\"James\"))\n\nmerge(df, Full_Names)          # Inner join — only matching rows\nmerge(df, Full_Names, all=TRUE) # Outer join — all rows, NA for missing\n\n\n\nFunction\nWhat it does\n\n\ndata.frame(...)\nCreate a dataframe from named vectors\n\n\nas.data.frame(X)\nConvert a matrix to a dataframe\n\n\ndim(df)\nRows and columns\n\n\ncolnames(df)\nColumn names\n\n\nstr(df)\nStructure overview (types, first values)\n\n\nmerge(a, b)\nJoin two dataframes on shared columns",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "WEEK 1: Datatypes",
+      "Content"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#loops-iteration",
+    "href": "1_datentypen.html#loops-iteration",
+    "title": "Basics in Coding",
+    "section": "Loops & Iteration",
+    "text": "Loops & Iteration\n\napply family & for loops\nMat &lt;- matrix(rnorm(12), nrow = 3)\n\napply(Mat, 1, mean)   # mean of each ROW    (MARGIN = 1)\napply(Mat, 2, mean)   # mean of each COLUMN (MARGIN = 2)\n\nx &lt;- c(1:5)\nsapply(x, sqrt)       # apply sqrt() to each element → returns vector\nlapply(x, sqrt)       # same but returns a list\n\n# For loop\nfor (i in 1:4) {\n  print(i * 3)\n}\n\n# If / else\na &lt;- 5; b &lt;- 10\nif (a &lt; b) { print(\"a is smaller\") } else { print(\"b is smaller\") }\n\n\n\nFunction\nWhat it does\n\n\napply(X, 1, fun)\nApply fun to each row of matrix/dataframe\n\n\napply(X, 2, fun)\nApply fun to each column\n\n\nsapply(x, fun)\nApply fun to each element of vector/list → vector\n\n\nlapply(x, fun)\nApply fun to each element → list",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "WEEK 1: Datatypes",
+      "Content"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#index-selection",
+    "href": "1_datentypen.html#index-selection",
+    "title": "Basics in Coding",
+    "section": "Index Selection",
+    "text": "Index Selection\n\nwhich, %in%, is.na\nx &lt;- c(2, 8, 3, 7, 1)\n\nwhich(x &gt; 5)          # c(2, 4)  — INDICES where condition is TRUE\nx[which(x &gt; 5)]       # c(8, 7)  — VALUES at those indices\n\nc(\"a\",\"b\",\"c\") %in% c(\"b\",\"d\")  # FALSE TRUE FALSE\n                                 # — is each element in the right-hand set?\n\nis.na(c(1, NA, 3))    # FALSE TRUE FALSE\nsum(is.na(x))         # count of NA values\n\n\n\nFunction / Operator\nWhat it does\n\n\nwhich(condition)\nReturns indices where condition is TRUE\n\n\nx %in% y\nFor each element of x: is it anywhere in y?\n\n\nis.na(x)\nTRUE for each NA element\n\n\nna.omit(x)\nRemove NA values from a vector or dataframe",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "WEEK 1: Datatypes",
+      "Content"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html",
+    "href": "coding_basics.html",
+    "title": "Basics in Coding",
+    "section": "",
+    "text": "This page is a quick-reference for the R basics covered in Week 1. Keep it open in a browser tab while working through the markdowns in RStudio.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#variables-assignments",
+    "href": "coding_basics.html#variables-assignments",
+    "title": "Basics in Coding",
+    "section": "Variables & Assignments",
+    "text": "Variables & Assignments\n\nAssigning values\nUse &lt;- or = to assign a value to a variable. R is case-sensitive — hello and Hello are different objects.\na   &lt;- 2            # numeric\nb   &lt;- TRUE         # logical\nname &lt;- \"Rosalinde\" # character (string)\n\na + 3               # use in calculations: returns 5\nprint(name)         # explicitly print to console\n\n\n\nFunction\nWhat it does\n\n\nstr(x)\nShow structure and type of x\n\n\nls()\nList all objects in the environment\n\n\nrm(x)\nRemove variable x from the environment\n\n\nload(\"file.RData\")\nReload a saved environment",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#vectors",
+    "href": "coding_basics.html#vectors",
+    "title": "Basics in Coding",
+    "section": "Vectors",
+    "text": "Vectors\n\nCreating & accessing vectors\nA vector is a sequence of values of the same type. When you mix types, R converts everything to the lowest common type (logical → numeric → character).\ny &lt;- c(9, 3, 7, 2)   # numeric vector of length 4\nlength(y)             # 4\n\n# Indexing\ny[3]          # 7        — third element\ny[2:4]        # 3 7 2    — elements 2 to 4\ny[-2]         # 9 7 2    — all except element 2\ny[y &lt; 5]      # 3 2      — elements where condition is TRUE\n\n# Logical tests (applied to each element)\ny &lt; 5         # FALSE TRUE FALSE TRUE\nsum(y &lt; 5)    # 2  — count of elements satisfying condition\n\n# Modifying\ny[1] &lt;- 10    # replace first element\n\n  TRUE / FALSE in arithmetic: R treats TRUE as 1 and FALSE as 0.\n  So sum(c(TRUE, FALSE, TRUE, TRUE)) = 3 — a quick way to count matching elements.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#matrices",
+    "href": "coding_basics.html#matrices",
+    "title": "Basics in Coding",
+    "section": "Matrices",
+    "text": "Matrices\n\nCreating & accessing matrices\nA matrix is a 2-dimensional structure. All elements must be the same type. Indexing uses [row, column] — leave one side empty to select all.\nX &lt;- matrix(1:6, nrow = 2, ncol = 3, byrow = TRUE)\n#      [,1] [,2] [,3]\n# [1,]    1    2    3\n# [2,]    4    5    6\n\ndim(X)        # c(2, 3)  — rows, then columns\nX[1, 2]       # 2        — row 1, column 2\nX[2, ]        # 4 5 6    — entire second row\nX[, 1]        # 1 4      — entire first column\n\n# Building from vectors\nA &lt;- cbind(c(1,2), c(3,4), c(5,6))   # join as columns\nB &lt;- rbind(c(1,2,3), c(4,5,6))       # join as rows\n\n# Naming\nrownames(A) &lt;- c(\"r1\", \"r2\")\ncolnames(A) &lt;- c(\"p1\", \"p2\", \"p3\")\n\n\n\nFunction\nWhat it does\n\n\ndim(X)\nReturns c(rows, columns)\n\n\nnrow(X) / ncol(X)\nNumber of rows / columns\n\n\ncbind(x, y)\nCombine vectors as columns\n\n\nrbind(x, y)\nCombine vectors as rows\n\n\ncolnames(X)\nGet or set column names\n\n\nrownames(X)\nGet or set row names",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#lists",
+    "href": "coding_basics.html#lists",
+    "title": "Basics in Coding",
+    "section": "Lists",
+    "text": "Lists\n\nCreating & accessing lists\nLists can hold elements of different types and lengths — unlike vectors or matrices. Access elements with $name or [[ ]].\nL &lt;- list(color = c(\"blue\", \"red\"), size = 5, active = TRUE)\n\n# Accessing content (returns the actual value)\nL$color           # \"blue\" \"red\"\nL[[\"color\"]]      # same — \"blue\" \"red\"\nL[[\"color\"]][2]   # \"red\"\n\n# Single brackets return a list, not the content\nL[\"color\"]        # a list of length 1 (not the vector!)\nlength(L[\"color\"])   # 1\nlength(L[[\"color\"]]) # 2\n\n# Modifying & deleting\nL[[\"size\"]] &lt;- 10     # change an element\nL[[\"new\"]]  &lt;- \"hi\"   # add a new element\nL[[3]] &lt;- NULL         # delete third element\n\n  [ ] vs [[ ]]: Single brackets always return a list.\n  Double brackets return the content. Use [[ ]] when you want to work with the value.",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#dataframes",
+    "href": "coding_basics.html#dataframes",
+    "title": "Basics in Coding",
+    "section": "Dataframes",
+    "text": "Dataframes\n\nCreating & accessing dataframes\nA dataframe is like a table: rows are observations, columns are variables. Unlike matrices, different columns can have different types.\nName   &lt;- c(\"Ben\", \"Alice\", \"Daniel\", \"Charlie\")\nYear   &lt;- c(1990, 1992, 1995, 1993)\nOption &lt;- c(\"Biology\", \"Physics\", \"Chemistry\", \"Mathematics\")\n\ndf &lt;- data.frame(First_Name = Name, Year = Year, Options = Option)\n\n# Accessing columns\ndf$Year           # 1990 1992 1995 1993\ndf[[\"Year\"]]      # same\ndf[, 2]           # same — all rows, column 2\n\n# Accessing elements\ndf$Options[3]     # \"Chemistry\"\ndf[2:3, 3]        # \"Physics\" \"Chemistry\"\n\n# Merging two dataframes\nFull_Names &lt;- data.frame(First_Name = c(\"Alice\",\"Ben\"),\n                         Last_Name  = c(\"Parker\",\"James\"))\n\nmerge(df, Full_Names)          # Inner join — only matching rows\nmerge(df, Full_Names, all=TRUE) # Outer join — all rows, NA for missing\n\n\n\nFunction\nWhat it does\n\n\ndata.frame(...)\nCreate a dataframe from named vectors\n\n\nas.data.frame(X)\nConvert a matrix to a dataframe\n\n\ndim(df)\nRows and columns\n\n\ncolnames(df)\nColumn names\n\n\nstr(df)\nStructure overview (types, first values)\n\n\nmerge(a, b)\nJoin two dataframes on shared columns",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#loops-iteration",
+    "href": "coding_basics.html#loops-iteration",
+    "title": "Basics in Coding",
+    "section": "Loops & Iteration",
+    "text": "Loops & Iteration\n\napply family & for loops\nMat &lt;- matrix(rnorm(12), nrow = 3)\n\napply(Mat, 1, mean)   # mean of each ROW    (MARGIN = 1)\napply(Mat, 2, mean)   # mean of each COLUMN (MARGIN = 2)\n\nx &lt;- c(1:5)\nsapply(x, sqrt)       # apply sqrt() to each element → returns vector\nlapply(x, sqrt)       # same but returns a list\n\n# For loop\nfor (i in 1:4) {\n  print(i * 3)\n}\n\n# If / else\na &lt;- 5; b &lt;- 10\nif (a &lt; b) { print(\"a is smaller\") } else { print(\"b is smaller\") }\n\n\n\nFunction\nWhat it does\n\n\napply(X, 1, fun)\nApply fun to each row of matrix/dataframe\n\n\napply(X, 2, fun)\nApply fun to each column\n\n\nsapply(x, fun)\nApply fun to each element of vector/list → vector\n\n\nlapply(x, fun)\nApply fun to each element → list",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#index-selection",
+    "href": "coding_basics.html#index-selection",
+    "title": "Basics in Coding",
+    "section": "Index Selection",
+    "text": "Index Selection\n\nwhich, %in%, is.na\nx &lt;- c(2, 8, 3, 7, 1)\n\nwhich(x &gt; 5)          # c(2, 4)  — INDICES where condition is TRUE\nx[which(x &gt; 5)]       # c(8, 7)  — VALUES at those indices\n\nc(\"a\",\"b\",\"c\") %in% c(\"b\",\"d\")  # FALSE TRUE FALSE\n                                 # — is each element in the right-hand set?\n\nis.na(c(1, NA, 3))    # FALSE TRUE FALSE\nsum(is.na(x))         # count of NA values\n\n\n\nFunction / Operator\nWhat it does\n\n\nwhich(condition)\nReturns indices where condition is TRUE\n\n\nx %in% y\nFor each element of x: is it anywhere in y?\n\n\nis.na(x)\nTRUE for each NA element\n\n\nna.omit(x)\nRemove NA values from a vector or dataframe",
+    "crumbs": [
+      "PYTHON",
+      "COURSE-CONTENTS",
+      "Basics in Coding"
     ]
   }
 ]

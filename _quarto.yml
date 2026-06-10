@@ -15,7 +15,7 @@ filters:
 website:
   title: "METHODS IN DATA ANALYSIS"
   site-url: "https://lisaduttenhoefer.github.io/data-analysis-course"
-  
+
   sidebar:
     style: "floating"
     collapse-level: 1
@@ -26,18 +26,16 @@ website:
         contents:
           - text: "Getting started"
             href: 0_markdown.qmd
+          - text: "Basics in Coding"
+            href: coding_basics.qmd
           - section: "WEEK 1: Datatypes"
             contents:
               - text: "Content"
                 href: 1_datentypen.qmd
-              - text: "Exercises – Week 1"
-                href: exercises/week1_exercises.qmd
           - section: "WEEK 2: Data Cleanup"
             contents:
               - text: "Content"
                 href: 2_data_cleanup.qmd
-              - text: "Exercises – Week 2"
-                href: exercises/week2_exercises.qmd
 
   navbar:
     background: "#ffffff"
@@ -49,7 +47,7 @@ website:
 
 format:
   html:
-    theme: 
+    theme:
       - cosmo
       - custom.scss
     embed-resources: false

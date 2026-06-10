@@ -1,0 +1,300 @@
+---
+title: "Basics in Coding"
+format:
+  html:
+    include-in-header:
+      - language-switch.html
+---
+
+```{=html}
+<style>
+  .ref-section {
+    background: #f8f9fa; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #1a4d1a;
+  }
+  .ref-section h3 { color: #1a4d1a; margin-top: 0; margin-bottom: 0.8rem; font-size: 1.15rem; }
+  .ref-section code { background: #e8f5e9; padding: 2px 5px; border-radius: 4px; }
+  .fn-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem; }
+  .fn-table th { background: #1a4d1a; color: white; padding: 8px 12px; text-align: left; }
+  .fn-table td { padding: 7px 12px; border-bottom: 1px solid #e0e0e0; vertical-align: top; }
+  .fn-table tr:last-child td { border-bottom: none; }
+  .fn-table td:first-child { font-family: monospace; color: #1a4d1a; white-space: nowrap; }
+  .tip-box {
+    background: #e8f5e9; border-radius: 8px; padding: 12px 16px;
+    margin: 1rem 0; font-size: 0.9rem; border-left: 3px solid #1a4d1a;
+  }
+</style>
+```
+
+This page is a **quick-reference** for the R basics covered in Week 1. Keep it open in a browser tab while working through the markdowns in RStudio.
+
+---
+
+## Variables & Assignments
+
+```{=html}
+<div class="ref-section">
+<h3>Assigning values</h3>
+```
+
+Use `<-` or `=` to assign a value to a variable. R is **case-sensitive** — `hello` and `Hello` are different objects.
+
+```r
+a   <- 2            # numeric
+b   <- TRUE         # logical
+name <- "Rosalinde" # character (string)
+
+a + 3               # use in calculations: returns 5
+print(name)         # explicitly print to console
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td>str(x)</td><td>Show structure and type of x</td></tr>
+  <tr><td>ls()</td><td>List all objects in the environment</td></tr>
+  <tr><td>rm(x)</td><td>Remove variable x from the environment</td></tr>
+  <tr><td>load("file.RData")</td><td>Reload a saved environment</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Vectors
+
+```{=html}
+<div class="ref-section">
+<h3>Creating &amp; accessing vectors</h3>
+```
+
+A vector is a sequence of values of the **same type**. When you mix types, R converts everything to the lowest common type (logical → numeric → character).
+
+```r
+y <- c(9, 3, 7, 2)   # numeric vector of length 4
+length(y)             # 4
+
+# Indexing
+y[3]          # 7        — third element
+y[2:4]        # 3 7 2    — elements 2 to 4
+y[-2]         # 9 7 2    — all except element 2
+y[y < 5]      # 3 2      — elements where condition is TRUE
+
+# Logical tests (applied to each element)
+y < 5         # FALSE TRUE FALSE TRUE
+sum(y < 5)    # 2  — count of elements satisfying condition
+
+# Modifying
+y[1] <- 10    # replace first element
+```
+
+```{=html}
+<div class="tip-box">
+  <strong>TRUE / FALSE in arithmetic:</strong> R treats <code>TRUE</code> as 1 and <code>FALSE</code> as 0.
+  So <code>sum(c(TRUE, FALSE, TRUE, TRUE))</code> = 3 — a quick way to count matching elements.
+</div>
+</div>
+```
+
+---
+
+## Matrices
+
+```{=html}
+<div class="ref-section">
+<h3>Creating &amp; accessing matrices</h3>
+```
+
+A matrix is a **2-dimensional** structure. All elements must be the same type. Indexing uses `[row, column]` — leave one side empty to select all.
+
+```r
+X <- matrix(1:6, nrow = 2, ncol = 3, byrow = TRUE)
+#      [,1] [,2] [,3]
+# [1,]    1    2    3
+# [2,]    4    5    6
+
+dim(X)        # c(2, 3)  — rows, then columns
+X[1, 2]       # 2        — row 1, column 2
+X[2, ]        # 4 5 6    — entire second row
+X[, 1]        # 1 4      — entire first column
+
+# Building from vectors
+A <- cbind(c(1,2), c(3,4), c(5,6))   # join as columns
+B <- rbind(c(1,2,3), c(4,5,6))       # join as rows
+
+# Naming
+rownames(A) <- c("r1", "r2")
+colnames(A) <- c("p1", "p2", "p3")
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td>dim(X)</td><td>Returns c(rows, columns)</td></tr>
+  <tr><td>nrow(X) / ncol(X)</td><td>Number of rows / columns</td></tr>
+  <tr><td>cbind(x, y)</td><td>Combine vectors as columns</td></tr>
+  <tr><td>rbind(x, y)</td><td>Combine vectors as rows</td></tr>
+  <tr><td>colnames(X)</td><td>Get or set column names</td></tr>
+  <tr><td>rownames(X)</td><td>Get or set row names</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Lists
+
+```{=html}
+<div class="ref-section">
+<h3>Creating &amp; accessing lists</h3>
+```
+
+Lists can hold **elements of different types and lengths** — unlike vectors or matrices. Access elements with `$name` or `[[ ]]`.
+
+```r
+L <- list(color = c("blue", "red"), size = 5, active = TRUE)
+
+# Accessing content (returns the actual value)
+L$color           # "blue" "red"
+L[["color"]]      # same — "blue" "red"
+L[["color"]][2]   # "red"
+
+# Single brackets return a list, not the content
+L["color"]        # a list of length 1 (not the vector!)
+length(L["color"])   # 1
+length(L[["color"]]) # 2
+
+# Modifying & deleting
+L[["size"]] <- 10     # change an element
+L[["new"]]  <- "hi"   # add a new element
+L[[3]] <- NULL         # delete third element
+```
+
+```{=html}
+<div class="tip-box">
+  <strong>[ ] vs [[ ]]:</strong> Single brackets always return a <em>list</em>.
+  Double brackets return the <em>content</em>. Use <code>[[ ]]</code> when you want to work with the value.
+</div>
+</div>
+```
+
+---
+
+## Dataframes
+
+```{=html}
+<div class="ref-section">
+<h3>Creating &amp; accessing dataframes</h3>
+```
+
+A dataframe is like a table: rows are observations, columns are variables. Unlike matrices, **different columns can have different types**.
+
+```r
+Name   <- c("Ben", "Alice", "Daniel", "Charlie")
+Year   <- c(1990, 1992, 1995, 1993)
+Option <- c("Biology", "Physics", "Chemistry", "Mathematics")
+
+df <- data.frame(First_Name = Name, Year = Year, Options = Option)
+
+# Accessing columns
+df$Year           # 1990 1992 1995 1993
+df[["Year"]]      # same
+df[, 2]           # same — all rows, column 2
+
+# Accessing elements
+df$Options[3]     # "Chemistry"
+df[2:3, 3]        # "Physics" "Chemistry"
+
+# Merging two dataframes
+Full_Names <- data.frame(First_Name = c("Alice","Ben"),
+                         Last_Name  = c("Parker","James"))
+
+merge(df, Full_Names)          # Inner join — only matching rows
+merge(df, Full_Names, all=TRUE) # Outer join — all rows, NA for missing
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td>data.frame(...)</td><td>Create a dataframe from named vectors</td></tr>
+  <tr><td>as.data.frame(X)</td><td>Convert a matrix to a dataframe</td></tr>
+  <tr><td>dim(df)</td><td>Rows and columns</td></tr>
+  <tr><td>colnames(df)</td><td>Column names</td></tr>
+  <tr><td>str(df)</td><td>Structure overview (types, first values)</td></tr>
+  <tr><td>merge(a, b)</td><td>Join two dataframes on shared columns</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Loops & Iteration
+
+```{=html}
+<div class="ref-section">
+<h3>apply family &amp; for loops</h3>
+```
+
+```r
+Mat <- matrix(rnorm(12), nrow = 3)
+
+apply(Mat, 1, mean)   # mean of each ROW    (MARGIN = 1)
+apply(Mat, 2, mean)   # mean of each COLUMN (MARGIN = 2)
+
+x <- c(1:5)
+sapply(x, sqrt)       # apply sqrt() to each element → returns vector
+lapply(x, sqrt)       # same but returns a list
+
+# For loop
+for (i in 1:4) {
+  print(i * 3)
+}
+
+# If / else
+a <- 5; b <- 10
+if (a < b) { print("a is smaller") } else { print("b is smaller") }
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td>apply(X, 1, fun)</td><td>Apply fun to each row of matrix/dataframe</td></tr>
+  <tr><td>apply(X, 2, fun)</td><td>Apply fun to each column</td></tr>
+  <tr><td>sapply(x, fun)</td><td>Apply fun to each element of vector/list → vector</td></tr>
+  <tr><td>lapply(x, fun)</td><td>Apply fun to each element → list</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Index Selection
+
+```{=html}
+<div class="ref-section">
+<h3>which, %in%, is.na</h3>
+```
+
+```r
+x <- c(2, 8, 3, 7, 1)
+
+which(x > 5)          # c(2, 4)  — INDICES where condition is TRUE
+x[which(x > 5)]       # c(8, 7)  — VALUES at those indices
+
+c("a","b","c") %in% c("b","d")  # FALSE TRUE FALSE
+                                 # — is each element in the right-hand set?
+
+is.na(c(1, NA, 3))    # FALSE TRUE FALSE
+sum(is.na(x))         # count of NA values
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function / Operator</th><th>What it does</th></tr>
+  <tr><td>which(condition)</td><td>Returns indices where condition is TRUE</td></tr>
+  <tr><td>x %in% y</td><td>For each element of x: is it anywhere in y?</td></tr>
+  <tr><td>is.na(x)</td><td>TRUE for each NA element</td></tr>
+  <tr><td>na.omit(x)</td><td>Remove NA values from a vector or dataframe</td></tr>
+</table>
+</div>
+```

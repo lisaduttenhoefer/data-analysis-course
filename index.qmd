@@ -75,7 +75,7 @@ let isLeaderboardExpanded = false;
 let courseSchedule = {};
 
 const WEEKS = [
-  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", exerciseHref:"exercises/week1_exercises.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
+  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", checkIds:["check_w1_slides","check_w1_vid1","check_w1_vid2","check_w1_vid3","check_w1_md1","check_w1_md2"], quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"], lang:"r" },
   { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", exerciseHref:"exercises/week2_exercises.html", checkIds:["check_w2_slides","check_w2_vid1","check_w2_vid2","check_w2_vid3","check_w2_vid4","check_w2_markdown"], quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
   { n:3, title:"Week 3", topics:"Coming soon" },
   { n:4, title:"Week 4", topics:"Coming soon" },

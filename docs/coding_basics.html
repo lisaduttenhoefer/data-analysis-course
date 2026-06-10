@@ -241,7 +241,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./1_datentypen.html">WEEK 1: Datatypes</a></li><li class="breadcrumb-item"><a href="./1_datentypen.html">Content</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./coding_basics.html">Basics in Coding</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -276,22 +276,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./coding_basics.html" class="sidebar-item-text sidebar-link">
+  <a href="./coding_basics.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Basics in Coding</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
  <span class="menu-text">WEEK 1: Datatypes</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link active">
+  <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Content</span></a>
   </div>
 </li>
@@ -325,7 +325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./1_datentypen.html">WEEK 1: Datatypes</a></li><li class="breadcrumb-item"><a href="./1_datentypen.html">Content</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./coding_basics.html">Basics in Coding</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Basics in Coding</h1>
 </div>
@@ -342,266 +342,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 </header>
-
-
-<style>
-  .step-header {
-    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
-  }
-  .step-badge {
-    background: #1a4d1a; color: white; border-radius: 50%;
-    width: 38px; height: 38px; display: flex; align-items: center;
-    justify-content: center; font-weight: 900; font-size: 1.1rem;
-    flex-shrink: 0;
-  }
-  .step-header h2 { margin: 0; font-size: 1.35rem; }
-
-  .resource-list { list-style: none; padding: 0; margin: 0; }
-  .resource-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
-    background: #f8f9fa; border: 2px solid transparent;
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
-  .resource-item input[type="checkbox"] {
-    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
-  }
-  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
-  .resource-item label a { color: #1a4d1a; font-weight: 600; }
-  .resource-item label a:hover { text-decoration: underline; }
-
-  .quiz-card {
-    background: #f8f9fa; border-radius: 12px;
-    padding: 20px 24px; margin-bottom: 1.5rem;
-    border-left: 4px solid #1a4d1a;
-  }
-  .quiz-done-badge {
-    display: none; background: #a8d5a2; color: #1a4d1a;
-    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
-    font-weight: 800; margin-left: 10px; vertical-align: middle;
-  }
-</style>
-
-<!-- Progress bar -->
-<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
-  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-    <div>
-      <strong style="font-size:1.1rem;">Week 1 Progress</strong>
-      <div id="week1-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
-    </div>
-    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
-  </div>
-  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
-    <div id="week1-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
-  </div>
-</div>
-<p>In this week you will learn the fundamental <strong>building blocks of R</strong>: how data is stored, organised, and accessed. These concepts underlie everything that comes later.</p>
-<blockquote class="blockquote">
-<p><strong>Tip:</strong> The <a href="coding_basics.html">Basics in Coding</a> reference page gives you a quick-lookup summary of all syntax covered this week — keep it open while working in RStudio.</p>
-</blockquote>
-<hr>
-<div class="step-header">
-  <div class="step-badge">1</div>
-  <h2 class="anchored">Watch the Lecture Videos &amp; Download the Slides</h2>
-</div>
-<p style="color:#555;margin-bottom:1rem;">Watch the three short lecture videos and download the slide deck. Check each item off as you go.</p>
-
-<ul class="resource-list">
-
-  <li class="resource-item">
-    <input type="checkbox" id="check_w1_slides" onchange="markCheckDone(this)">
-    <label for="check_w1_slides">
-      <a href="WEEK0/week0_lecture_slides.pdf" download="">Week 1 – Basic datatypes &amp; data manipulation (PDF slides)</a>
-    </label>
-  </li>
-
-  <li class="resource-item">
-    <input type="checkbox" id="check_w1_vid1" onchange="markCheckDone(this)">
-    <label for="check_w1_vid1">
-      <a href="https://youtu.be/doQYGprZe94" target="_blank" rel="noopener">Video 1/3 – General introduction to RStudio</a>
-    </label>
-  </li>
-
-  <li class="resource-item">
-    <input type="checkbox" id="check_w1_vid2" onchange="markCheckDone(this)">
-    <label for="check_w1_vid2">
-      <a href="https://youtu.be/joM5D3AXXgg" target="_blank" rel="noopener">Video 2/3 – Working with R scripts</a>
-    </label>
-  </li>
-
-  <li class="resource-item">
-    <input type="checkbox" id="check_w1_vid3" onchange="markCheckDone(this)">
-    <label for="check_w1_vid3">
-      <a href="https://youtu.be/DVOlDfgY9gU" target="_blank" rel="noopener">Video 3/3 – Working with Markdown</a>
-    </label>
-  </li>
-
-</ul>
-<hr>
-<div class="step-header">
-  <div class="step-badge">2</div>
-  <h2 class="anchored">Work Through the Practical Markdowns</h2>
-</div>
-<p style="color:#555;margin-bottom:1rem;">Download both R Markdown files and work through them in RStudio. Check each off when done.</p>
-
-<ul class="resource-list">
-
-  <li class="resource-item">
-    <input type="checkbox" id="check_w1_md1" onchange="markCheckDone(this)">
-    <label for="check_w1_md1">
-      <a href="WEEK0/_00_basic_data_structure.md" download="">Week 1 – Basic Data Structures (R Markdown)</a>
-      <span style="color:#888;font-size:0.85rem;margin-left:8px;">vectors · matrices · lists · dataframes</span>
-    </label>
-  </li>
-
-  <li class="resource-item">
-    <input type="checkbox" id="check_w1_md2" onchange="markCheckDone(this)">
-    <label for="check_w1_md2">
-      <a href="WEEK0/_00_basic_data_manipulation.md" download="">Week 1 – Data Manipulation (R Markdown)</a>
-      <span style="color:#888;font-size:0.85rem;margin-left:8px;">apply · sapply · for loops · if statements</span>
-    </label>
-  </li>
-
-</ul>
-<p><strong>Useful reference PDFs</strong> (open in browser, no download needed):</p>
-<div class="d-flex gap-3 mb-3 flex-wrap">
-  <a href="WEEK0/base-r.pdf" target="_blank" class="btn btn-outline-danger btn-sm">R Base – Cheat Sheet</a>
-  <a href="WEEK0/rmarkdown-reference.pdf" target="_blank" class="btn btn-outline-danger btn-sm">Markdown Reference</a>
-  <a href="WEEK0/cheatsheet_Best_Practice_R.pdf" target="_blank" class="btn btn-outline-danger btn-sm">R Best Practice</a>
-</div>
-<hr>
-<div class="step-header">
-  <div class="step-badge">3</div>
-  <h2 class="anchored">Comprehension Quiz</h2>
-</div>
-<p style="color:#555;margin-bottom:1.5rem;">Four short quizzes — one per data structure. Each unlocks once you get all questions right.</p>
-<section id="quiz-1-vectors" class="level3">
-<h3 class="anchored" data-anchor-id="quiz-1-vectors">Quiz 1: Vectors</h3>
-<p><span id="quiz-done-w1_q_vectors" class="quiz-done-badge">✓ Done</span></p>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> What does <code>length(c(9, 3, 7, 2))</code> return?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1a"><label class="form-check-label" for="v1a">2</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1b"><label class="form-check-label" for="v1b">4</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1c"><label class="form-check-label" for="v1c">9</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v1" id="v1d"><label class="form-check-label" for="v1d">1</label></div>
-    <div id="v1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> Why does <code>sum(c(TRUE, FALSE, TRUE, TRUE))</code> return <code>3</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2a"><label class="form-check-label" for="v2a">Because the vector has 3 elements</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2b"><label class="form-check-label" for="v2b">Because R treats TRUE as 1 and FALSE as 0 — sum() therefore counts the TRUE values</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v2" id="v2c"><label class="form-check-label" for="v2c">Because sum() only counts the first three elements</label></div>
-    <div id="v2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> What does <code>y[y &lt; 5]</code> return when <code>y &lt;- c(9, 3, 7, 2)</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3a"><label class="form-check-label" for="v3a">9 7</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3b"><label class="form-check-label" for="v3b">3 2</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v3" id="v3c"><label class="form-check-label" for="v3c">TRUE FALSE TRUE TRUE</label></div>
-    <div id="v3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 4:</strong> What happens when data types are mixed in a vector, e.g. <code>c(TRUE, "FALSE", 3)</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v4" id="v4a"><label class="form-check-label" for="v4a">R throws an error</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v4" id="v4b"><label class="form-check-label" for="v4b">Each element keeps its own type</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v4" id="v4c"><label class="form-check-label" for="v4c">All elements are converted to the lowest common type (here: character)</label></div>
-    <div id="v4-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkVektorQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="vektor-result" class="mt-3 fw-bold text-center"></div>
-</div>
-<hr>
-</section>
-<section id="quiz-2-matrices" class="level3">
-<h3 class="anchored" data-anchor-id="quiz-2-matrices">Quiz 2: Matrices</h3>
-<p><span id="quiz-done-w1_q_matrices" class="quiz-done-badge">✓ Done</span></p>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> What does <code>dim(X)</code> return for <code>X &lt;- matrix(1:6, nrow=2, ncol=3)</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="m1" id="m1a"><label class="form-check-label" for="m1a">6</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="m1" id="m1b"><label class="form-check-label" for="m1b">2 3</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="m1" id="m1c"><label class="form-check-label" for="m1c">3 2</label></div>
-    <div id="m1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> What is the difference between <code>cbind()</code> and <code>rbind()</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="m2" id="m2a"><label class="form-check-label" for="m2a">No difference – both do the same thing</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="m2" id="m2b"><label class="form-check-label" for="m2b">cbind() joins vectors as columns, rbind() as rows</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="m2" id="m2c"><label class="form-check-label" for="m2c">cbind() only works for numbers, rbind() for all types</label></div>
-    <div id="m2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> What does <code>X[2, ]</code> return?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="m3" id="m3a"><label class="form-check-label" for="m3a">The element in row 2, column 0</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="m3" id="m3b"><label class="form-check-label" for="m3b">All elements of the second row</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="m3" id="m3c"><label class="form-check-label" for="m3c">All elements of the second column</label></div>
-    <div id="m3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkMatrixQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="matrix-result" class="mt-3 fw-bold text-center"></div>
-</div>
-<hr>
-</section>
-<section id="quiz-3-lists" class="level3">
-<h3 class="anchored" data-anchor-id="quiz-3-lists">Quiz 3: Lists</h3>
-<p><span id="quiz-done-w1_q_lists" class="quiz-done-badge">✓ Done</span></p>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> What is the difference between <code>List1["color"]</code> and <code>List1[["color"]]</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="wl1" id="wl1a"><label class="form-check-label" for="wl1a">No difference – both return the same value</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="wl1" id="wl1b"><label class="form-check-label" for="wl1b"><code>List1["color"]</code> returns a list of length 1; <code>List1[["color"]]</code> returns the content (the vector) directly</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="wl1" id="wl1c"><label class="form-check-label" for="wl1c"><code>List1[["color"]]</code> returns a list; <code>List1["color"]</code> returns the content</label></div>
-    <div id="wl1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> How do you access the <strong>second position</strong> of the first element of <code>List2 &lt;- list(c("blue", "red"), 5, TRUE)</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="wl2" id="wl2a"><label class="form-check-label" for="wl2a"><code>List2[1][2]</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="wl2" id="wl2b"><label class="form-check-label" for="wl2b"><code>List2[[1]][2]</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="wl2" id="wl2c"><label class="form-check-label" for="wl2c"><code>List2$1[2]</code></label></div>
-    <div id="wl2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> How do you delete the third element from a list?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="wl3" id="wl3a"><label class="form-check-label" for="wl3a"><code>List2[3] &lt;- FALSE</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="wl3" id="wl3b"><label class="form-check-label" for="wl3b"><code>List2[[3]] &lt;- NULL</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="wl3" id="wl3c"><label class="form-check-label" for="wl3c"><code>rm(List2[[3]])</code></label></div>
-    <div id="wl3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkListQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="list-result" class="mt-3 fw-bold text-center"></div>
-</div>
-<hr>
-</section>
-<section id="quiz-4-dataframes" class="level3">
-<h3 class="anchored" data-anchor-id="quiz-4-dataframes">Quiz 4: Dataframes</h3>
-<p><span id="quiz-done-w1_q_dataframes" class="quiz-done-badge">✓ Done</span></p>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> What is the most important difference between a dataframe and a matrix?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="d1" id="d1a"><label class="form-check-label" for="d1a">Dataframes can be larger than matrices</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="d1" id="d1b"><label class="form-check-label" for="d1b">Dataframes can contain different data types in different columns; matrices only one type throughout</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="d1" id="d1c"><label class="form-check-label" for="d1c">Matrices always have column names, dataframes do not</label></div>
-    <div id="d1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> How many fruits does <code>Fruit &lt;- c(TRUE, TRUE, FALSE, TRUE, FALSE)</code> contain, and which function do you use?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="d2" id="d2a"><label class="form-check-label" for="d2a">2, with <code>length(Fruit)</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="d2" id="d2b"><label class="form-check-label" for="d2b">3, with <code>sum(Fruit)</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="d2" id="d2c"><label class="form-check-label" for="d2c">5, with <code>sum(Fruit)</code></label></div>
-    <div id="d2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> What does <code>merge(Students, Full_Names)</code> do by default?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="d3" id="d3a"><label class="form-check-label" for="d3a">All rows of both dataframes are merged; missing values filled with NA</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="d3" id="d3b"><label class="form-check-label" for="d3b">Only rows that appear in both dataframes are kept (Inner Join)</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="d3" id="d3c"><label class="form-check-label" for="d3c">The dataframes are stacked on top of each other</label></div>
-    <div id="d3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkDfQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="df-result" class="mt-3 fw-bold text-center"></div>
-</div>
 
 
 <style>
@@ -623,7 +363,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 <p>This page is a <strong>quick-reference</strong> for the R basics covered in Week 1. Keep it open in a browser tab while working through the markdowns in RStudio.</p>
 <hr>
-</section>
 <section id="variables-assignments" class="level2">
 <h2 class="anchored" data-anchor-id="variables-assignments">Variables &amp; Assignments</h2>
 <div class="ref-section">
@@ -927,190 +666,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 
 </div>
+
+
 </section>
 
 </main> <!-- /main -->
-<script>
-// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
-const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
-
-const W1_CHECKS   = ['check_w1_slides','check_w1_vid1','check_w1_vid2','check_w1_vid3','check_w1_md1','check_w1_md2'];
-const W1_QUIZ_IDS = ['w1_q_vectors','w1_q_matrices','w1_q_lists','w1_q_dataframes'];
-
-let sbClient;
-
-(function init() {
-  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
-  });
-
-  const savedSession = sessionStorage.getItem('sb-session');
-  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
-
-  sbClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
-      if (window.location.hash.includes('access_token'))
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
-    await loadAndRenderProgress();
-  });
-
-  loadAndRenderProgress();
-})();
-
-async function loadAndRenderProgress() {
-  const pm = await loadProgressMap();
-  renderCheckboxes(pm);
-  renderQuizBadges(pm);
-  updateWeekBar(pm);
-}
-
-async function loadProgressMap() {
-  const pm = {};
-  const allKeys = [...W1_CHECKS, ...W1_QUIZ_IDS.map(id => 'quiz_r_w1_' + id)];
-  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
-  try {
-    const savedSession = sessionStorage.getItem('sb-session');
-    const user = savedSession ? JSON.parse(savedSession).user : null;
-    if (user && sbClient) {
-      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
-      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
-    }
-  } catch(e) {}
-  return pm;
-}
-
-async function sbSaveProgress(key, value) {
-  localStorage.setItem(key, value);
-  try {
-    const savedSession = sessionStorage.getItem('sb-session');
-    const user = savedSession ? JSON.parse(savedSession).user : null;
-    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
-  } catch(e) { console.error('sbSaveProgress:', e); }
-}
-
-async function markCheckDone(el) {
-  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
-  const item = el.closest('.resource-item');
-  if (item) item.classList.toggle('is-checked', el.checked);
-  const pm = await loadProgressMap();
-  updateWeekBar(pm);
-}
-
-async function markQuizDone(quizId) {
-  const key = 'quiz_r_w1_' + quizId;
-  await sbSaveProgress(key, 'true');
-  const badge = document.getElementById('quiz-done-' + quizId);
-  if (badge) badge.style.display = 'inline';
-  const pm = await loadProgressMap();
-  updateWeekBar(pm);
-}
-
-function renderCheckboxes(pm) {
-  W1_CHECKS.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.checked = !!pm[id];
-    const item = el.closest('.resource-item');
-    if (item) item.classList.toggle('is-checked', !!pm[id]);
-  });
-}
-
-function renderQuizBadges(pm) {
-  W1_QUIZ_IDS.forEach(id => {
-    if (pm['quiz_r_w1_' + id]) {
-      const badge = document.getElementById('quiz-done-' + id);
-      if (badge) badge.style.display = 'inline';
-    }
-  });
-}
-
-function updateWeekBar(pm) {
-  const total = W1_CHECKS.length + W1_QUIZ_IDS.length;
-  let done = 0;
-  W1_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
-  W1_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w1_' + id]) done++; });
-  const pct = Math.round((done / total) * 100);
-  const bar = document.getElementById('week1-progress-bar');
-  const txt = document.getElementById('week1-progress-text');
-  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
-  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
-}
-
-// ─── Quiz 1: Vectors ─────────────────────────────────────────────────────────
-function checkVektorQuiz() {
-  var score = 0, total = 4;
-  var v1 = document.querySelector('input[name="v1"]:checked'), v1f = document.getElementById('v1-feedback');
-  if (v1 && v1.id === 'v1b') { v1f.innerHTML = '✅ Correct! The vector has 4 elements.'; v1f.style.color = '#1a4d1a'; score++; }
-  else if (v1) { v1f.innerHTML = '❌ Count the elements: 9, 3, 7, 2 – that is 4.'; v1f.style.color = '#d9534f'; }
-  var v2 = document.querySelector('input[name="v2"]:checked'), v2f = document.getElementById('v2-feedback');
-  if (v2 && v2.id === 'v2b') { v2f.innerHTML = '✅ Exactly! In R, TRUE = 1 and FALSE = 0. sum() adds the ones.'; v2f.style.color = '#1a4d1a'; score++; }
-  else if (v2) { v2f.innerHTML = '❌ Remember: TRUE = 1 and FALSE = 0 in R. sum(c(1,0,1,1)) = 3.'; v2f.style.color = '#d9534f'; }
-  var v3 = document.querySelector('input[name="v3"]:checked'), v3f = document.getElementById('v3-feedback');
-  if (v3 && v3.id === 'v3b') { v3f.innerHTML = '✅ Correct! Only elements 3 and 2 are less than 5.'; v3f.style.color = '#1a4d1a'; score++; }
-  else if (v3) { v3f.innerHTML = '❌ y < 5 tests each element: 9→F, 3→T, 7→F, 2→T. So 3 and 2 are returned.'; v3f.style.color = '#d9534f'; }
-  var v4 = document.querySelector('input[name="v4"]:checked'), v4f = document.getElementById('v4-feedback');
-  if (v4 && v4.id === 'v4c') { v4f.innerHTML = '✅ Correct! R converts all elements to the lowest common type — here character.'; v4f.style.color = '#1a4d1a'; score++; }
-  else if (v4) { v4f.innerHTML = '❌ Try str(c(TRUE, "FALSE", 3)) in RStudio to see the conversion!'; v4f.style.color = '#d9534f'; }
-  var res = document.getElementById('vektor-result');
-  if (score === total) { res.innerHTML = '🎉 All questions correct! Well done!'; res.style.color = '#1a4d1a'; markQuizDone('w1_q_vectors'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Review and try again!'; res.style.color = '#d9534f'; }
-}
-
-// ─── Quiz 2: Matrices ────────────────────────────────────────────────────────
-function checkMatrixQuiz() {
-  var score = 0, total = 3;
-  var m1 = document.querySelector('input[name="m1"]:checked'), m1f = document.getElementById('m1-feedback');
-  if (m1 && m1.id === 'm1b') { m1f.innerHTML = '✅ Correct! dim() always returns [rows, columns].'; m1f.style.color = '#1a4d1a'; score++; }
-  else if (m1) { m1f.innerHTML = '❌ dim() returns [rows, columns]. With nrow=2, ncol=3 that is 2 3.'; m1f.style.color = '#d9534f'; }
-  var m2 = document.querySelector('input[name="m2"]:checked'), m2f = document.getElementById('m2-feedback');
-  if (m2 && m2.id === 'm2b') { m2f.innerHTML = '✅ Exactly! cbind = column bind, rbind = row bind.'; m2f.style.color = '#1a4d1a'; score++; }
-  else if (m2) { m2f.innerHTML = '❌ cbind = "column bind", rbind = "row bind".'; m2f.style.color = '#d9534f'; }
-  var m3 = document.querySelector('input[name="m3"]:checked'), m3f = document.getElementById('m3-feedback');
-  if (m3 && m3.id === 'm3b') { m3f.innerHTML = '✅ Correct! The empty comma means: all columns. X[2, ] = all elements from row 2.'; m3f.style.color = '#1a4d1a'; score++; }
-  else if (m3) { m3f.innerHTML = '❌ X[row, column] — empty field means everything. X[2, ] = all columns of row 2.'; m3f.style.color = '#d9534f'; }
-  var res = document.getElementById('matrix-result');
-  if (score === total) { res.innerHTML = '🎉 Perfect — all questions correct!'; res.style.color = '#1a4d1a'; markQuizDone('w1_q_matrices'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
-}
-
-// ─── Quiz 3: Lists ───────────────────────────────────────────────────────────
-function checkListQuiz() {
-  var score = 0, total = 3;
-  var l1 = document.querySelector('input[name="wl1"]:checked'), l1f = document.getElementById('wl1-feedback');
-  if (l1 && l1.id === 'wl1b') { l1f.innerHTML = '✅ Exactly! Single [ ] returns a list, double [[ ]] returns the actual content.'; l1f.style.color = '#1a4d1a'; score++; }
-  else if (l1) { l1f.innerHTML = '❌ Try length(List1["color"]) vs. length(List1[["color"]]) in RStudio!'; l1f.style.color = '#d9534f'; }
-  var l2 = document.querySelector('input[name="wl2"]:checked'), l2f = document.getElementById('wl2-feedback');
-  if (l2 && l2.id === 'wl2b') { l2f.innerHTML = '✅ Correct! First use [[ ]] to get the vector, then [2] for the second element.'; l2f.style.color = '#1a4d1a'; score++; }
-  else if (l2) { l2f.innerHTML = '❌ List2[1] returns a list — use List2[[1]] to extract the vector first.'; l2f.style.color = '#d9534f'; }
-  var l3 = document.querySelector('input[name="wl3"]:checked'), l3f = document.getElementById('wl3-feedback');
-  if (l3 && l3.id === 'wl3b') { l3f.innerHTML = '✅ Correct! Assigning NULL to a list element with [[ ]] removes it completely.'; l3f.style.color = '#1a4d1a'; score++; }
-  else if (l3) { l3f.innerHTML = '❌ rm() removes variables, not list elements. Use List2[[3]] <- NULL.'; l3f.style.color = '#d9534f'; }
-  var res = document.getElementById('list-result');
-  if (score === total) { res.innerHTML = '🎉 All correct — you have mastered lists!'; res.style.color = '#1a4d1a'; markQuizDone('w1_q_lists'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
-}
-
-// ─── Quiz 4: Dataframes ──────────────────────────────────────────────────────
-function checkDfQuiz() {
-  var score = 0, total = 3;
-  var d1 = document.querySelector('input[name="d1"]:checked'), d1f = document.getElementById('d1-feedback');
-  if (d1 && d1.id === 'd1b') { d1f.innerHTML = '✅ Correct! A dataframe can mix types column by column — a matrix cannot.'; d1f.style.color = '#1a4d1a'; score++; }
-  else if (d1) { d1f.innerHTML = '❌ The key difference is data types: matrices contain only one type, dataframes can mix.'; d1f.style.color = '#d9534f'; }
-  var d2 = document.querySelector('input[name="d2"]:checked'), d2f = document.getElementById('d2-feedback');
-  if (d2 && d2.id === 'd2b') { d2f.innerHTML = '✅ Correct! sum() on a logical vector counts the TRUE values (TRUE = 1). There are 3 fruits.'; d2f.style.color = '#1a4d1a'; score++; }
-  else if (d2) { d2f.innerHTML = '❌ length() returns the total length (5). sum() counts the TRUE values.'; d2f.style.color = '#d9534f'; }
-  var d3 = document.querySelector('input[name="d3"]:checked'), d3f = document.getElementById('d3-feedback');
-  if (d3 && d3.id === 'd3b') { d3f.innerHTML = '✅ Exactly! Default all=FALSE = Inner Join. Only rows present in both are kept.'; d3f.style.color = '#1a4d1a'; score++; }
-  else if (d3) { d3f.innerHTML = '❌ merge() default = Inner Join (only matching rows). Use all=TRUE to keep everything.'; d3f.style.color = '#d9534f'; }
-  var res = document.getElementById('df-result');
-  if (score === total) { res.innerHTML = '🎉 Excellent — Week 1 complete!'; res.style.color = '#1a4d1a'; markQuizDone('w1_q_dataframes'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Review and try again!'; res.style.color = '#d9534f'; }
-}
-</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
