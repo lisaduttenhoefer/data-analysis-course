@@ -2,8 +2,8 @@ project:
   type: website
   output-dir: docs
   resources:
-    - "WEEK1/*.md"
-    - "WEEK1/*.pdf"
+    - "WEEK0/**"
+    - "WEEK1/**"
   render:
     - "*.qmd"
     - "!test_qmds/"

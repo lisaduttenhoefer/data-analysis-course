@@ -139,7 +139,7 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <li class="resource-item">
     <input type="checkbox" id="check_w2_markdown" onchange="markCheckDone(this)">
     <label for="check_w2_markdown">
-      <a href="WEEK1/_01_data_cleanup.Rmd" download>Week 2 – Data Cleanup (R Markdown)</a>
+      <a href="WEEK1/_01_data_cleanup.Rmd" download="_01_data_cleanup.Rmd">Week 2 – Data Cleanup (R Markdown)</a>
       <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
     </label>
   </li>
@@ -161,7 +161,7 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <li class="resource-item">
     <input type="checkbox" id="check_w2_markdown" onchange="markCheckDone(this)">
     <label for="check_w2_markdown">
-      <a href="WEEK1/_01_data_cleanup_python.ipynb" download>Week 2 – Data Cleanup (Python Notebook)</a>
+      <a href="WEEK1/_01_data_cleanup_python.ipynb" download="_01_data_cleanup_python.ipynb">Week 2 – Data Cleanup (Python Notebook)</a>
       <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in VS Code with Jupyter extension</span>
     </label>
   </li>
