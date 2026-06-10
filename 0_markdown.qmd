@@ -8,11 +8,13 @@ title: "Orientation in This Course"
 
 Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.
 
-On this platform you will find everything in one place: clear explanations, directly executable code examples for experimentation, and short knowledge tests after each chapter to consolidate what you have learned.
+On this platform you will find everything in one place: lecture videos and slide decks, practical markdown files to work through in RStudio or VS Code, and short comprehension quizzes to consolidate what you have learned.
 
-You have full freedom of choice: using the **button in the top right corner**, you can switch between the programming languages **R** and **Python** at any time. The subject matter is identical — you decide which tool you want to work with.
+Each week page guides you through three steps: **watch the videos & download the slides** → **work through the practical markdown** → **complete the comprehension quiz**. Your progress is tracked automatically.
 
-In addition, all lecture slides and Markdown files with the same content are linked so that you can also work through the materials independently offline.
+You have full freedom of choice: using the **button in the top right corner**, you can switch between the programming languages **R** and **Python** at any time. For weeks where Python materials are still being prepared, a placeholder will indicate what is coming.
+
+The [Basics in Coding](coding_basics.html) page provides a quick-reference for syntax in both R and Python — keep it open while working through the markdowns.
 
 ---
 
@@ -47,7 +49,7 @@ If you later want to work on your own computer, this is the correct order:
 
 ::: {.callout-tip}
 ## Our Tip for Getting Started
-To work on the exercises on this website, **no installed RStudio or VS Code is required**. Our interactive windows already have everything "on board". However, we recommend that you familiarize yourself with these programs during the course, as they will be your daily companions in later practice!
+To watch videos, follow the course and take quizzes, **no installation is required**. However, to work through the practical markdown files, you will need **RStudio** (for R) or **VS Code** (for Python) installed on your computer. We recommend setting this up early — these tools will be your daily companions throughout the course.
 :::
 
 ---

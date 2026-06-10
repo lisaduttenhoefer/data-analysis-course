@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Week 1: Basic Data Structures – METHODS IN DATA ANALYSIS</title>
+<title>Orientation in This Course – METHODS IN DATA ANALYSIS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +22,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -43,6 +78,11 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/run-python-blocks.js" type="module"></script>
+<link href="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/shinylive.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -259,7 +299,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Week 1: Basic Data Structures</h1>
+<h1 class="title">Orientation in This Course</h1>
 </div>
 
 
@@ -313,6 +353,15 @@ ul.task-list li input[type="checkbox"] {
     border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
     font-weight: 800; margin-left: 10px; vertical-align: middle;
   }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
 </style>
 
 <!-- Progress bar -->
@@ -328,9 +377,9 @@ ul.task-list li input[type="checkbox"] {
     <div id="week1-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
   </div>
 </div>
-<p>In this week you will learn the fundamental <strong>building blocks of R</strong>: how data is stored, organised, and accessed. These concepts underlie everything that comes later.</p>
+<p>In this week you will learn the fundamental <strong>building blocks</strong> of data analysis: how data is stored, organised, and accessed. Use the language toggle above to switch between R and Python.</p>
 <blockquote class="blockquote">
-<p><strong>Tip:</strong> The <a href="coding_basics.html">Basics in Coding</a> reference page gives you a quick-lookup summary of all syntax covered this week — keep it open while working in RStudio.</p>
+<p><strong>Tip:</strong> The <a href="coding_basics.html">Basics in Coding</a> reference page gives you a quick-lookup summary of all syntax covered this week — available for both R and Python.</p>
 </blockquote>
 <hr>
 <div class="step-header">
@@ -370,7 +419,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
 
 </ul>
+<div class="lang-python">
+<div class="lang-note">
+  <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — data types, assignment, indexing — apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+</div>
+</div>
 <hr>
+<div class="lang-r">
 <div class="step-header">
   <div class="step-badge">2</div>
   <h2 class="anchored">Work Through the Practical Markdowns</h2>
@@ -402,12 +457,25 @@ ul.task-list li input[type="checkbox"] {
   <a href="WEEK0/rmarkdown-reference.pdf" target="_blank" class="btn btn-outline-danger btn-sm">Markdown Reference</a>
   <a href="WEEK0/cheatsheet_Best_Practice_R.pdf" target="_blank" class="btn btn-outline-danger btn-sm">R Best Practice</a>
 </div>
+</div>
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2 class="anchored">Work Through the Practical Markdowns</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Markdown — Coming Soon</p>
+  <p style="margin:0;color:#555;">A Python version of this practical markdown is currently being prepared.
+  In the meantime, the <a href="coding_basics.html" style="color:#7c9cef;">Basics in Coding</a> reference page covers Python syntax for all topics this week.</p>
+</div>
+</div>
 <hr>
 <div class="step-header">
   <div class="step-badge">3</div>
   <h2 class="anchored">Comprehension Quiz</h2>
 </div>
-<p style="color:#555;margin-bottom:1.5rem;">Four short quizzes — one per data structure. Each unlocks once you get all questions right.</p>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+<div class="lang-r">
 <section id="quiz-1-vectors" class="level3">
 <h3 class="anchored" data-anchor-id="quiz-1-vectors">Quiz 1: Vectors</h3>
 <p><span id="quiz-done-w1_q_vectors" class="quiz-done-badge">✓ Done</span></p>
@@ -534,8 +602,1304 @@ ul.task-list li input[type="checkbox"] {
   <button onclick="checkDfQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
   <div id="df-result" class="mt-3 fw-bold text-center"></div>
 </div>
+</section>
+</div>
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per data structure topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;" class="anchored">Quiz 1: Lists <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Vectors)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> What does <code>len([9, 3, 7, 2])</code> return?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">2</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">4</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">9</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 2: NumPy Arrays <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Matrices)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> What does <code>np.array([[1,2,3],[4,5,6]]).shape</code> return?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(6,)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(2, 3)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(3, 2)</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 3: Dictionaries <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Lists)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you access the value for key <code>"color"</code> in dict <code>L</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>L$color</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>L["color"]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>L[["color"]]</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 4: Pandas DataFrames <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Dataframes)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you create a DataFrame from named lists in Python?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>data.frame(Name = x, Year = y)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>pd.DataFrame({"Name": x, "Year": y})</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>DataFrame.create(Name = x)</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+</div>
 
 
+<style>
+  /* Step section headers */
+  .step-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
+  }
+  .step-badge {
+    background: #1a4d1a; color: white; border-radius: 50%;
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .step-header h2 { margin: 0; font-size: 1.35rem; }
+
+  /* Resource checklist */
+  .resource-list { list-style: none; padding: 0; margin: 0; }
+  .resource-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: #f8f9fa; border: 2px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .resource-item.is-checked {
+    background: #f0fff0; border-color: #a8d5a2;
+  }
+  .resource-item input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
+  }
+  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
+  .resource-item label a { color: #1a4d1a; font-weight: 600; }
+  .resource-item label a:hover { text-decoration: underline; }
+
+  /* Quiz cards */
+  .quiz-card {
+    background: #f8f9fa; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 1.5rem;
+    border-left: 4px solid #1a4d1a;
+  }
+  .quiz-done-badge {
+    display: none; background: #a8d5a2; color: #1a4d1a;
+    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
+    font-weight: 800; margin-left: 10px; vertical-align: middle;
+  }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
+</style>
+
+<!-- Progress bar -->
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 2 Progress</strong>
+      <div id="week2-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week2-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+</div>
+<p>In this week you will work with a real diabetes dataset and learn how to <strong>prepare raw data for analysis</strong> and <strong>visualise distributions</strong>. Use the language toggle above to switch between R and Python.</p>
+<hr>
+<div class="step-header">
+  <div class="step-badge">1</div>
+  <h2 class="anchored">Watch the Lecture Videos &amp; Download the Slides</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Watch the four short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
+
+<ul class="resource-list">
+
+  <li class="resource-item">
+    <input type="checkbox" id="check_w2_slides" onchange="markCheckDone(this)">
+    <label for="check_w2_slides">
+      <a href="WEEK1/week1_lecture_slides.pdf" download="">Week 2 – Describing &amp; Visualizing data (PDF slides)</a>
+    </label>
+  </li>
+
+  <li class="resource-item">
+    <input type="checkbox" id="check_w2_vid1" onchange="markCheckDone(this)">
+    <label for="check_w2_vid1">
+      <a href="https://youtu.be/itBBBH1gEGc" target="_blank" rel="noopener">Video 1/4 – Which data?</a>
+    </label>
+  </li>
+
+  <li class="resource-item">
+    <input type="checkbox" id="check_w2_vid2" onchange="markCheckDone(this)">
+    <label for="check_w2_vid2">
+      <a href="https://youtu.be/JMoE2lpBsPg" target="_blank" rel="noopener">Video 2/4 – Visualization of data</a>
+    </label>
+  </li>
+
+  <li class="resource-item">
+    <input type="checkbox" id="check_w2_vid3" onchange="markCheckDone(this)">
+    <label for="check_w2_vid3">
+      <a href="https://youtu.be/DU3IEnVr2kA" target="_blank" rel="noopener">Video 3/4 – Describing data 1</a>
+    </label>
+  </li>
+
+  <li class="resource-item">
+    <input type="checkbox" id="check_w2_vid4" onchange="markCheckDone(this)">
+    <label for="check_w2_vid4">
+      <a href="https://youtu.be/jFt72U7xiHk" target="_blank" rel="noopener">Video 4/4 – Describing data 2</a>
+    </label>
+  </li>
+
+</ul>
+<div class="lang-python">
+<div class="lang-note">
+  <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — data loading, cleanup, and visualisation — apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+</div>
+</div>
+<hr>
+<div class="lang-r">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2 class="anchored">Work Through the Practical Markdown</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
+
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w2_markdown" onchange="markCheckDone(this)">
+    <label for="check_w2_markdown">
+      <a href="WEEK1/_01_data_cleanup.md" download="">Week 2 – Data Cleanup (R Markdown)</a>
+      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
+    </label>
+  </li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Course dataset:</strong> Load the diabetes data in RStudio with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">'https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</blockquote>
+</div>
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2 class="anchored">Work Through the Practical Markdown</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Markdown — Coming Soon</p>
+  <p style="margin-bottom:0.5rem;color:#555;">A Python version of this practical markdown (using pandas and matplotlib) is currently being prepared.</p>
+  <p style="margin:0;color:#555;">In the meantime, the <a href="coding_basics.html" style="color:#7c9cef;">Basics in Coding</a> reference page covers pandas DataFrames and data selection in Python.</p>
+</div>
+<blockquote class="blockquote">
+<p><strong>Course dataset:</strong> Load the diabetes data in Python with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dat <span class="op">=</span> pd.read_csv(<span class="st">'https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1'</span>, sep<span class="op">=</span><span class="st">'</span><span class="ch">\t</span><span class="st">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</blockquote>
+</div>
+<hr>
+<div class="step-header">
+  <div class="step-badge">3</div>
+  <h2 class="anchored">Comprehension Quiz</h2>
+</div>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+<div class="lang-r">
+<section id="quiz-1-loading-and-exploring" class="level3">
+<h3 class="anchored" data-anchor-id="quiz-1-loading-and-exploring">Quiz 1: Loading and Exploring</h3>
+<p><span id="quiz-done-w2_q_loading" class="quiz-done-badge">✓ Done</span></p>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What does <code>dim(dat)</code> return for a dataframe with 400 rows and 17 columns?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1a"><label class="form-check-label" for="l1a"><code>c(17, 400)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1b"><label class="form-check-label" for="l1b"><code>c(400, 17)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1c"><label class="form-check-label" for="l1c"><code>400</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l1" id="l1d"><label class="form-check-label" for="l1d"><code>6800</code></label></div>
+    <div id="l1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What does <code>head(dat)</code> show by default?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2a"><label class="form-check-label" for="l2a">The last 6 rows</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2b"><label class="form-check-label" for="l2b">The first 6 rows</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2c"><label class="form-check-label" for="l2c">A summary of all columns</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l2" id="l2d"><label class="form-check-label" for="l2d">The first row only</label></div>
+    <div id="l2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> How do you access the column <code>age</code> from a dataframe <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3a"><label class="form-check-label" for="l3a"><code>dat[age]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3b"><label class="form-check-label" for="l3b"><code>dat$age</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3c"><label class="form-check-label" for="l3c"><code>dat["age", ]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l3" id="l3d"><label class="form-check-label" for="l3d"><code>get(dat, "age")</code></label></div>
+    <div id="l3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkLoadingQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="loading-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<hr>
+</section>
+<section id="quiz-2-data-cleanup" class="level3">
+<h3 class="anchored" data-anchor-id="quiz-2-data-cleanup">Quiz 2: Data Cleanup</h3>
+<p><span id="quiz-done-w2_q_cleanup" class="quiz-done-badge">✓ Done</span></p>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> <code>which(x &gt; 5)</code> for <code>x &lt;- c(2, 8, 3, 7, 1)</code> returns…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1a"><label class="form-check-label" for="c1a"><code>c(8, 7)</code> — the values greater than 5</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1b"><label class="form-check-label" for="c1b"><code>c(2, 4)</code> — the indices (positions) where the condition is TRUE</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1c"><label class="form-check-label" for="c1c"><code>c(FALSE, TRUE, FALSE, TRUE, FALSE)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c1" id="c1d"><label class="form-check-label" for="c1d">An error</label></div>
+    <div id="c1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> How do you remove columns 3 and 7 from dataframe <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2a"><label class="form-check-label" for="c2a"><code>dat[-c(3,7)]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2b"><label class="form-check-label" for="c2b"><code>dat[, -c(3,7)]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2c"><label class="form-check-label" for="c2c"><code>dat[c(3,7), ]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c2" id="c2d"><label class="form-check-label" for="c2d"><code>dat - c(3,7)</code></label></div>
+    <div id="c2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> <code>apply(dat, 1, function(x) sum(is.na(x)))</code> counts the NAs…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3a"><label class="form-check-label" for="c3a">Per column (one value per variable)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3b"><label class="form-check-label" for="c3b">Per row (one value per patient)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3c"><label class="form-check-label" for="c3c">In the entire dataframe (one total)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c3" id="c3d"><label class="form-check-label" for="c3d">Per cell (one value per element)</label></div>
+    <div id="c3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkCleanupQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="cleanup-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<hr>
+</section>
+<section id="quiz-3-visualisation" class="level3">
+<h3 class="anchored" data-anchor-id="quiz-3-visualisation">Quiz 3: Visualisation</h3>
+<p><span id="quiz-done-w2_q_viz" class="quiz-done-badge">✓ Done</span></p>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What does the <code>breaks</code> parameter in <code>hist()</code> control?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1a"><label class="form-check-label" for="v1a">The colour of the bars</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1b"><label class="form-check-label" for="v1b">The number of bins</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1c"><label class="form-check-label" for="v1c">The y-axis range</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v1" id="v1d"><label class="form-check-label" for="v1d">The x-axis title</label></div>
+    <div id="v1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In a boxplot, the central line inside the box represents…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2a"><label class="form-check-label" for="v2a">The mean</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2b"><label class="form-check-label" for="v2b">The median (50th percentile)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2c"><label class="form-check-label" for="v2c">The standard deviation</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v2" id="v2d"><label class="form-check-label" for="v2d">The minimum value</label></div>
+    <div id="v2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> What does a Q-Q plot tell you?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3a"><label class="form-check-label" for="v3a">The correlation between two variables</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3b"><label class="form-check-label" for="v3b">How many outliers the data has</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3c"><label class="form-check-label" for="v3c">How closely the data follows a theoretical distribution (e.g. normal)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v3" id="v3d"><label class="form-check-label" for="v3d">The distribution of each group separately</label></div>
+    <div id="v3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkVizQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="viz-result" class="mt-3 fw-bold text-center"></div>
+</div>
+<hr>
+</section>
+<section id="quiz-4-putting-it-all-together" class="level3">
+<h3 class="anchored" data-anchor-id="quiz-4-putting-it-all-together">Quiz 4: Putting it all together</h3>
+<p><span id="quiz-done-w2_q_exercises" class="quiz-done-badge">✓ Done</span></p>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> Which function creates a smooth probability density curve (not a histogram)?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1a"><label class="form-check-label" for="e1a"><code>hist()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1b"><label class="form-check-label" for="e1b"><code>density()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1c"><label class="form-check-label" for="e1c"><code>curve()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e1" id="e1d"><label class="form-check-label" for="e1d"><code>smooth()</code></label></div>
+    <div id="e1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> You identified rows with NAs: <code>i.missing &lt;- which(nb_NA &gt; 0)</code>. How do you remove them?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2a"><label class="form-check-label" for="e2a"><code>dat[i.missing, ]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2b"><label class="form-check-label" for="e2b"><code>dat[-i.missing, ]</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2c"><label class="form-check-label" for="e2c"><code>dat[, -i.missing]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e2" id="e2d"><label class="form-check-label" for="e2d"><code>na.omit(i.missing)</code></label></div>
+    <div id="e2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> The operator <code>%in%</code> is used to…</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3a"><label class="form-check-label" for="e3a">Calculate percentages</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3b"><label class="form-check-label" for="e3b">Test if elements of one vector appear in another</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3c"><label class="form-check-label" for="e3c">Apply a function to each element</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e3" id="e3d"><label class="form-check-label" for="e3d">Check exact equality of two vectors</label></div>
+    <div id="e3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkExerciseQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="exercise-result" class="mt-3 fw-bold text-center"></div>
+</div>
+</section>
+</div>
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;" class="anchored">Quiz 1: Loading &amp; Exploring <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R read.delim + head/dim)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> What does <code>dat.shape</code> return for a DataFrame with 400 rows and 17 columns?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(17, 400)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(400, 17)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>6800</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 2: Data Cleanup <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R which/apply/is.na)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you count missing values per column in a pandas DataFrame <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sum(is.na(dat))</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.isna().sum()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.count()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 3: Visualisation <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(matplotlib equivalent of R hist/boxplot/qqnorm)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which matplotlib function creates a histogram?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.bar()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.hist()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.plot()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 4: Putting it all together <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python full pipeline)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you remove rows with missing values from a pandas DataFrame?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.drop_na()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.dropna()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.remove_na()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+</div>
+<style>
+  .ref-section {
+    background: #f8f9fa; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #1a4d1a;
+  }
+  .ref-section h3 { color: #1a4d1a; margin-top: 0; margin-bottom: 0.8rem; font-size: 1.15rem; }
+  .ref-section code { background: #e8f5e9; padding: 2px 5px; border-radius: 4px; }
+  .fn-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem; }
+  .fn-table th { background: #1a4d1a; color: white; padding: 8px 12px; text-align: left; }
+  .fn-table td { padding: 7px 12px; border-bottom: 1px solid #e0e0e0; vertical-align: top; }
+  .fn-table tr:last-child td { border-bottom: none; }
+  .fn-table td:first-child { font-family: monospace; color: #1a4d1a; white-space: nowrap; }
+  .tip-box {
+    background: #e8f5e9; border-radius: 8px; padding: 12px 16px;
+    margin: 1rem 0; font-size: 0.9rem; border-left: 3px solid #1a4d1a;
+  }
+  /* Python variant — blue accent */
+  .ref-section.py { border-left-color: #7c9cef; }
+  .ref-section.py h3 { color: #4a6cbf; }
+  .ref-section.py code { background: #eef2ff; }
+  .ref-section.py .fn-table th { background: #4a6cbf; }
+  .ref-section.py .fn-table td:first-child { color: #4a6cbf; }
+  .ref-section.py .tip-box { background: #eef2ff; border-left-color: #7c9cef; }
+</style>
+<p>This page is a <strong>quick-reference</strong> for the coding basics covered in Week 1. Keep it open in a browser tab while working through the markdowns. Use the language toggle above to switch between <strong>R</strong> and <strong>Python</strong>.</p>
+<hr>
+<div class="lang-r">
+<section id="variables-assignments" class="level2">
+<h2 class="anchored" data-anchor-id="variables-assignments">Variables &amp; Assignments</h2>
+<div class="ref-section">
+<h3 class="anchored">Assigning values</h3>
+<p>Use <code>&lt;-</code> or <code>=</code> to assign a value to a variable. R is <strong>case-sensitive</strong> — <code>hello</code> and <code>Hello</code> are different objects.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>a   <span class="ot">&lt;-</span> <span class="dv">2</span>            <span class="co"># numeric</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>b   <span class="ot">&lt;-</span> <span class="cn">TRUE</span>         <span class="co"># logical</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>name <span class="ot">&lt;-</span> <span class="st">"Rosalinde"</span> <span class="co"># character (string)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>a <span class="sc">+</span> <span class="dv">3</span>               <span class="co"># use in calculations: returns 5</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(name)         <span class="co"># explicitly print to console</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>str(x)</td>
+<td>Show structure and type of x</td>
+</tr>
+<tr class="odd">
+<td>ls()</td>
+<td>List all objects in the environment</td>
+</tr>
+<tr class="even">
+<td>rm(x)</td>
+<td>Remove variable x from the environment</td>
+</tr>
+<tr class="odd">
+<td>load("file.RData")</td>
+<td>Reload a saved environment</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="vectors" class="level2">
+<h2 class="anchored" data-anchor-id="vectors">Vectors</h2>
+<div class="ref-section">
+<h3 class="anchored">Creating &amp; accessing vectors</h3>
+<p>A vector is a sequence of values of the <strong>same type</strong>. When you mix types, R converts everything to the lowest common type (logical → numeric → character).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">2</span>)   <span class="co"># numeric vector of length 4</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(y)             <span class="co"># 4</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Indexing</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">3</span>]          <span class="co"># 7        — third element</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>]        <span class="co"># 3 7 2    — elements 2 to 4</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>y[<span class="sc">-</span><span class="dv">2</span>]         <span class="co"># 9 7 2    — all except element 2</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>y[y <span class="sc">&lt;</span> <span class="dv">5</span>]      <span class="co"># 3 2      — elements where condition is TRUE</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Logical tests (applied to each element)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>y <span class="sc">&lt;</span> <span class="dv">5</span>         <span class="co"># FALSE TRUE FALSE TRUE</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(y <span class="sc">&lt;</span> <span class="dv">5</span>)    <span class="co"># 2  — count of elements satisfying condition</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Modifying</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>    <span class="co"># replace first element</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="tip-box">
+  <strong>TRUE / FALSE in arithmetic:</strong> R treats <code>TRUE</code> as 1 and <code>FALSE</code> as 0.
+  So <code>sum(c(TRUE, FALSE, TRUE, TRUE))</code> = 3 — a quick way to count matching elements.
+</div>
+</div>
+<hr>
+</section>
+<section id="matrices" class="level2">
+<h2 class="anchored" data-anchor-id="matrices">Matrices</h2>
+<div class="ref-section">
+<h3 class="anchored">Creating &amp; accessing matrices</h3>
+<p>A matrix is a <strong>2-dimensional</strong> structure. All elements must be the same type. Indexing uses <code>[row, column]</code> — leave one side empty to select all.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#      [,1] [,2] [,3]</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># [1,]    1    2    3</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># [2,]    4    5    6</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(X)        <span class="co"># c(2, 3)  — rows, then columns</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>X[<span class="dv">1</span>, <span class="dv">2</span>]       <span class="co"># 2        — row 1, column 2</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>X[<span class="dv">2</span>, ]        <span class="co"># 4 5 6    — entire second row</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>X[, <span class="dv">1</span>]        <span class="co"># 1 4      — entire first column</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Building from vectors</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>), <span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">6</span>))   <span class="co"># join as columns</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>))       <span class="co"># join as rows</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Naming</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(A) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"r1"</span>, <span class="st">"r2"</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(A) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"p1"</span>, <span class="st">"p2"</span>, <span class="st">"p3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>dim(X)</td>
+<td>Returns c(rows, columns)</td>
+</tr>
+<tr class="odd">
+<td>nrow(X) / ncol(X)</td>
+<td>Number of rows / columns</td>
+</tr>
+<tr class="even">
+<td>cbind(x, y)</td>
+<td>Combine vectors as columns</td>
+</tr>
+<tr class="odd">
+<td>rbind(x, y)</td>
+<td>Combine vectors as rows</td>
+</tr>
+<tr class="even">
+<td>colnames(X)</td>
+<td>Get or set column names</td>
+</tr>
+<tr class="odd">
+<td>rownames(X)</td>
+<td>Get or set row names</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="lists" class="level2">
+<h2 class="anchored" data-anchor-id="lists">Lists</h2>
+<div class="ref-section">
+<h3 class="anchored">Creating &amp; accessing lists</h3>
+<p>Lists can hold <strong>elements of different types and lengths</strong> — unlike vectors or matrices. Access elements with <code>$name</code> or <code>[[ ]]</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">color =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>), <span class="at">size =</span> <span class="dv">5</span>, <span class="at">active =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Accessing content (returns the actual value)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>L<span class="sc">$</span>color           <span class="co"># "blue" "red"</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>L[[<span class="st">"color"</span>]]      <span class="co"># same — "blue" "red"</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>L[[<span class="st">"color"</span>]][<span class="dv">2</span>]   <span class="co"># "red"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Single brackets return a list, not the content</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>L[<span class="st">"color"</span>]        <span class="co"># a list of length 1 (not the vector!)</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(L[<span class="st">"color"</span>])   <span class="co"># 1</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(L[[<span class="st">"color"</span>]]) <span class="co"># 2</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Modifying &amp; deleting</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>L[[<span class="st">"size"</span>]] <span class="ot">&lt;-</span> <span class="dv">10</span>     <span class="co"># change an element</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>L[[<span class="st">"new"</span>]]  <span class="ot">&lt;-</span> <span class="st">"hi"</span>   <span class="co"># add a new element</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>L[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="cn">NULL</span>         <span class="co"># delete third element</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="tip-box">
+  <strong>[ ] vs [[ ]]:</strong> Single brackets always return a <em>list</em>.
+  Double brackets return the <em>content</em>. Use <code>[[ ]]</code> when you want to work with the value.
+</div>
+</div>
+<hr>
+</section>
+<section id="dataframes" class="level2">
+<h2 class="anchored" data-anchor-id="dataframes">Dataframes</h2>
+<div class="ref-section">
+<h3 class="anchored">Creating &amp; accessing dataframes</h3>
+<p>A dataframe is like a table: rows are observations, columns are variables. Unlike matrices, <strong>different columns can have different types</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Name   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Ben"</span>, <span class="st">"Alice"</span>, <span class="st">"Daniel"</span>, <span class="st">"Charlie"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Year   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1990</span>, <span class="dv">1992</span>, <span class="dv">1995</span>, <span class="dv">1993</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>Option <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Biology"</span>, <span class="st">"Physics"</span>, <span class="st">"Chemistry"</span>, <span class="st">"Mathematics"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">First_Name =</span> Name, <span class="at">Year =</span> Year, <span class="at">Options =</span> Option)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Accessing columns</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>Year           <span class="co"># 1990 1992 1995 1993</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>df[[<span class="st">"Year"</span>]]      <span class="co"># same</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>df[, <span class="dv">2</span>]           <span class="co"># same — all rows, column 2</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Accessing elements</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>Options[<span class="dv">3</span>]     <span class="co"># "Chemistry"</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>df[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">3</span>]        <span class="co"># "Physics" "Chemistry"</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Merging two dataframes</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>Full_Names <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">First_Name =</span> <span class="fu">c</span>(<span class="st">"Alice"</span>,<span class="st">"Ben"</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Last_Name  =</span> <span class="fu">c</span>(<span class="st">"Parker"</span>,<span class="st">"James"</span>))</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="fu">merge</span>(df, Full_Names)          <span class="co"># Inner join — only matching rows</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="fu">merge</span>(df, Full_Names, <span class="at">all=</span><span class="cn">TRUE</span>) <span class="co"># Outer join — all rows, NA for missing</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>data.frame(...)</td>
+<td>Create a dataframe from named vectors</td>
+</tr>
+<tr class="odd">
+<td>as.data.frame(X)</td>
+<td>Convert a matrix to a dataframe</td>
+</tr>
+<tr class="even">
+<td>dim(df)</td>
+<td>Rows and columns</td>
+</tr>
+<tr class="odd">
+<td>colnames(df)</td>
+<td>Column names</td>
+</tr>
+<tr class="even">
+<td>str(df)</td>
+<td>Structure overview (types, first values)</td>
+</tr>
+<tr class="odd">
+<td>merge(a, b)</td>
+<td>Join two dataframes on shared columns</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="loops-iteration" class="level2">
+<h2 class="anchored" data-anchor-id="loops-iteration">Loops &amp; Iteration</h2>
+<div class="ref-section">
+<h3 class="anchored">apply family &amp; for loops</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">12</span>), <span class="at">nrow =</span> <span class="dv">3</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(Mat, <span class="dv">1</span>, mean)   <span class="co"># mean of each ROW    (MARGIN = 1)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(Mat, <span class="dv">2</span>, mean)   <span class="co"># mean of each COLUMN (MARGIN = 2)</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(x, sqrt)       <span class="co"># apply sqrt() to each element → returns vector</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(x, sqrt)       <span class="co"># same but returns a list</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># For loop</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(i <span class="sc">*</span> <span class="dv">3</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># If / else</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">5</span>; b <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (a <span class="sc">&lt;</span> b) { <span class="fu">print</span>(<span class="st">"a is smaller"</span>) } <span class="cf">else</span> { <span class="fu">print</span>(<span class="st">"b is smaller"</span>) }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>apply(X, 1, fun)</td>
+<td>Apply fun to each row of matrix/dataframe</td>
+</tr>
+<tr class="odd">
+<td>apply(X, 2, fun)</td>
+<td>Apply fun to each column</td>
+</tr>
+<tr class="even">
+<td>sapply(x, fun)</td>
+<td>Apply fun to each element of vector/list → vector</td>
+</tr>
+<tr class="odd">
+<td>lapply(x, fun)</td>
+<td>Apply fun to each element → list</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="index-selection" class="level2">
+<h2 class="anchored" data-anchor-id="index-selection">Index Selection</h2>
+<div class="ref-section">
+<h3 class="anchored">which, %in%, is.na</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">1</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(x <span class="sc">&gt;</span> <span class="dv">5</span>)          <span class="co"># c(2, 4)  — INDICES where condition is TRUE</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>x[<span class="fu">which</span>(x <span class="sc">&gt;</span> <span class="dv">5</span>)]       <span class="co"># c(8, 7)  — VALUES at those indices</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">"a"</span>,<span class="st">"b"</span>,<span class="st">"c"</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b"</span>,<span class="st">"d"</span>)  <span class="co"># FALSE TRUE FALSE</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># — is each element in the right-hand set?</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">is.na</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="cn">NA</span>, <span class="dv">3</span>))    <span class="co"># FALSE TRUE FALSE</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(x))         <span class="co"># count of NA values</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function / Operator</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>which(condition)</td>
+<td>Returns indices where condition is TRUE</td>
+</tr>
+<tr class="odd">
+<td>x %in% y</td>
+<td>For each element of x: is it anywhere in y?</td>
+</tr>
+<tr class="even">
+<td>is.na(x)</td>
+<td>TRUE for each NA element</td>
+</tr>
+<tr class="odd">
+<td>na.omit(x)</td>
+<td>Remove NA values from a vector or dataframe</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</section>
+</div>
+<div class="lang-python">
+<section id="variables-assignments-1" class="level2">
+<h2 class="anchored" data-anchor-id="variables-assignments-1">Variables &amp; Assignments</h2>
+<div class="ref-section py">
+<h3 class="anchored">Assigning values</h3>
+<p>Use <code>=</code> to assign a value to a variable. Python is <strong>case-sensitive</strong> — <code>hello</code> and <code>Hello</code> are different objects. There is no <code>&lt;-</code> operator in Python.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>a    <span class="op">=</span> <span class="dv">2</span>              <span class="co"># integer</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>b    <span class="op">=</span> <span class="va">True</span>           <span class="co"># boolean  (note capital T)</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>name <span class="op">=</span> <span class="st">"Rosalinde"</span>   <span class="co"># string</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">+</span> <span class="dv">3</span>                <span class="co"># 5</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(name)          <span class="co"># Rosalinde</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>type(x)</td>
+<td>Show the type of x</td>
+</tr>
+<tr class="odd">
+<td>dir()</td>
+<td>List all names in the current scope</td>
+</tr>
+<tr class="even">
+<td>del x</td>
+<td>Remove variable x</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="lists-1" class="level2">
+<h2 class="anchored" data-anchor-id="lists-1">Lists</h2>
+<div class="ref-section py">
+<h3 class="anchored">Creating &amp; accessing lists (R: vectors)</h3>
+<p>Python lists use <strong>0-based indexing</strong> and can hold mixed types. Use <code>[ ]</code> for indexing and slicing.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> [<span class="dv">9</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">2</span>]    <span class="co"># list of length 4</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(y)               <span class="co"># 4</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Indexing (0-based!)</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">2</span>]                 <span class="co"># 7        — third element (index 2)</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>:<span class="dv">3</span>]               <span class="co"># [3, 7]   — elements at index 1 and 2</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>y[:<span class="op">-</span><span class="dv">1</span>]               <span class="co"># [9,3,7]  — all except last</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter with list comprehension</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>[x <span class="cf">for</span> x <span class="kw">in</span> y <span class="cf">if</span> x <span class="op">&lt;</span> <span class="dv">5</span>]      <span class="co"># [3, 2]</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>[x <span class="op">&lt;</span> <span class="dv">5</span> <span class="cf">for</span> x <span class="kw">in</span> y]           <span class="co"># [False, True, False, True]</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="bu">sum</span>(x <span class="op">&lt;</span> <span class="dv">5</span> <span class="cf">for</span> x <span class="kw">in</span> y)        <span class="co"># 2  — count matching</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Modifying</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">10</span>            <span class="co"># replace first element (index 0)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="tip-box" style="background:#eef2ff;border-left-color:#7c9cef;">
+  <strong>Mixed types:</strong> Unlike R vectors, Python lists allow mixed types:
+  <code>[True, "hello", 3]</code> stays as-is — no automatic conversion.
+  Indexing starts at <strong>0</strong>, not 1.
+</div>
+</div>
+<hr>
+</section>
+<section id="numpy-arrays" class="level2">
+<h2 class="anchored" data-anchor-id="numpy-arrays">NumPy Arrays</h2>
+<div class="ref-section py">
+<h3 class="anchored">Creating &amp; accessing arrays (R: matrices)</h3>
+<p>NumPy arrays are the Python equivalent of R matrices. Requires <code>import numpy as np</code>. Indexing is <strong>0-based</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]])</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Shape: (2, 3)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>X.shape          <span class="co"># (2, 3)  — rows, then columns</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>X[<span class="dv">0</span>, <span class="dv">1</span>]          <span class="co"># 2       — row 0, column 1 (0-based!)</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>X[<span class="dv">1</span>, :]          <span class="co"># [4 5 6] — entire second row</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>X[:, <span class="dv">0</span>]          <span class="co"># [1 4]   — entire first column</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Building from vectors</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.column_stack(([<span class="dv">1</span>,<span class="dv">2</span>], [<span class="dv">3</span>,<span class="dv">4</span>], [<span class="dv">5</span>,<span class="dv">6</span>]))  <span class="co"># join as columns</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.vstack([[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>], [<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]])            <span class="co"># join as rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>X.shape</td>
+<td>Returns (rows, columns) as a tuple</td>
+</tr>
+<tr class="odd">
+<td>X.reshape(r, c)</td>
+<td>Reshape to r rows and c columns</td>
+</tr>
+<tr class="even">
+<td>np.hstack((a, b))</td>
+<td>Combine arrays side by side (columns)</td>
+</tr>
+<tr class="odd">
+<td>np.vstack((a, b))</td>
+<td>Stack arrays vertically (rows)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="dictionaries" class="level2">
+<h2 class="anchored" data-anchor-id="dictionaries">Dictionaries</h2>
+<div class="ref-section py">
+<h3 class="anchored">Creating &amp; accessing dicts (R: lists)</h3>
+<p>Dictionaries hold <strong>key–value pairs</strong> of any type. Use <code>[ ]</code> with the key to access values — there is no <code>$</code> or <code>[[ ]]</code> in Python.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> {<span class="st">"color"</span>: [<span class="st">"blue"</span>, <span class="st">"red"</span>], <span class="st">"size"</span>: <span class="dv">5</span>, <span class="st">"active"</span>: <span class="va">True</span>}</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Accessing content</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>L[<span class="st">"color"</span>]           <span class="co"># ["blue", "red"]</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>L[<span class="st">"color"</span>][<span class="dv">1</span>]        <span class="co"># "red"   — second element (0-based)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if key exists</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">"color"</span> <span class="kw">in</span> L         <span class="co"># True</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Modifying &amp; deleting</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>L[<span class="st">"size"</span>] <span class="op">=</span> <span class="dv">10</span>       <span class="co"># change a value</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>L[<span class="st">"new"</span>]  <span class="op">=</span> <span class="st">"hi"</span>     <span class="co"># add a new key</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> L[<span class="st">"size"</span>]        <span class="co"># delete a key</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="tip-box" style="background:#eef2ff;border-left-color:#7c9cef;">
+  <strong>R vs Python:</strong> R's <code>L[["color"]]</code> → Python's <code>L["color"]</code>.
+  Square brackets always return the value directly in Python — no double-bracket distinction.
+</div>
+</div>
+<hr>
+</section>
+<section id="dataframes-1" class="level2">
+<h2 class="anchored" data-anchor-id="dataframes-1">DataFrames</h2>
+<div class="ref-section py">
+<h3 class="anchored">Creating &amp; accessing DataFrames (R: data.frame)</h3>
+<p>Pandas DataFrames are the Python equivalent of R dataframes. Requires <code>import pandas as pd</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>Name   <span class="op">=</span> [<span class="st">"Ben"</span>, <span class="st">"Alice"</span>, <span class="st">"Daniel"</span>, <span class="st">"Charlie"</span>]</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>Year   <span class="op">=</span> [<span class="dv">1990</span>, <span class="dv">1992</span>, <span class="dv">1995</span>, <span class="dv">1993</span>]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>Option <span class="op">=</span> [<span class="st">"Biology"</span>, <span class="st">"Physics"</span>, <span class="st">"Chemistry"</span>, <span class="st">"Mathematics"</span>]</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">"First_Name"</span>: Name, <span class="st">"Year"</span>: Year, <span class="st">"Options"</span>: Option})</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Accessing columns</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Year"</span>]            <span class="co"># Series: 1990 1992 1995 1993</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>df.Year               <span class="co"># same — attribute-style access</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>df.iloc[:, <span class="dv">1</span>]         <span class="co"># same — all rows, column index 1 (0-based)</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Accessing elements</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Options"</span>].iloc[<span class="dv">2</span>]    <span class="co"># "Chemistry"</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>df.iloc[<span class="dv">1</span>:<span class="dv">3</span>, <span class="dv">2</span>]          <span class="co"># "Physics", "Chemistry"</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Merging two DataFrames</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>Full_Names <span class="op">=</span> pd.DataFrame({<span class="st">"First_Name"</span>: [<span class="st">"Alice"</span>,<span class="st">"Ben"</span>],</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"Last_Name"</span>:  [<span class="st">"Parker"</span>,<span class="st">"James"</span>]})</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>pd.merge(df, Full_Names)                    <span class="co"># Inner join — matching rows only</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>pd.merge(df, Full_Names, how<span class="op">=</span><span class="st">"outer"</span>)       <span class="co"># Outer join — all rows, NaN for missing</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>pd.DataFrame({...})</td>
+<td>Create a DataFrame from a dict of lists</td>
+</tr>
+<tr class="odd">
+<td>df.shape</td>
+<td>Rows and columns as (r, c)</td>
+</tr>
+<tr class="even">
+<td>df.columns</td>
+<td>Column names</td>
+</tr>
+<tr class="odd">
+<td>df.dtypes</td>
+<td>Data type of each column</td>
+</tr>
+<tr class="even">
+<td>df.describe()</td>
+<td>Summary statistics for numeric columns</td>
+</tr>
+<tr class="odd">
+<td>pd.merge(a, b)</td>
+<td>Join two DataFrames on shared columns</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="loops-iteration-1" class="level2">
+<h2 class="anchored" data-anchor-id="loops-iteration-1">Loops &amp; Iteration</h2>
+<div class="ref-section py">
+<h3 class="anchored">for loops, list comprehensions &amp; numpy</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>Mat <span class="op">=</span> np.random.randn(<span class="dv">3</span>, <span class="dv">4</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>np.mean(Mat, axis<span class="op">=</span><span class="dv">0</span>)        <span class="co"># mean of each COLUMN</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>np.mean(Mat, axis<span class="op">=</span><span class="dv">1</span>)        <span class="co"># mean of each ROW</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">6</span>))       <span class="co"># [1, 2, 3, 4, 5]</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>[np.sqrt(i) <span class="cf">for</span> i <span class="kw">in</span> x]     <span class="co"># list comprehension — apply to each element</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(<span class="bu">map</span>(np.sqrt, x))        <span class="co"># same result with map()</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># For loop</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">5</span>):</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(i <span class="op">*</span> <span class="dv">3</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># If / else</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">5</span><span class="op">;</span> b <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> a <span class="op">&lt;</span> b:</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"a is smaller"</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"b is smaller"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function / Syntax</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>np.mean(X, axis=0)</td>
+<td>Mean of each column (axis 0 = rows collapse)</td>
+</tr>
+<tr class="odd">
+<td>np.mean(X, axis=1)</td>
+<td>Mean of each row (axis 1 = columns collapse)</td>
+</tr>
+<tr class="even">
+<td>[f(x) for x in lst]</td>
+<td>List comprehension — apply f to each element</td>
+</tr>
+<tr class="odd">
+<td>map(f, lst)</td>
+<td>Apply f to each element → map object</td>
+</tr>
+<tr class="even">
+<td>filter(f, lst)</td>
+<td>Keep elements where f returns True</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<hr>
+</section>
+<section id="index-selection-1" class="level2">
+<h2 class="anchored" data-anchor-id="index-selection-1">Index Selection</h2>
+<div class="ref-section py">
+<h3 class="anchored">np.where, in, pd.isna</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">1</span>])</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>np.where(x <span class="op">&gt;</span> <span class="dv">5</span>)          <span class="co"># (array([1, 3]),)  — INDICES where condition is TRUE</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>x[np.where(x <span class="op">&gt;</span> <span class="dv">5</span>)]       <span class="co"># array([8, 7])     — VALUES at those indices</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>x[x <span class="op">&gt;</span> <span class="dv">5</span>]                 <span class="co"># array([8, 7])     — direct boolean indexing (shortcut)</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">"a"</span> <span class="kw">in</span> [<span class="st">"b"</span>, <span class="st">"d"</span>]        <span class="co"># False  — membership test</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>[<span class="st">"a"</span> <span class="kw">in</span> [<span class="st">"b"</span>,<span class="st">"d"</span>], <span class="st">"b"</span> <span class="kw">in</span> [<span class="st">"b"</span>,<span class="st">"d"</span>], <span class="st">"c"</span> <span class="kw">in</span> [<span class="st">"b"</span>,<span class="st">"d"</span>]]  <span class="co"># [False, True, False]</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>pd.isna(pd.Series([<span class="dv">1</span>, <span class="va">None</span>, <span class="dv">3</span>]))   <span class="co"># [False, True, False]</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>np.isnan(x.astype(<span class="bu">float</span>))          <span class="co"># array of bool (for float arrays)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="fn-table caption-top table">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Function / Operator</th>
+<th data-quarto-table-cell-role="th">What it does</th>
+</tr>
+<tr class="even">
+<td>np.where(condition)</td>
+<td>Returns tuple of indices where condition is TRUE</td>
+</tr>
+<tr class="odd">
+<td>x in y</td>
+<td>True if x appears in sequence y</td>
+</tr>
+<tr class="even">
+<td>pd.isna(x)</td>
+<td>True for each NaN / None element</td>
+</tr>
+<tr class="odd">
+<td>np.isnan(x)</td>
+<td>True for each NaN in a NumPy float array</td>
+</tr>
+<tr class="even">
+<td>df.dropna()</td>
+<td>Remove rows with any missing value</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</section>
+</div>
+<section id="structure-course-materials" class="level2">
+<h2 class="anchored" data-anchor-id="structure-course-materials">Structure &amp; Course Materials</h2>
+<p>Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.</p>
+<p>On this platform you will find everything in one place: lecture videos and slide decks, practical markdown files to work through in RStudio or VS Code, and short comprehension quizzes to consolidate what you have learned.</p>
+<p>Each week page guides you through three steps: <strong>watch the videos &amp; download the slides</strong> → <strong>work through the practical markdown</strong> → <strong>complete the comprehension quiz</strong>. Your progress is tracked automatically.</p>
+<p>You have full freedom of choice: using the <strong>button in the top right corner</strong>, you can switch between the programming languages <strong>R</strong> and <strong>Python</strong> at any time. For weeks where Python materials are still being prepared, a placeholder will indicate what is coming.</p>
+<p>The <a href="coding_basics.html">Basics in Coding</a> page provides a quick-reference for syntax in both R and Python — keep it open while working through the markdowns.</p>
+<hr>
+</section>
+<section id="programming-languages-and-their-working-environments" class="level2">
+<h2 class="anchored" data-anchor-id="programming-languages-and-their-working-environments">Programming Languages and Their Working Environments</h2>
+<p>Before we start, it is important to understand the difference between the <strong>programming language</strong> itself and the <strong>program</strong> in which we write.</p>
+<section id="the-language-r-and-python" class="level3">
+<h3 class="anchored" data-anchor-id="the-language-r-and-python">1. The Language: R and Python</h3>
+<p><strong>R</strong> and <strong>Python</strong> are the “engines” behind your analysis. For your computer to understand what you want from it, you need to download the language as base software.</p>
+<ul>
+<li><strong>Python:</strong> Installed as a program from <a href="https://www.python.org/">python.org</a>.</li>
+<li><strong>R:</strong> Installed as “Base R” from the <a href="https://cran.r-project.org/">CRAN network</a>.</li>
+</ul>
+<p><strong>Important:</strong> You will almost never open these programs directly. They “rest” in the background of your operating system and wait for commands.</p>
+</section>
+<section id="the-tool-the-ide-rstudio-vs-code" class="level3">
+<h3 class="anchored" data-anchor-id="the-tool-the-ide-rstudio-vs-code">2. The Tool: The IDE (RStudio &amp; VS Code)</h3>
+<p>To actually write code, we use an <strong>IDE</strong> (<em>Integrated Development Environment</em>). This is your actual control center.</p>
+<ul>
+<li><strong>RStudio</strong> is the standard environment for <strong>R</strong>.</li>
+<li><strong>VS Code</strong> is the most popular environment for <strong>Python</strong>.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="what-do-you-need-for-setup" class="level2">
+<h2 class="anchored" data-anchor-id="what-do-you-need-for-setup">What Do You Need for Setup?</h2>
+<p>If you later want to work on your own computer, this is the correct order:</p>
+<ol type="1">
+<li><strong>Install the engine:</strong> Download Python or R (provides the “language”).</li>
+<li><strong>Set up the workspace:</strong> Install an IDE like RStudio or VS Code (your workstation).</li>
+<li><strong>Unpack the tools:</strong> Install so-called “packages” within the IDE. These are extensions for specific tasks, such as drawing biological diagrams.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Our Tip for Getting Started
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To watch videos, follow the course and take quizzes, <strong>no installation is required</strong>. However, to work through the practical markdown files, you will need <strong>RStudio</strong> (for R) or <strong>VS Code</strong> (for Python) installed on your computer. We recommend setting this up early — these tools will be your daily companions throughout the course.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="working-with-markdown" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-markdown">Working with Markdown</h2>
+<p>In this course we do not use ordinary text documents or pure program code. In addition to this website, we work with <strong>Markdown</strong> files as an offline alternative.</p>
+<p>In science, <strong>reproducibility</strong> (traceability) is crucial. Markdown allows us to do so-called <strong>Literate Programming</strong>: * We write our text (explanations, hypotheses). * We embed the actual code (R or Python) directly within it. * We let the computer <strong>render</strong> the document (in RStudio often via the <strong>Knit</strong> button).</p>
+<p>The result is a finished document (HTML, PDF, or Word) in which the text, the code, and the resulting graphics are perfectly combined.</p>
+<section id="the-structure-of-a-file" class="level3">
+<h3 class="anchored" data-anchor-id="the-structure-of-a-file">The Structure of a File</h3>
+<ol type="1">
+<li><strong>The text:</strong> Regular text with simple formatting (<code>**bold**</code>, <code>*italic*</code>, <code># Heading</code>).</li>
+<li><strong>The code chunks:</strong> Blocks that begin with three backticks. This is where the actual code is executed. It is recommended to <strong>name</strong> each chunk — this keeps your document tidy and greatly facilitates troubleshooting.</li>
+<li><strong>The YAML header:</strong> The area at the very top between the <code>---</code> lines for title and author.</li>
+</ol>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Language-Specific Introduction
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Depending on whether you have switched to “R” or “Python” above, you will now see a more detailed introduction to the respective environment below.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="focus-r-and-rstudio" class="level2 lang-r">
+<h2 class="anchored" data-anchor-id="focus-r-and-rstudio">Focus: R and RStudio</h2>
+<p><strong>R</strong> is a powerful language for statistical data analysis. We recommend that you also take the introductory courses at <strong>DataCamp</strong> to get a feel for the syntax. <strong>RStudio</strong> is an “Integrated Development Environment” (IDE) that helps you write code, visualize data, and save results.</p>
+<section id="the-rstudio-interface" class="level3">
+<h3 class="anchored" data-anchor-id="the-rstudio-interface">The RStudio Interface</h3>
+<p>The interface is divided into four main areas:</p>
+<ol type="1">
+<li><strong>Source (top left):</strong> This is where you write your scripts and Markdown files. To create a new file, click on the <code>New File</code> icon (green plus) at the top left. Everything written here can be saved.</li>
+<li><strong>Console (bottom left):</strong> Code is executed immediately here. For example, type <code>3 + 4</code> and press Enter — the result appears immediately. The console is ideal for commands that you do not need to save permanently.</li>
+<li><strong>Environment (top right):</strong> All variables, lists, and datasets that you have created and defined during your session are displayed here.</li>
+<li><strong>Files/Plots/Help (bottom right):</strong> Here you manage your files, view generated graphics, or search the help for functions (e.g., with <code>?matrix</code>).</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/rstudio-panes-labeled.jpeg" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>The main areas of RStudio</figcaption>
+</figure>
+</div>
+</section>
+<section id="first-steps-in-programming" class="level3">
+<h3 class="anchored" data-anchor-id="first-steps-in-programming">First Steps in Programming</h3>
+<ul>
+<li><strong>Assignments:</strong> Values are loaded into variables with <code>&lt;-</code> or <code>=</code> (e.g., <code>a &lt;- 10</code>). The variable then appears in the Environment.</li>
+<li><strong>R as a calculator:</strong> R is excellent for mathematical calculations. You can calculate directly with variables:</li>
+</ul>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "R Chunk: Mathematical Operations", value = "x &lt;- 5\ny &lt;- 3\nSum &lt;- x + y\nSum * 5", width = '100%', height = '100px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })
+}
+shinyApp(ui, server)</code></pre>
+<ul>
+<li><strong>Case Sensitivity:</strong> R is extremely picky. <code>hello</code> is a different variable from <code>Hello</code>.</li>
+<li><strong>Getting help:</strong> Use the documentation directly in RStudio or online resources:
+<ul>
+<li><a href="https://www.guru99.com/r-tutorial.html">guru99 R Tutorial</a></li>
+<li><a href="https://www.bioinformatics.babraham.ac.uk/training.html#advancedrtidy">Babraham Bioinformatics</a></li>
+<li><a href="https://r4ds.had.co.nz">R for Data Science</a></li>
+</ul></li>
+<li><strong>Workspace:</strong> Use <code>ls()</code> to list your variables and <code>rm(a)</code> to delete them — <strong>Caution:</strong> <code>rm()</code> deletes irreversibly, so use it carefully! Your entire environment can be saved as an <code>.RData</code> file and restored in a later session with <code>load("MyEnvironment.RData")</code>.</li>
+<li><strong>Working Directory:</strong> Via the <strong>Files -&gt; More -&gt; Set As Working Directory</strong> tab, you define which folder R should look in for your files.</li>
+</ul>
+<section id="helpful-tips-in-the-editor" class="level4">
+<h4 class="anchored" data-anchor-id="helpful-tips-in-the-editor">Helpful Tips in the Editor</h4>
+<ul>
+<li><strong>Autocomplete:</strong> In RStudio, quotation marks <code>""</code> and brackets <code>()</code> usually appear automatically in pairs. This helps you avoid syntax errors caused by forgotten characters.</li>
+<li><strong>History:</strong> Using the <strong>arrow keys (up/down)</strong> you can scroll through your most recently used commands in the console.</li>
+<li><strong>Comments:</strong> Everything after a <code>#</code> is ignored by R. Use this generously to explain your code to yourself and others.</li>
+</ul>
+</section>
+<section id="variables-assignments-2" class="level4">
+<h4 class="anchored" data-anchor-id="variables-assignments-2">Variables &amp; Assignments</h4>
+<p>We can load values (numbers or text) into variables. In R, the arrow <code>&lt;-</code> is traditionally used for this, but <code>=</code> is also possible.</p>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+library(shiny)
+ui &lt;- fluidPage(
+  textAreaInput("code", "R Chunk: Variables &amp; Assignments", value = "a &lt;- \"Hello world!\"\nhello = \"Hello world!\"\nprint(a)\nprint(hello)", width = '100%', height = '120px'),
+  actionButton("run", "Run Code", class = "btn-success"),
+  verbatimTextOutput("out")
+)
+server &lt;- function(input, output) {
+  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })
+}
+shinyApp(ui, server)</code></pre>
+</section>
+</section>
+</section>
+<section id="python-and-vs-code" class="level2 lang-python">
+<h2 class="anchored" data-anchor-id="python-and-vs-code">Python and VS Code</h2>
+<p><strong>Python</strong> is a versatile and widely used programming language that is particularly well-suited for data analysis, machine learning, and scientific computing. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. VS Code is a flexible development environment (IDE) that can be optimally adapted for Python through extensions.</p>
+<section id="the-vs-code-interface" class="level3">
+<h3 class="anchored" data-anchor-id="the-vs-code-interface">The VS Code Interface</h3>
+<p>The interface is divided into four main areas:</p>
+<ol type="1">
+<li><strong>Editor (center):</strong> This is where you write your scripts and notebooks. To create a new file, click on the New File icon at the top left in the Explorer. Everything written here can be saved. The file extensions determine in which programming language you are writing and how the file can be used (.py/.ipynb for Python, .r for R, .md for Markdown).</li>
+<li><strong>Terminal (bottom):</strong> Code is executed immediately here and files can be launched. Connections to clusters, communication with GitHub, or searching for files also work via the terminal. The terminal can be opened, for example, at the top right (3rd icon from the right).</li>
+<li><strong>Explorer (left):</strong> Here you manage your files and folders. These are either stored locally on your computer or on a cluster.</li>
+<li><strong>Control Center (far left):</strong> Here you can, for example, search documents for a keyword, connect and manage GitHub repositories, debug, install extensions, and manage remote connections (e.g., clusters).</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/vs_code.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>The main areas of VS Code</figcaption>
+</figure>
+</div>
+</section>
+<section id="first-steps-in-programming-1" class="level3">
+<h3 class="anchored" data-anchor-id="first-steps-in-programming-1">First Steps in Programming</h3>
+<ul>
+<li><strong>Assignments:</strong> In Python, values are loaded into variables with = (e.g., a = 10). Unlike R, there is no <code>&lt;-</code> in Python.</li>
+<li><strong>Python as a calculator:</strong> Python is excellent for mathematical calculations. You can calculate directly with variables:</li>
+</ul>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+from shiny import App, ui, render, reactive
+import io, contextlib
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", "Python Chunk: Mathematical Operations", value="x = 5\ny = 3\nSum = x + y\nprint(Sum * 5)", width='100%', height='100px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    def out():
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            exec(input.code(), {})
+        return f.getvalue()
+
+app = App(app_ui, server)</code></pre>
+<ul>
+<li><strong>Case Sensitivity:</strong> Python is just as picky as R. hello is a different variable from Hello.</li>
+</ul>
+</section>
+<section id="getting-help" class="level3">
+<h3 class="anchored" data-anchor-id="getting-help">Getting Help:</h3>
+<p>Use the documentation directly in VS Code or online resources: Python Documentation W3Schools Python Tutorial Python for Data Science Handbook</p>
+<ul>
+<li><p><strong>Workspace:</strong> Use <code>dir()</code> to list all current variables and objects, and <code>del a</code> to delete a variable — <strong>Caution:</strong> <code>del</code> deletes irreversibly, so use it carefully!</p></li>
+<li><p><strong>Working Directory:</strong> With <code>import os</code> and <code>os.getcwd()</code> you can display the current directory; with <code>os.chdir("path/to/folder")</code> you change it.</p></li>
+</ul>
+</section>
+<section id="helpful-tips-in-the-editor-1" class="level3">
+<h3 class="anchored" data-anchor-id="helpful-tips-in-the-editor-1">Helpful Tips in the Editor</h3>
+<ul>
+<li><strong>Autocomplete:</strong> VS Code automatically suggests functions, variable names, and brackets. Quotation marks <code>""</code> and brackets <code>()</code> often appear automatically in pairs — this helps avoid syntax errors.</li>
+<li><strong>History:</strong> In the terminal you can scroll through your most recently used commands using the arrow keys (up/down).</li>
+<li><strong>Comments:</strong> Everything after a <code>#</code> is ignored by Python — just like in R. Use comments generously to explain your code.</li>
+</ul>
+</section>
+<section id="variables-assignments-3" class="level3">
+<h3 class="anchored" data-anchor-id="variables-assignments-3">Variables &amp; Assignments</h3>
+<p>We can load values (numbers or text) into variables. In Python, <code>=</code> is used exclusively for assignments.</p>
+<pre class="shinylive-python" data-engine="python"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 300
+from shiny import App, ui, render, reactive
+import io, contextlib
+
+app_ui = ui.page_fluid(
+    ui.input_text_area("code", "Python Chunk: Variables &amp; Assignments", value='a = "Hello world!"\nhello = "Hello world!"\nprint(a)\nprint(hello)', width='100%', height='120px'),
+    ui.input_action_button("run", "Run Code", class_="btn-success"),
+    ui.output_text_verbatim("out")
+)
+
+def server(input, output, session):
+    @render.text
+    @reactive.event(input.run)
+    def out():
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            exec(input.code(), {})
+        return f.getvalue()
+
+app = App(app_ui, server)</code></pre>
+</section>
 </section>
 
 </main> <!-- /main -->

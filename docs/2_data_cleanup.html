@@ -353,6 +353,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
     font-weight: 800; margin-left: 10px; vertical-align: middle;
   }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
 </style>
 
 <!-- Progress bar -->
@@ -368,7 +377,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div id="week2-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
   </div>
 </div>
-<p>In this week you will work with a real diabetes dataset and learn how to <strong>prepare raw data for analysis</strong> and <strong>visualise distributions</strong>. Complete all three steps below to finish the week.</p>
+<p>In this week you will work with a real diabetes dataset and learn how to <strong>prepare raw data for analysis</strong> and <strong>visualise distributions</strong>. Use the language toggle above to switch between R and Python.</p>
 <hr>
 <div class="step-header">
   <div class="step-badge">1</div>
@@ -414,7 +423,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
 
 </ul>
+<div class="lang-python">
+<div class="lang-note">
+  <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — data loading, cleanup, and visualisation — apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+</div>
+</div>
 <hr>
+<div class="lang-r">
 <div class="step-header">
   <div class="step-badge">2</div>
   <h2 class="anchored">Work Through the Practical Markdown</h2>
@@ -434,12 +449,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Course dataset:</strong> Load the diabetes data in RStudio with:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">'https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </blockquote>
+</div>
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2 class="anchored">Work Through the Practical Markdown</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Markdown — Coming Soon</p>
+  <p style="margin-bottom:0.5rem;color:#555;">A Python version of this practical markdown (using pandas and matplotlib) is currently being prepared.</p>
+  <p style="margin:0;color:#555;">In the meantime, the <a href="coding_basics.html" style="color:#7c9cef;">Basics in Coding</a> reference page covers pandas DataFrames and data selection in Python.</p>
+</div>
+<blockquote class="blockquote">
+<p><strong>Course dataset:</strong> Load the diabetes data in Python with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dat <span class="op">=</span> pd.read_csv(<span class="st">'https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1'</span>, sep<span class="op">=</span><span class="st">'</span><span class="ch">\t</span><span class="st">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</blockquote>
+</div>
 <hr>
 <div class="step-header">
   <div class="step-badge">3</div>
   <h2 class="anchored">Comprehension Quiz</h2>
 </div>
-<p style="color:#555;margin-bottom:1.5rem;">Test your understanding with four short quizzes. Each quiz unlocks once you get all questions right.</p>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+<div class="lang-r">
 <section id="quiz-1-loading-and-exploring" class="level3">
 <h3 class="anchored" data-anchor-id="quiz-1-loading-and-exploring">Quiz 1: Loading and Exploring</h3>
 <p><span id="quiz-done-w2_q_loading" class="quiz-done-badge">✓ Done</span></p>
@@ -570,9 +603,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <button onclick="checkExerciseQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
   <div id="exercise-result" class="mt-3 fw-bold text-center"></div>
 </div>
-
-
 </section>
+</div>
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;" class="anchored">Quiz 1: Loading &amp; Exploring <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R read.delim + head/dim)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> What does <code>dat.shape</code> return for a DataFrame with 400 rows and 17 columns?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(17, 400)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(400, 17)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>6800</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 2: Data Cleanup <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R which/apply/is.na)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you count missing values per column in a pandas DataFrame <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sum(is.na(dat))</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.isna().sum()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.count()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 3: Visualisation <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(matplotlib equivalent of R hist/boxplot/qqnorm)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which matplotlib function creates a histogram?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.bar()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.hist()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.plot()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 4: Putting it all together <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python full pipeline)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you remove rows with missing values from a pandas DataFrame?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.drop_na()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.dropna()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.remove_na()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+</div>
+
+
 
 </main> <!-- /main -->
 <script>

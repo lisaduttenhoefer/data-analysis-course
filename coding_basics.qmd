@@ -23,12 +23,21 @@ format:
     background: #e8f5e9; border-radius: 8px; padding: 12px 16px;
     margin: 1rem 0; font-size: 0.9rem; border-left: 3px solid #1a4d1a;
   }
+  /* Python variant — blue accent */
+  .ref-section.py { border-left-color: #7c9cef; }
+  .ref-section.py h3 { color: #4a6cbf; }
+  .ref-section.py code { background: #eef2ff; }
+  .ref-section.py .fn-table th { background: #4a6cbf; }
+  .ref-section.py .fn-table td:first-child { color: #4a6cbf; }
+  .ref-section.py .tip-box { background: #eef2ff; border-left-color: #7c9cef; }
 </style>
 ```
 
-This page is a **quick-reference** for the R basics covered in Week 1. Keep it open in a browser tab while working through the markdowns in RStudio.
+This page is a **quick-reference** for the coding basics covered in Week 1. Keep it open in a browser tab while working through the markdowns. Use the language toggle above to switch between **R** and **Python**.
 
 ---
+
+:::: {.lang-r}
 
 ## Variables & Assignments
 
@@ -298,3 +307,282 @@ sum(is.na(x))         # count of NA values
 </table>
 </div>
 ```
+
+::::
+
+:::: {.lang-python}
+
+## Variables & Assignments
+
+```{=html}
+<div class="ref-section py">
+<h3>Assigning values</h3>
+```
+
+Use `=` to assign a value to a variable. Python is **case-sensitive** — `hello` and `Hello` are different objects. There is no `<-` operator in Python.
+
+```python
+a    = 2              # integer
+b    = True           # boolean  (note capital T)
+name = "Rosalinde"   # string
+
+a + 3                # 5
+print(name)          # Rosalinde
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td>type(x)</td><td>Show the type of x</td></tr>
+  <tr><td>dir()</td><td>List all names in the current scope</td></tr>
+  <tr><td>del x</td><td>Remove variable x</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Lists
+
+```{=html}
+<div class="ref-section py">
+<h3>Creating &amp; accessing lists (R: vectors)</h3>
+```
+
+Python lists use **0-based indexing** and can hold mixed types. Use `[ ]` for indexing and slicing.
+
+```python
+y = [9, 3, 7, 2]    # list of length 4
+len(y)               # 4
+
+# Indexing (0-based!)
+y[2]                 # 7        — third element (index 2)
+y[1:3]               # [3, 7]   — elements at index 1 and 2
+y[:-1]               # [9,3,7]  — all except last
+
+# Filter with list comprehension
+[x for x in y if x < 5]      # [3, 2]
+[x < 5 for x in y]           # [False, True, False, True]
+sum(x < 5 for x in y)        # 2  — count matching
+
+# Modifying
+y[0] = 10            # replace first element (index 0)
+```
+
+```{=html}
+<div class="tip-box" style="background:#eef2ff;border-left-color:#7c9cef;">
+  <strong>Mixed types:</strong> Unlike R vectors, Python lists allow mixed types:
+  <code>[True, "hello", 3]</code> stays as-is — no automatic conversion.
+  Indexing starts at <strong>0</strong>, not 1.
+</div>
+</div>
+```
+
+---
+
+## NumPy Arrays
+
+```{=html}
+<div class="ref-section py">
+<h3>Creating &amp; accessing arrays (R: matrices)</h3>
+```
+
+NumPy arrays are the Python equivalent of R matrices. Requires `import numpy as np`. Indexing is **0-based**.
+
+```python
+import numpy as np
+
+X = np.array([[1, 2, 3],
+              [4, 5, 6]])
+# Shape: (2, 3)
+
+X.shape          # (2, 3)  — rows, then columns
+X[0, 1]          # 2       — row 0, column 1 (0-based!)
+X[1, :]          # [4 5 6] — entire second row
+X[:, 0]          # [1 4]   — entire first column
+
+# Building from vectors
+A = np.column_stack(([1,2], [3,4], [5,6]))  # join as columns
+B = np.vstack([[1,2,3], [4,5,6]])            # join as rows
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td>X.shape</td><td>Returns (rows, columns) as a tuple</td></tr>
+  <tr><td>X.reshape(r, c)</td><td>Reshape to r rows and c columns</td></tr>
+  <tr><td>np.hstack((a, b))</td><td>Combine arrays side by side (columns)</td></tr>
+  <tr><td>np.vstack((a, b))</td><td>Stack arrays vertically (rows)</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Dictionaries
+
+```{=html}
+<div class="ref-section py">
+<h3>Creating &amp; accessing dicts (R: lists)</h3>
+```
+
+Dictionaries hold **key–value pairs** of any type. Use `[ ]` with the key to access values — there is no `$` or `[[ ]]` in Python.
+
+```python
+L = {"color": ["blue", "red"], "size": 5, "active": True}
+
+# Accessing content
+L["color"]           # ["blue", "red"]
+L["color"][1]        # "red"   — second element (0-based)
+
+# Check if key exists
+"color" in L         # True
+
+# Modifying & deleting
+L["size"] = 10       # change a value
+L["new"]  = "hi"     # add a new key
+del L["size"]        # delete a key
+```
+
+```{=html}
+<div class="tip-box" style="background:#eef2ff;border-left-color:#7c9cef;">
+  <strong>R vs Python:</strong> R's <code>L[["color"]]</code> → Python's <code>L["color"]</code>.
+  Square brackets always return the value directly in Python — no double-bracket distinction.
+</div>
+</div>
+```
+
+---
+
+## DataFrames
+
+```{=html}
+<div class="ref-section py">
+<h3>Creating &amp; accessing DataFrames (R: data.frame)</h3>
+```
+
+Pandas DataFrames are the Python equivalent of R dataframes. Requires `import pandas as pd`.
+
+```python
+import pandas as pd
+
+Name   = ["Ben", "Alice", "Daniel", "Charlie"]
+Year   = [1990, 1992, 1995, 1993]
+Option = ["Biology", "Physics", "Chemistry", "Mathematics"]
+
+df = pd.DataFrame({"First_Name": Name, "Year": Year, "Options": Option})
+
+# Accessing columns
+df["Year"]            # Series: 1990 1992 1995 1993
+df.Year               # same — attribute-style access
+df.iloc[:, 1]         # same — all rows, column index 1 (0-based)
+
+# Accessing elements
+df["Options"].iloc[2]    # "Chemistry"
+df.iloc[1:3, 2]          # "Physics", "Chemistry"
+
+# Merging two DataFrames
+Full_Names = pd.DataFrame({"First_Name": ["Alice","Ben"],
+                            "Last_Name":  ["Parker","James"]})
+
+pd.merge(df, Full_Names)                    # Inner join — matching rows only
+pd.merge(df, Full_Names, how="outer")       # Outer join — all rows, NaN for missing
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function</th><th>What it does</th></tr>
+  <tr><td>pd.DataFrame({...})</td><td>Create a DataFrame from a dict of lists</td></tr>
+  <tr><td>df.shape</td><td>Rows and columns as (r, c)</td></tr>
+  <tr><td>df.columns</td><td>Column names</td></tr>
+  <tr><td>df.dtypes</td><td>Data type of each column</td></tr>
+  <tr><td>df.describe()</td><td>Summary statistics for numeric columns</td></tr>
+  <tr><td>pd.merge(a, b)</td><td>Join two DataFrames on shared columns</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Loops & Iteration
+
+```{=html}
+<div class="ref-section py">
+<h3>for loops, list comprehensions &amp; numpy</h3>
+```
+
+```python
+import numpy as np
+
+Mat = np.random.randn(3, 4)
+
+np.mean(Mat, axis=0)        # mean of each COLUMN
+np.mean(Mat, axis=1)        # mean of each ROW
+
+x = list(range(1, 6))       # [1, 2, 3, 4, 5]
+[np.sqrt(i) for i in x]     # list comprehension — apply to each element
+list(map(np.sqrt, x))        # same result with map()
+
+# For loop
+for i in range(1, 5):
+    print(i * 3)
+
+# If / else
+a = 5; b = 10
+if a < b:
+    print("a is smaller")
+else:
+    print("b is smaller")
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function / Syntax</th><th>What it does</th></tr>
+  <tr><td>np.mean(X, axis=0)</td><td>Mean of each column (axis 0 = rows collapse)</td></tr>
+  <tr><td>np.mean(X, axis=1)</td><td>Mean of each row (axis 1 = columns collapse)</td></tr>
+  <tr><td>[f(x) for x in lst]</td><td>List comprehension — apply f to each element</td></tr>
+  <tr><td>map(f, lst)</td><td>Apply f to each element → map object</td></tr>
+  <tr><td>filter(f, lst)</td><td>Keep elements where f returns True</td></tr>
+</table>
+</div>
+```
+
+---
+
+## Index Selection
+
+```{=html}
+<div class="ref-section py">
+<h3>np.where, in, pd.isna</h3>
+```
+
+```python
+import numpy as np
+import pandas as pd
+
+x = np.array([2, 8, 3, 7, 1])
+
+np.where(x > 5)          # (array([1, 3]),)  — INDICES where condition is TRUE
+x[np.where(x > 5)]       # array([8, 7])     — VALUES at those indices
+x[x > 5]                 # array([8, 7])     — direct boolean indexing (shortcut)
+
+"a" in ["b", "d"]        # False  — membership test
+["a" in ["b","d"], "b" in ["b","d"], "c" in ["b","d"]]  # [False, True, False]
+
+pd.isna(pd.Series([1, None, 3]))   # [False, True, False]
+np.isnan(x.astype(float))          # array of bool (for float arrays)
+```
+
+```{=html}
+<table class="fn-table">
+  <tr><th>Function / Operator</th><th>What it does</th></tr>
+  <tr><td>np.where(condition)</td><td>Returns tuple of indices where condition is TRUE</td></tr>
+  <tr><td>x in y</td><td>True if x appears in sequence y</td></tr>
+  <tr><td>pd.isna(x)</td><td>True for each NaN / None element</td></tr>
+  <tr><td>np.isnan(x)</td><td>True for each NaN in a NumPy float array</td></tr>
+  <tr><td>df.dropna()</td><td>Remove rows with any missing value</td></tr>
+</table>
+</div>
+```
+
+::::

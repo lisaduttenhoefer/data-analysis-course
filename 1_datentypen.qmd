@@ -46,6 +46,15 @@ format:
     border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
     font-weight: 800; margin-left: 10px; vertical-align: middle;
   }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
 </style>
 
 <!-- Progress bar -->
@@ -63,9 +72,9 @@ format:
 </div>
 ```
 
-In this week you will learn the fundamental **building blocks of R**: how data is stored, organised, and accessed. These concepts underlie everything that comes later.
+In this week you will learn the fundamental **building blocks** of data analysis: how data is stored, organised, and accessed. Use the language toggle above to switch between R and Python.
 
-> **Tip:** The [Basics in Coding](coding_basics.html) reference page gives you a quick-lookup summary of all syntax covered this week — keep it open while working in RStudio.
+> **Tip:** The [Basics in Coding](coding_basics.html) reference page gives you a quick-lookup summary of all syntax covered this week — available for both R and Python.
 
 ---
 
@@ -109,8 +118,17 @@ In this week you will learn the fundamental **building blocks of R**: how data i
 </ul>
 ```
 
+:::: {.lang-python}
+```{=html}
+<div class="lang-note">
+  <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — data types, assignment, indexing — apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+</div>
+```
+::::
+
 ---
 
+:::: {.lang-r}
 ```{=html}
 <div class="step-header">
   <div class="step-badge">2</div>
@@ -148,6 +166,21 @@ In this week you will learn the fundamental **building blocks of R**: how data i
   <a href="WEEK0/cheatsheet_Best_Practice_R.pdf" target="_blank" class="btn btn-outline-danger btn-sm">R Best Practice</a>
 </div>
 ```
+::::
+
+:::: {.lang-python}
+```{=html}
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Markdowns</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Markdown — Coming Soon</p>
+  <p style="margin:0;color:#555;">A Python version of this practical markdown is currently being prepared.
+  In the meantime, the <a href="coding_basics.html" style="color:#7c9cef;">Basics in Coding</a> reference page covers Python syntax for all topics this week.</p>
+</div>
+```
+::::
 
 ---
 
@@ -156,8 +189,10 @@ In this week you will learn the fundamental **building blocks of R**: how data i
   <div class="step-badge">3</div>
   <h2>Comprehension Quiz</h2>
 </div>
-<p style="color:#555;margin-bottom:1.5rem;">Four short quizzes — one per data structure. Each unlocks once you get all questions right.</p>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
 ```
+
+:::: {.lang-r}
 
 ### Quiz 1: Vectors
 <span id="quiz-done-w1_q_vectors" class="quiz-done-badge">✓ Done</span>
@@ -296,3 +331,61 @@ In this week you will learn the fundamental **building blocks of R**: how data i
   <div id="df-result" class="mt-3 fw-bold text-center"></div>
 </div>
 ```
+
+::::
+
+:::: {.lang-python}
+
+```{=html}
+<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per data structure topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;">Quiz 1: Lists <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Vectors)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> What does <code>len([9, 3, 7, 2])</code> return?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;">2</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;">4</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;">9</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 2: NumPy Arrays <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Matrices)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> What does <code>np.array([[1,2,3],[4,5,6]]).shape</code> return?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>(6,)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>(2, 3)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>(3, 2)</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 3: Dictionaries <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Lists)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you access the value for key <code>"color"</code> in dict <code>L</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>L$color</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>L["color"]</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>L[["color"]]</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 4: Pandas DataFrames <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python equivalent of R Dataframes)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you create a DataFrame from named lists in Python?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>data.frame(Name = x, Year = y)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>pd.DataFrame({"Name": x, "Year": y})</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>DataFrame.create(Name = x)</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+</div>
+```
+
+::::
