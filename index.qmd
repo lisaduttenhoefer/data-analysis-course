@@ -294,9 +294,11 @@ function calculateWeekProgress(week, dbData) {
   const lang = week.lang || getLang();
   const total = (week.chunkCount || 0) + (week.checkIds?.length || 0) + (week.quizIds?.length || 0);
   let done = 0;
-  if (hasChunks) for (let i = 1; i <= week.chunkCount; i++) if (dbData?.[`chunk_${lang}_w${week.n}_c${i}`]) done++;
-  week.checkIds?.forEach(cid => { if (dbData?.[cid]) done++; });
-  week.quizIds?.forEach(qid => { if (dbData?.[`quiz_${lang}_w${week.n}_${qid}`]) done++; });
+  // Check Supabase data first, fall back to localStorage
+  const isDone = (key) => dbData?.[key] === true || localStorage.getItem(key) === 'true';
+  if (hasChunks) for (let i = 1; i <= week.chunkCount; i++) if (isDone(`chunk_${lang}_w${week.n}_c${i}`)) done++;
+  week.checkIds?.forEach(cid => { if (isDone(cid)) done++; });
+  week.quizIds?.forEach(qid => { if (isDone(`quiz_${lang}_w${week.n}_${qid}`)) done++; });
   return { done, total, pct: Math.round((done / total) * 100) };
 }
 

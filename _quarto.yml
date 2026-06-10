@@ -18,20 +18,17 @@ website:
 
   sidebar:
     style: "floating"
-    collapse-level: 1
     contents:
       - text: "WELCOME"
         href: index.qmd
-      - section: "COURSE-CONTENTS"
-        contents:
-          - text: "Getting started"
-            href: 0_markdown.qmd
-          - text: "Basics in Coding"
-            href: coding_basics.qmd
-          - text: "Week 1: Datatypes"
-            href: 1_datentypen.qmd
-          - text: "Week 2: Data Cleanup"
-            href: 2_data_cleanup.qmd
+      - text: "Getting started"
+        href: 0_markdown.qmd
+      - text: "Basics in Coding"
+        href: coding_basics.qmd
+      - text: "Week 1: Datatypes"
+        href: 1_datentypen.qmd
+      - text: "Week 2: Data Cleanup"
+        href: 2_data_cleanup.qmd
 
   navbar:
     background: "#ffffff"

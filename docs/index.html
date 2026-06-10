@@ -224,41 +224,30 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">WELCOME</span></a>
   </div>
 </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
- <span class="menu-text">COURSE-CONTENTS</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./0_markdown.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Getting started</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./coding_basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics in Coding</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Week 1: Datatypes</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2_data_cleanup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Week 2: Data Cleanup</span></a>
   </div>
 </li>
-      </ul>
-  </li>
     </ul>
     </div>
 </nav>
@@ -578,9 +567,11 @@ function calculateWeekProgress(week, dbData) {
   const lang = week.lang || getLang();
   const total = (week.chunkCount || 0) + (week.checkIds?.length || 0) + (week.quizIds?.length || 0);
   let done = 0;
-  if (hasChunks) for (let i = 1; i <= week.chunkCount; i++) if (dbData?.[`chunk_${lang}_w${week.n}_c${i}`]) done++;
-  week.checkIds?.forEach(cid => { if (dbData?.[cid]) done++; });
-  week.quizIds?.forEach(qid => { if (dbData?.[`quiz_${lang}_w${week.n}_${qid}`]) done++; });
+  // Check Supabase data first, fall back to localStorage
+  const isDone = (key) => dbData?.[key] === true || localStorage.getItem(key) === 'true';
+  if (hasChunks) for (let i = 1; i <= week.chunkCount; i++) if (isDone(`chunk_${lang}_w${week.n}_c${i}`)) done++;
+  week.checkIds?.forEach(cid => { if (isDone(cid)) done++; });
+  week.quizIds?.forEach(qid => { if (isDone(`quiz_${lang}_w${week.n}_${qid}`)) done++; });
   return { done, total, pct: Math.round((done / total) * 100) };
 }
 
