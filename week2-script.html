@@ -1,0 +1,194 @@
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+// All trackable items for Week 2
+const W2_CHECKS   = ['check_w2_slides','check_w2_vid1','check_w2_vid2','check_w2_vid3','check_w2_vid4','check_w2_markdown'];
+const W2_QUIZ_IDS = ['w2_q_loading','w2_q_cleanup','w2_q_viz','w2_q_exercises'];
+
+// ── HOW TO ADD A NEW QUIZ QUESTION ──────────────────────────────────────────
+// 1. In 2_data_cleanup.qmd, add to the relevant quiz's {=html} block:
+//      <div class="mb-4">
+//        <p><strong>Question N:</strong> Your question text?</p>
+//        <div class="form-check"><input class="form-check-input" type="radio" name="xy1" id="xy1a"><label class="form-check-label" for="xy1a">Wrong answer</label></div>
+//        <div class="form-check"><input class="form-check-input" type="radio" name="xy1" id="xy1b"><label class="form-check-label" for="xy1b">Correct answer</label></div>
+//        <div id="xy1-feedback" class="mt-1 fw-bold"></div>
+//      </div>
+// 2. In the quiz's check function below, add (and increment `total`):
+//      var xy1 = document.querySelector('input[name="xy1"]:checked'), xy1f = document.getElementById('xy1-feedback');
+//      if (xy1 && xy1.id === 'xy1b') { xy1f.innerHTML = '✅ Correct!'; xy1f.style.color = '#1a4d1a'; score++; }
+//      else if (xy1) { xy1f.innerHTML = '❌ Hint text.'; xy1f.style.color = '#d9534f'; }
+// ─────────────────────────────────────────────────────────────────────────────
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W2_CHECKS, ...W2_QUIZ_IDS.map(id => 'quiz_r_w2_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  // Update visual checked state of the item row
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w2_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W2_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W2_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w2_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W2_CHECKS.length + W2_QUIZ_IDS.length;
+  let done = 0;
+  W2_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W2_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w2_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week2-progress-bar');
+  const txt = document.getElementById('week2-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: Loading and Exploring ───────────────────────────────────────────
+function checkLoadingQuiz() {
+  var score = 0, total = 3;
+  var l1 = document.querySelector('input[name="l1"]:checked'), l1f = document.getElementById('l1-feedback');
+  if (l1 && l1.id === 'l1b') { l1f.innerHTML = '✅ Correct! dim() always returns (rows, columns) — rows first!'; l1f.style.color = '#1a4d1a'; score++; }
+  else if (l1) { l1f.innerHTML = '❌ Not quite. dim() returns c(rows, cols). 400 patients, 17 variables → c(400, 17).'; l1f.style.color = '#d9534f'; }
+  var l2 = document.querySelector('input[name="l2"]:checked'), l2f = document.getElementById('l2-feedback');
+  if (l2 && l2.id === 'l2b') { l2f.innerHTML = '✅ Exactly! head(dat) shows the first 6 rows. Use head(dat, n) for a custom number.'; l2f.style.color = '#1a4d1a'; score++; }
+  else if (l2) { l2f.innerHTML = '❌ head() shows the beginning of the data — default is 6 rows.'; l2f.style.color = '#d9534f'; }
+  var l3 = document.querySelector('input[name="l3"]:checked'), l3f = document.getElementById('l3-feedback');
+  if (l3 && l3.id === 'l3b') { l3f.innerHTML = '✅ Correct! dat$age is the standard way to access a column by name in R.'; l3f.style.color = '#1a4d1a'; score++; }
+  else if (l3) { l3f.innerHTML = '❌ Try dat$age or dat[, "age"] in RStudio!'; l3f.style.color = '#d9534f'; }
+  var res = document.getElementById('loading-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_loading'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: Data Cleanup ─────────────────────────────────────────────────────
+function checkCleanupQuiz() {
+  var score = 0, total = 3;
+  var c1 = document.querySelector('input[name="c1"]:checked'), c1f = document.getElementById('c1-feedback');
+  if (c1 && c1.id === 'c1b') { c1f.innerHTML = '✅ Correct! which() returns INDICES — use x[which(x > 5)] to get the actual values.'; c1f.style.color = '#1a4d1a'; score++; }
+  else if (c1) { c1f.innerHTML = '❌ which() returns positions (indices), not values.'; c1f.style.color = '#d9534f'; }
+  var c2 = document.querySelector('input[name="c2"]:checked'), c2f = document.getElementById('c2-feedback');
+  if (c2 && c2.id === 'c2b') { c2f.innerHTML = '✅ Right! The comma separates rows (left) from columns (right). Negative = exclude.'; c2f.style.color = '#1a4d1a'; score++; }
+  else if (c2) { c2f.innerHTML = '❌ Remember: dat[rows, columns]. To select columns use dat[, ...]. Negative index removes.'; c2f.style.color = '#d9534f'; }
+  var c3 = document.querySelector('input[name="c3"]:checked'), c3f = document.getElementById('c3-feedback');
+  if (c3 && c3.id === 'c3b') { c3f.innerHTML = '✅ Exactly! MARGIN=1 means row-wise. Each result value = NA count for one patient.'; c3f.style.color = '#1a4d1a'; score++; }
+  else if (c3) { c3f.innerHTML = '❌ MARGIN=1 applies the function to each row. MARGIN=2 would be column-wise.'; c3f.style.color = '#d9534f'; }
+  var res = document.getElementById('cleanup-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_cleanup'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Visualisation ────────────────────────────────────────────────────
+function checkVizQuiz() {
+  var score = 0, total = 3;
+  var v1 = document.querySelector('input[name="v1"]:checked'), v1f = document.getElementById('v1-feedback');
+  if (v1 && v1.id === 'v1b') { v1f.innerHTML = '✅ Correct! More breaks = more (narrower) bins. Fewer breaks = broader view.'; v1f.style.color = '#1a4d1a'; score++; }
+  else if (v1) { v1f.innerHTML = '❌ Try hist(x, breaks=3) vs hist(x, breaks=20) in RStudio and compare!'; v1f.style.color = '#d9534f'; }
+  var v2 = document.querySelector('input[name="v2"]:checked'), v2f = document.getElementById('v2-feedback');
+  if (v2 && v2.id === 'v2b') { v2f.innerHTML = '✅ Right! The box spans Q1–Q3 (middle 50%), the line is the median, whiskers extend to 1.5×IQR.'; v2f.style.color = '#1a4d1a'; score++; }
+  else if (v2) { v2f.innerHTML = '❌ The central line in a boxplot is always the median — not the mean!'; v2f.style.color = '#d9534f'; }
+  var v3 = document.querySelector('input[name="v3"]:checked'), v3f = document.getElementById('v3-feedback');
+  if (v3 && v3.id === 'v3c') { v3f.innerHTML = '✅ Exactly! Points on the diagonal = matches the normal distribution. Curves away = skewed or heavy tails.'; v3f.style.color = '#1a4d1a'; score++; }
+  else if (v3) { v3f.innerHTML = '❌ A Q-Q plot compares your data\'s quantiles to a theoretical distribution (usually normal).'; v3f.style.color = '#d9534f'; }
+  var res = document.getElementById('viz-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_viz'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 4: Putting it all together ─────────────────────────────────────────
+function checkExerciseQuiz() {
+  var score = 0, total = 3;
+  var e1 = document.querySelector('input[name="e1"]:checked'), e1f = document.getElementById('e1-feedback');
+  if (e1 && e1.id === 'e1b') { e1f.innerHTML = '✅ Correct! density() estimates the curve, then plot(density(x)) draws it.'; e1f.style.color = '#1a4d1a'; score++; }
+  else if (e1) { e1f.innerHTML = '❌ hist() makes bars. density() makes a smooth curve — pass its result to plot().'; e1f.style.color = '#d9534f'; }
+  var e2 = document.querySelector('input[name="e2"]:checked'), e2f = document.getElementById('e2-feedback');
+  if (e2 && e2.id === 'e2b') { e2f.innerHTML = '✅ Right! Negative row index removes those rows. dat[-i.missing, ] keeps everyone else.'; e2f.style.color = '#1a4d1a'; score++; }
+  else if (e2) { e2f.innerHTML = '❌ dat[i.missing, ] would KEEP those rows. Add a - to REMOVE them: dat[-i.missing, ].'; e2f.style.color = '#d9534f'; }
+  var e3 = document.querySelector('input[name="e3"]:checked'), e3f = document.getElementById('e3-feedback');
+  if (e3 && e3.id === 'e3b') { e3f.innerHTML = '✅ Exactly! c("a","b","c") %in% c("b","d") → c(FALSE,TRUE,FALSE). Useful for finding columns by name.'; e3f.style.color = '#1a4d1a'; score++; }
+  else if (e3) { e3f.innerHTML = '❌ %in% tests membership — TRUE if the element appears anywhere in the right-hand vector.'; e3f.style.color = '#d9534f'; }
+  var res = document.getElementById('exercise-result');
+  if (score === total) { res.innerHTML = '🎉 Week 2 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_exercises'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>

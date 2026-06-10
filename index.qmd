@@ -76,7 +76,7 @@ let courseSchedule = {};
 
 const WEEKS = [
   { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", exerciseHref:"exercises/week1_exercises.html", chunkCount:28, quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"] },
-  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", exerciseHref:"exercises/week2_exercises.html", chunkCount:20, quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
+  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", exerciseHref:"exercises/week2_exercises.html", checkIds:["check_w2_slides","check_w2_vid1","check_w2_vid2","check_w2_vid3","check_w2_vid4","check_w2_markdown"], quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
   { n:3, title:"Week 3", topics:"Coming soon" },
   { n:4, title:"Week 4", topics:"Coming soon" },
   { n:5, title:"Week 5", topics:"Coming soon" },
@@ -225,7 +225,7 @@ function renderWeekCards(dbData) {
 
 function updateGlobalUI(dbData) {
   let total = 0, done = 0, completedW = 0;
-  WEEKS.filter(w => courseSchedule[w.n]?.content_unlocked && w.chunkCount).forEach(w => {
+  WEEKS.filter(w => courseSchedule[w.n]?.content_unlocked && (w.chunkCount || w.checkIds?.length)).forEach(w => {
     const p = calculateWeekProgress(w, dbData);
     if (p) { total += p.total; done += p.done; if(p.pct === 100) completedW++; }
   });
@@ -294,11 +294,14 @@ function getLang() {
 }
 
 function calculateWeekProgress(week, dbData) {
-  if (!week.chunkCount) return null;
+  const hasChunks = !!week.chunkCount;
+  const hasChecks = !!(week.checkIds?.length);
+  if (!hasChunks && !hasChecks) return null;
   const lang = week.lang || getLang();
-  const total = week.chunkCount + (week.quizIds?.length || 0);
+  const total = (week.chunkCount || 0) + (week.checkIds?.length || 0) + (week.quizIds?.length || 0);
   let done = 0;
-  for (let i = 1; i <= week.chunkCount; i++) if (dbData?.[`chunk_${lang}_w${week.n}_c${i}`]) done++;
+  if (hasChunks) for (let i = 1; i <= week.chunkCount; i++) if (dbData?.[`chunk_${lang}_w${week.n}_c${i}`]) done++;
+  week.checkIds?.forEach(cid => { if (dbData?.[cid]) done++; });
   week.quizIds?.forEach(qid => { if (dbData?.[`quiz_${lang}_w${week.n}_${qid}`]) done++; });
   return { done, total, pct: Math.round((done / total) * 100) };
 }
