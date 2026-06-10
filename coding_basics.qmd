@@ -37,7 +37,9 @@ This page is a **quick-reference** for the coding basics covered in Week 1. Keep
 
 ---
 
-:::: {.lang-r}
+```{=html}
+<div class="lang-r">
+```
 
 ## Variables & Assignments
 
@@ -306,11 +308,10 @@ sum(is.na(x))         # count of NA values
   <tr><td>na.omit(x)</td><td>Remove NA values from a vector or dataframe</td></tr>
 </table>
 </div>
+
+</div><!-- end .lang-r -->
+<div class="lang-python">
 ```
-
-::::
-
-:::: {.lang-python}
 
 ## Variables & Assignments
 
@@ -583,6 +584,6 @@ np.isnan(x.astype(float))          # array of bool (for float arrays)
   <tr><td>df.dropna()</td><td>Remove rows with any missing value</td></tr>
 </table>
 </div>
-```
 
-::::
+</div><!-- end .lang-python -->
+```

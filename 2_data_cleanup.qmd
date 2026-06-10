@@ -10,7 +10,6 @@ format:
 
 ```{=html}
 <style>
-  /* Step section headers */
   .step-header {
     display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
   }
@@ -22,7 +21,6 @@ format:
   }
   .step-header h2 { margin: 0; font-size: 1.35rem; }
 
-  /* Resource checklist */
   .resource-list { list-style: none; padding: 0; margin: 0; }
   .resource-item {
     display: flex; align-items: center; gap: 14px;
@@ -30,9 +28,7 @@ format:
     background: #f8f9fa; border: 2px solid transparent;
     transition: background 0.2s, border-color 0.2s;
   }
-  .resource-item.is-checked {
-    background: #f0fff0; border-color: #a8d5a2;
-  }
+  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
   .resource-item input[type="checkbox"] {
     width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
   }
@@ -40,7 +36,6 @@ format:
   .resource-item label a { color: #1a4d1a; font-weight: 600; }
   .resource-item label a:hover { text-decoration: underline; }
 
-  /* Quiz cards */
   .quiz-card {
     background: #f8f9fa; border-radius: 12px;
     padding: 20px 24px; margin-bottom: 1.5rem;
@@ -82,6 +77,7 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
 ---
 
 ```{=html}
+<!-- ─── STEP 1: Videos & Slides (shared) ─────────────────────────────────── -->
 <div class="step-header">
   <div class="step-badge">1</div>
   <h2>Watch the Lecture Videos &amp; Download the Slides</h2>
@@ -89,63 +85,56 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
 <p style="color:#555;margin-bottom:1rem;">Watch the four short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
 
 <ul class="resource-list">
-
   <li class="resource-item">
     <input type="checkbox" id="check_w2_slides" onchange="markCheckDone(this)">
     <label for="check_w2_slides">
       <a href="WEEK1/week1_lecture_slides.pdf" download>Week 2 – Describing &amp; Visualizing data (PDF slides)</a>
     </label>
   </li>
-
   <li class="resource-item">
     <input type="checkbox" id="check_w2_vid1" onchange="markCheckDone(this)">
     <label for="check_w2_vid1">
       <a href="https://youtu.be/itBBBH1gEGc" target="_blank" rel="noopener">Video 1/4 – Which data?</a>
     </label>
   </li>
-
   <li class="resource-item">
     <input type="checkbox" id="check_w2_vid2" onchange="markCheckDone(this)">
     <label for="check_w2_vid2">
       <a href="https://youtu.be/JMoE2lpBsPg" target="_blank" rel="noopener">Video 2/4 – Visualization of data</a>
     </label>
   </li>
-
   <li class="resource-item">
     <input type="checkbox" id="check_w2_vid3" onchange="markCheckDone(this)">
     <label for="check_w2_vid3">
       <a href="https://youtu.be/DU3IEnVr2kA" target="_blank" rel="noopener">Video 3/4 – Describing data 1</a>
     </label>
   </li>
-
   <li class="resource-item">
     <input type="checkbox" id="check_w2_vid4" onchange="markCheckDone(this)">
     <label for="check_w2_vid4">
       <a href="https://youtu.be/jFt72U7xiHk" target="_blank" rel="noopener">Video 4/4 – Describing data 2</a>
     </label>
   </li>
-
 </ul>
-```
 
-:::: {.lang-python}
-```{=html}
-<div class="lang-note">
-  <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — data loading, cleanup, and visualisation — apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+<!-- Python note -->
+<div class="lang-python">
+  <div class="lang-note">
+    <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — data loading, cleanup, and visualisation — apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+  </div>
 </div>
-```
-::::
 
----
+<hr>
 
-:::: {.lang-r}
-```{=html}
+<!-- ─── STEP 2: Markdown ──────────────────────────────────────────────────── -->
+
+<!-- R version -->
+<div class="lang-r">
 <div class="step-header">
   <div class="step-badge">2</div>
   <h2>Work Through the Practical Markdown</h2>
 </div>
 <p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
-
 <ul class="resource-list">
   <li class="resource-item">
     <input type="checkbox" id="check_w2_markdown" onchange="markCheckDone(this)">
@@ -155,17 +144,14 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
     </label>
   </li>
 </ul>
-```
+<blockquote style="margin-top:1rem;">
+  <p><strong>Course dataset:</strong> Load the diabetes data in RStudio with:</p>
+  <pre><code>dat &lt;- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1')</code></pre>
+</blockquote>
+</div>
 
-> **Course dataset:** Load the diabetes data in RStudio with:
-> ```r
-> dat <- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1')
-> ```
-
-::::
-
-:::: {.lang-python}
-```{=html}
+<!-- Python placeholder -->
+<div class="lang-python">
 <div class="step-header">
   <div class="step-badge">2</div>
   <h2>Work Through the Practical Markdown</h2>
@@ -175,32 +161,26 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <p style="margin-bottom:0.5rem;color:#555;">A Python version of this practical markdown (using pandas and matplotlib) is currently being prepared.</p>
   <p style="margin:0;color:#555;">In the meantime, the <a href="coding_basics.html" style="color:#7c9cef;">Basics in Coding</a> reference page covers pandas DataFrames and data selection in Python.</p>
 </div>
-```
+<blockquote>
+  <p><strong>Course dataset:</strong> Load the diabetes data in Python with:</p>
+  <pre><code>import pandas as pd
+dat = pd.read_csv('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1', sep='\t')</code></pre>
+</blockquote>
+</div>
 
-> **Course dataset:** Load the diabetes data in Python with:
-> ```python
-> import pandas as pd
-> dat = pd.read_csv('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1', sep='\t')
-> ```
+<hr>
 
-::::
-
----
-
-```{=html}
+<!-- ─── STEP 3: Quiz ───────────────────────────────────────────────────────── -->
 <div class="step-header">
   <div class="step-badge">3</div>
   <h2>Comprehension Quiz</h2>
 </div>
 <p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
-```
 
-:::: {.lang-r}
+<!-- R quizzes -->
+<div class="lang-r">
 
-### Quiz 1: Loading and Exploring
-<span id="quiz-done-w2_q_loading" class="quiz-done-badge">✓ Done</span>
-
-```{=html}
+<h3>Quiz 1: Loading and Exploring <span id="quiz-done-w2_q_loading" class="quiz-done-badge">✓ Done</span></h3>
 <div class="quiz-card">
   <div class="mb-4">
     <p><strong>Question 1:</strong> What does <code>dim(dat)</code> return for a dataframe with 400 rows and 17 columns?</p>
@@ -229,14 +209,10 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <button onclick="checkLoadingQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
   <div id="loading-result" class="mt-3 fw-bold text-center"></div>
 </div>
-```
 
----
+<hr>
 
-### Quiz 2: Data Cleanup
-<span id="quiz-done-w2_q_cleanup" class="quiz-done-badge">✓ Done</span>
-
-```{=html}
+<h3>Quiz 2: Data Cleanup <span id="quiz-done-w2_q_cleanup" class="quiz-done-badge">✓ Done</span></h3>
 <div class="quiz-card">
   <div class="mb-4">
     <p><strong>Question 1:</strong> <code>which(x > 5)</code> for <code>x &lt;- c(2, 8, 3, 7, 1)</code> returns…</p>
@@ -265,14 +241,10 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <button onclick="checkCleanupQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
   <div id="cleanup-result" class="mt-3 fw-bold text-center"></div>
 </div>
-```
 
----
+<hr>
 
-### Quiz 3: Visualisation
-<span id="quiz-done-w2_q_viz" class="quiz-done-badge">✓ Done</span>
-
-```{=html}
+<h3>Quiz 3: Visualisation <span id="quiz-done-w2_q_viz" class="quiz-done-badge">✓ Done</span></h3>
 <div class="quiz-card">
   <div class="mb-4">
     <p><strong>Question 1:</strong> What does the <code>breaks</code> parameter in <code>hist()</code> control?</p>
@@ -301,14 +273,10 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <button onclick="checkVizQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
   <div id="viz-result" class="mt-3 fw-bold text-center"></div>
 </div>
-```
 
----
+<hr>
 
-### Quiz 4: Putting it all together
-<span id="quiz-done-w2_q_exercises" class="quiz-done-badge">✓ Done</span>
-
-```{=html}
+<h3>Quiz 4: Putting it all together <span id="quiz-done-w2_q_exercises" class="quiz-done-badge">✓ Done</span></h3>
 <div class="quiz-card">
   <div class="mb-4">
     <p><strong>Question 1:</strong> Which function creates a smooth probability density curve (not a histogram)?</p>
@@ -337,13 +305,11 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <button onclick="checkExerciseQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
   <div id="exercise-result" class="mt-3 fw-bold text-center"></div>
 </div>
-```
 
-::::
+</div><!-- end .lang-r -->
 
-:::: {.lang-python}
-
-```{=html}
+<!-- Python placeholder quizzes -->
+<div class="lang-python">
 <p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
 
 <h3 style="margin-top:0.5rem;">Quiz 1: Loading &amp; Exploring <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R read.delim + head/dim)</span></h3>
@@ -351,11 +317,11 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
   <div style="opacity:0.65;">
     <p><strong>Preview Question:</strong> What does <code>dat.shape</code> return for a DataFrame with 400 rows and 17 columns?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>(17, 400)</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>(400, 17)</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>6800</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(17, 400)</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(400, 17)</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>6800</code></label></div>
   </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
 </div>
 
 <h3 style="margin-top:1.5rem;">Quiz 2: Data Cleanup <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R which/apply/is.na)</span></h3>
@@ -363,11 +329,11 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
   <div style="opacity:0.65;">
     <p><strong>Preview Question:</strong> How do you count missing values per column in a pandas DataFrame <code>dat</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>sum(is.na(dat))</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>dat.isna().sum()</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>dat.count()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sum(is.na(dat))</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.isna().sum()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.count()</code></label></div>
   </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
 </div>
 
 <h3 style="margin-top:1.5rem;">Quiz 3: Visualisation <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(matplotlib equivalent of R hist/boxplot/qqnorm)</span></h3>
@@ -375,11 +341,11 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
   <div style="opacity:0.65;">
     <p><strong>Preview Question:</strong> Which matplotlib function creates a histogram?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>plt.bar()</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>plt.hist()</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>plt.plot()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.bar()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.hist()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.plot()</code></label></div>
   </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
 </div>
 
 <h3 style="margin-top:1.5rem;">Quiz 4: Putting it all together <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python full pipeline)</span></h3>
@@ -387,12 +353,12 @@ In this week you will work with a real diabetes dataset and learn how to **prepa
   <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
   <div style="opacity:0.65;">
     <p><strong>Preview Question:</strong> How do you remove rows with missing values from a pandas DataFrame?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>dat.drop_na()</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>dat.dropna()</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled><label class="form-check-label" style="color:#888;"><code>dat.remove_na()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.drop_na()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.dropna()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.remove_na()</code></label></div>
   </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled style="font-weight:700;">COMING SOON</button>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
 </div>
-```
 
-::::
+</div><!-- end .lang-python -->
+```

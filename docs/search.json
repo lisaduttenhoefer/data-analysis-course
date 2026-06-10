@@ -22,7 +22,7 @@
     "href": "1_datentypen.html",
     "title": "Week 1: Basic Data Structures",
     "section": "",
-    "text": "Week 1 Progress\n      Loading…\n    \n    ← Dashboard\n  \n  \n    \n  \n\nIn this week you will learn the fundamental building blocks of R: how data is stored, organised, and accessed. These concepts underlie everything that comes later.\n\nTip: The Basics in Coding reference page gives you a quick-lookup summary of all syntax covered this week — keep it open while working in RStudio.\n\n\n\n  1\n  Watch the Lecture Videos & Download the Slides\n\nWatch the three short lecture videos and download the slide deck. Check each item off as you go.\n\n\n\n  \n    \n    \n      Week 1 – Basic datatypes & data manipulation (PDF slides)\n    \n  \n\n  \n    \n    \n      Video 1/3 – General introduction to RStudio\n    \n  \n\n  \n    \n    \n      Video 2/3 – Working with R scripts\n    \n  \n\n  \n    \n    \n      Video 3/3 – Working with Markdown\n    \n  \n\n\n\n\n  2\n  Work Through the Practical Markdowns\n\nDownload both R Markdown files and work through them in RStudio. Check each off when done.\n\n\n\n  \n    \n    \n      Week 1 – Basic Data Structures (R Markdown)\n      vectors · matrices · lists · dataframes\n    \n  \n\n  \n    \n    \n      Week 1 – Data Manipulation (R Markdown)\n      apply · sapply · for loops · if statements\n    \n  \n\n\nUseful reference PDFs (open in browser, no download needed):\n\n  R Base – Cheat Sheet\n  Markdown Reference\n  R Best Practice\n\n\n\n  3\n  Comprehension Quiz\n\nFour short quizzes — one per data structure. Each unlocks once you get all questions right.\n\nQuiz 1: Vectors\n✓ Done\n\n  \n    Question 1: What does length(c(9, 3, 7, 2)) return?\n    2\n    4\n    9\n    1\n    \n  \n  \n    Question 2: Why does sum(c(TRUE, FALSE, TRUE, TRUE)) return 3?\n    Because the vector has 3 elements\n    Because R treats TRUE as 1 and FALSE as 0 — sum() therefore counts the TRUE values\n    Because sum() only counts the first three elements\n    \n  \n  \n    Question 3: What does y[y &lt; 5] return when y &lt;- c(9, 3, 7, 2)?\n    9 7\n    3 2\n    TRUE FALSE TRUE TRUE\n    \n  \n  \n    Question 4: What happens when data types are mixed in a vector, e.g. c(TRUE, \"FALSE\", 3)?\n    R throws an error\n    Each element keeps its own type\n    All elements are converted to the lowest common type (here: character)\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 2: Matrices\n✓ Done\n\n  \n    Question 1: What does dim(X) return for X &lt;- matrix(1:6, nrow=2, ncol=3)?\n    6\n    2 3\n    3 2\n    \n  \n  \n    Question 2: What is the difference between cbind() and rbind()?\n    No difference – both do the same thing\n    cbind() joins vectors as columns, rbind() as rows\n    cbind() only works for numbers, rbind() for all types\n    \n  \n  \n    Question 3: What does X[2, ] return?\n    The element in row 2, column 0\n    All elements of the second row\n    All elements of the second column\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 3: Lists\n✓ Done\n\n  \n    Question 1: What is the difference between List1[\"color\"] and List1[[\"color\"]]?\n    No difference – both return the same value\n    List1[\"color\"] returns a list of length 1; List1[[\"color\"]] returns the content (the vector) directly\n    List1[[\"color\"]] returns a list; List1[\"color\"] returns the content\n    \n  \n  \n    Question 2: How do you access the second position of the first element of List2 &lt;- list(c(\"blue\", \"red\"), 5, TRUE)?\n    List2[1][2]\n    List2[[1]][2]\n    List2$1[2]\n    \n  \n  \n    Question 3: How do you delete the third element from a list?\n    List2[3] &lt;- FALSE\n    List2[[3]] &lt;- NULL\n    rm(List2[[3]])\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 4: Dataframes\n✓ Done\n\n  \n    Question 1: What is the most important difference between a dataframe and a matrix?\n    Dataframes can be larger than matrices\n    Dataframes can contain different data types in different columns; matrices only one type throughout\n    Matrices always have column names, dataframes do not\n    \n  \n  \n    Question 2: How many fruits does Fruit &lt;- c(TRUE, TRUE, FALSE, TRUE, FALSE) contain, and which function do you use?\n    2, with length(Fruit)\n    3, with sum(Fruit)\n    5, with sum(Fruit)\n    \n  \n  \n    Question 3: What does merge(Students, Full_Names) do by default?\n    All rows of both dataframes are merged; missing values filled with NA\n    Only rows that appear in both dataframes are kept (Inner Join)\n    The dataframes are stacked on top of each other\n    \n  \n  CHECK ANSWERS",
+    "text": "Week 1 Progress\n      Loading…\n    \n    ← Dashboard\n  \n  \n    \n  \n\nIn this week you will learn the fundamental building blocks of data analysis: how data is stored, organised, and accessed. Use the language toggle above to switch between R and Python.\n\nTip: The Basics in Coding reference page gives you a quick-lookup summary of all syntax covered this week — available for both R and Python.\n\n\n\n\n  1\n  Watch the Lecture Videos & Download the Slides\n\nWatch the three short lecture videos and download the slide deck. Check each item off as you go.\n\n\n  \n    \n    \n      Week 1 – Basic datatypes & data manipulation (PDF slides)\n    \n  \n  \n    \n    \n      Video 1/3 – General introduction to RStudio\n    \n  \n  \n    \n    \n      Video 2/3 – Working with R scripts\n    \n  \n  \n    \n    \n      Video 3/3 – Working with Markdown\n    \n  \n\n\n\n\n  \n    Note for Python learners: These lecture videos and slides were recorded using R. The concepts — data types, assignment, indexing — apply equally to Python. See the Basics in Coding reference page for Python syntax equivalents.\n  \n\n\n\n\n\n\n\n\n\n  2\n  Work Through the Practical Markdowns\n\nDownload both R Markdown files and work through them in RStudio. Check each off when done.\n\n  \n    \n    \n      Week 1 – Basic Data Structures (R Markdown)\n      vectors · matrices · lists · dataframes\n    \n  \n  \n    \n    \n      Week 1 – Data Manipulation (R Markdown)\n      apply · sapply · for loops · if statements\n    \n  \n\nUseful reference PDFs (open in browser, no download needed):\n\n  R Base – Cheat Sheet\n  Markdown Reference\n  R Best Practice\n\n\n\n\n\n\n  2\n  Work Through the Practical Markdowns\n\n\n  🐍 Python Markdown — Coming Soon\n  A Python version of this practical markdown is currently being prepared.\n  In the meantime, the Basics in Coding reference page covers Python syntax for all topics this week.\n\n\n\n\n\n\n\n  3\n  Comprehension Quiz\n\nUse the language toggle above to select R or Python, then work through the quizzes below.\n\n\n\n\nQuiz 1: Vectors ✓ Done\n\n  \n    Question 1: What does length(c(9, 3, 7, 2)) return?\n    2\n    4\n    9\n    1\n    \n  \n  \n    Question 2: Why does sum(c(TRUE, FALSE, TRUE, TRUE)) return 3?\n    Because the vector has 3 elements\n    Because R treats TRUE as 1 and FALSE as 0 — sum() therefore counts the TRUE values\n    Because sum() only counts the first three elements\n    \n  \n  \n    Question 3: What does y[y &lt; 5] return when y &lt;- c(9, 3, 7, 2)?\n    9 7\n    3 2\n    TRUE FALSE TRUE TRUE\n    \n  \n  \n    Question 4: What happens when data types are mixed in a vector, e.g. c(TRUE, \"FALSE\", 3)?\n    R throws an error\n    Each element keeps its own type\n    All elements are converted to the lowest common type (here: character)\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 2: Matrices ✓ Done\n\n  \n    Question 1: What does dim(X) return for X &lt;- matrix(1:6, nrow=2, ncol=3)?\n    6\n    2 3\n    3 2\n    \n  \n  \n    Question 2: What is the difference between cbind() and rbind()?\n    No difference – both do the same thing\n    cbind() joins vectors as columns, rbind() as rows\n    cbind() only works for numbers, rbind() for all types\n    \n  \n  \n    Question 3: What does X[2, ] return?\n    The element in row 2, column 0\n    All elements of the second row\n    All elements of the second column\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 3: Lists ✓ Done\n\n  \n    Question 1: What is the difference between List1[\"color\"] and List1[[\"color\"]]?\n    No difference – both return the same value\n    List1[\"color\"] returns a list of length 1; List1[[\"color\"]] returns the content (the vector) directly\n    List1[[\"color\"]] returns a list; List1[\"color\"] returns the content\n    \n  \n  \n    Question 2: How do you access the second position of the first element of List2 &lt;- list(c(\"blue\", \"red\"), 5, TRUE)?\n    List2[1][2]\n    List2[[1]][2]\n    List2$1[2]\n    \n  \n  \n    Question 3: How do you delete the third element from a list?\n    List2[3] &lt;- FALSE\n    List2[[3]] &lt;- NULL\n    rm(List2[[3]])\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 4: Dataframes ✓ Done\n\n  \n    Question 1: What is the most important difference between a dataframe and a matrix?\n    Dataframes can be larger than matrices\n    Dataframes can contain different data types in different columns; matrices only one type throughout\n    Matrices always have column names, dataframes do not\n    \n  \n  \n    Question 2: How many fruits does Fruit &lt;- c(TRUE, TRUE, FALSE, TRUE, FALSE) contain, and which function do you use?\n    2, with length(Fruit)\n    3, with sum(Fruit)\n    5, with sum(Fruit)\n    \n  \n  \n    Question 3: What does merge(Students, Full_Names) do by default?\n    All rows of both dataframes are merged; missing values filled with NA\n    Only rows that appear in both dataframes are kept (Inner Join)\n    The dataframes are stacked on top of each other\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\n\n\nFour Python quizzes are in preparation — one per data structure topic. Preview questions below show how the quizzes will be structured.\n\nQuiz 1: Lists (Python equivalent of R Vectors)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: What does len([9, 3, 7, 2]) return?\n    2\n    4\n    9\n  \n  COMING SOON\n\n\nQuiz 2: NumPy Arrays (Python equivalent of R Matrices)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: What does np.array([[1,2,3],[4,5,6]]).shape return?\n    (6,)\n    (2, 3)\n    (3, 2)\n  \n  COMING SOON\n\n\nQuiz 3: Dictionaries (Python equivalent of R Lists)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: How do you access the value for key \"color\" in dict L?\n    L$color\n    L[\"color\"]\n    L[[\"color\"]]\n  \n  COMING SOON\n\n\nQuiz 4: Pandas DataFrames (Python equivalent of R Dataframes)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: How do you create a DataFrame from named lists in Python?\n    data.frame(Name = x, Year = y)\n    pd.DataFrame({\"Name\": x, \"Year\": y})\n    DataFrame.create(Name = x)\n  \n  COMING SOON",
     "crumbs": [
       "PYTHON",
       "Week 1: Datatypes"
@@ -33,7 +33,7 @@
     "href": "0_markdown.html",
     "title": "Orientation in This Course",
     "section": "",
-    "text": "Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.\nOn this platform you will find everything in one place: clear explanations, directly executable code examples for experimentation, and short knowledge tests after each chapter to consolidate what you have learned.\nYou have full freedom of choice: using the button in the top right corner, you can switch between the programming languages R and Python at any time. The subject matter is identical — you decide which tool you want to work with.\nIn addition, all lecture slides and Markdown files with the same content are linked so that you can also work through the materials independently offline.",
+    "text": "Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.\nOn this platform you will find everything in one place: lecture videos and slide decks, practical markdown files to work through in RStudio or VS Code, and short comprehension quizzes to consolidate what you have learned.\nEach week page guides you through three steps: watch the videos & download the slides → work through the practical markdown → complete the comprehension quiz. Your progress is tracked automatically.\nYou have full freedom of choice: using the button in the top right corner, you can switch between the programming languages R and Python at any time. For weeks where Python materials are still being prepared, a placeholder will indicate what is coming.\nThe Basics in Coding page provides a quick-reference for syntax in both R and Python — keep it open while working through the markdowns.",
     "crumbs": [
       "PYTHON",
       "Getting started"
@@ -44,7 +44,7 @@
     "href": "0_markdown.html#structure-course-materials",
     "title": "Orientation in This Course",
     "section": "",
-    "text": "Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.\nOn this platform you will find everything in one place: clear explanations, directly executable code examples for experimentation, and short knowledge tests after each chapter to consolidate what you have learned.\nYou have full freedom of choice: using the button in the top right corner, you can switch between the programming languages R and Python at any time. The subject matter is identical — you decide which tool you want to work with.\nIn addition, all lecture slides and Markdown files with the same content are linked so that you can also work through the materials independently offline.",
+    "text": "Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.\nOn this platform you will find everything in one place: lecture videos and slide decks, practical markdown files to work through in RStudio or VS Code, and short comprehension quizzes to consolidate what you have learned.\nEach week page guides you through three steps: watch the videos & download the slides → work through the practical markdown → complete the comprehension quiz. Your progress is tracked automatically.\nYou have full freedom of choice: using the button in the top right corner, you can switch between the programming languages R and Python at any time. For weeks where Python materials are still being prepared, a placeholder will indicate what is coming.\nThe Basics in Coding page provides a quick-reference for syntax in both R and Python — keep it open while working through the markdowns.",
     "crumbs": [
       "PYTHON",
       "Getting started"
@@ -66,7 +66,7 @@
     "href": "0_markdown.html#what-do-you-need-for-setup",
     "title": "Orientation in This Course",
     "section": "What Do You Need for Setup?",
-    "text": "What Do You Need for Setup?\nIf you later want to work on your own computer, this is the correct order:\n\nInstall the engine: Download Python or R (provides the “language”).\nSet up the workspace: Install an IDE like RStudio or VS Code (your workstation).\nUnpack the tools: Install so-called “packages” within the IDE. These are extensions for specific tasks, such as drawing biological diagrams.\n\n\n\n\n\n\n\nTipOur Tip for Getting Started\n\n\n\nTo work on the exercises on this website, no installed RStudio or VS Code is required. Our interactive windows already have everything “on board”. However, we recommend that you familiarize yourself with these programs during the course, as they will be your daily companions in later practice!",
+    "text": "What Do You Need for Setup?\nIf you later want to work on your own computer, this is the correct order:\n\nInstall the engine: Download Python or R (provides the “language”).\nSet up the workspace: Install an IDE like RStudio or VS Code (your workstation).\nUnpack the tools: Install so-called “packages” within the IDE. These are extensions for specific tasks, such as drawing biological diagrams.\n\n\n\n\n\n\n\nTipOur Tip for Getting Started\n\n\n\nTo watch videos, follow the course and take quizzes, no installation is required. However, to work through the practical markdown files, you will need RStudio (for R) or VS Code (for Python) installed on your computer. We recommend setting this up early — these tools will be your daily companions throughout the course.",
     "crumbs": [
       "PYTHON",
       "Getting started"
@@ -110,7 +110,7 @@
     "href": "2_data_cleanup.html",
     "title": "Week 2: Data Cleanup & Visualisation",
     "section": "",
-    "text": "Week 2 Progress\n      Loading…\n    \n    ← Dashboard\n  \n  \n    \n  \n\nIn this week you will work with a real diabetes dataset and learn how to prepare raw data for analysis and visualise distributions. Complete all three steps below to finish the week.\n\n\n  1\n  Watch the Lecture Videos & Download the Slides\n\nWatch the four short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.\n\n\n\n  \n    \n    \n      Week 2 – Describing & Visualizing data (PDF slides)\n    \n  \n\n  \n    \n    \n      Video 1/4 – Which data?\n    \n  \n\n  \n    \n    \n      Video 2/4 – Visualization of data\n    \n  \n\n  \n    \n    \n      Video 3/4 – Describing data 1\n    \n  \n\n  \n    \n    \n      Video 4/4 – Describing data 2\n    \n  \n\n\n\n\n  2\n  Work Through the Practical Markdown\n\nDownload the R Markdown file and open it in RStudio. Work through all sections, then check it off below.\n\n\n  \n    \n    \n      Week 2 – Data Cleanup (R Markdown)\n      open in RStudio\n    \n  \n\n\nCourse dataset: Load the diabetes data in RStudio with:\ndat &lt;- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1')\n\n\n\n  3\n  Comprehension Quiz\n\nTest your understanding with four short quizzes. Each quiz unlocks once you get all questions right.\n\nQuiz 1: Loading and Exploring\n✓ Done\n\n  \n    Question 1: What does dim(dat) return for a dataframe with 400 rows and 17 columns?\n    c(17, 400)\n    c(400, 17)\n    400\n    6800\n    \n  \n  \n    Question 2: What does head(dat) show by default?\n    The last 6 rows\n    The first 6 rows\n    A summary of all columns\n    The first row only\n    \n  \n  \n    Question 3: How do you access the column age from a dataframe dat?\n    dat[age]\n    dat$age\n    dat[\"age\", ]\n    get(dat, \"age\")\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 2: Data Cleanup\n✓ Done\n\n  \n    Question 1: which(x &gt; 5) for x &lt;- c(2, 8, 3, 7, 1) returns…\n    c(8, 7) — the values greater than 5\n    c(2, 4) — the indices (positions) where the condition is TRUE\n    c(FALSE, TRUE, FALSE, TRUE, FALSE)\n    An error\n    \n  \n  \n    Question 2: How do you remove columns 3 and 7 from dataframe dat?\n    dat[-c(3,7)]\n    dat[, -c(3,7)]\n    dat[c(3,7), ]\n    dat - c(3,7)\n    \n  \n  \n    Question 3: apply(dat, 1, function(x) sum(is.na(x))) counts the NAs…\n    Per column (one value per variable)\n    Per row (one value per patient)\n    In the entire dataframe (one total)\n    Per cell (one value per element)\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 3: Visualisation\n✓ Done\n\n  \n    Question 1: What does the breaks parameter in hist() control?\n    The colour of the bars\n    The number of bins\n    The y-axis range\n    The x-axis title\n    \n  \n  \n    Question 2: In a boxplot, the central line inside the box represents…\n    The mean\n    The median (50th percentile)\n    The standard deviation\n    The minimum value\n    \n  \n  \n    Question 3: What does a Q-Q plot tell you?\n    The correlation between two variables\n    How many outliers the data has\n    How closely the data follows a theoretical distribution (e.g. normal)\n    The distribution of each group separately\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 4: Putting it all together\n✓ Done\n\n  \n    Question 1: Which function creates a smooth probability density curve (not a histogram)?\n    hist()\n    density()\n    curve()\n    smooth()\n    \n  \n  \n    Question 2: You identified rows with NAs: i.missing &lt;- which(nb_NA &gt; 0). How do you remove them?\n    dat[i.missing, ]\n    dat[-i.missing, ]\n    dat[, -i.missing]\n    na.omit(i.missing)\n    \n  \n  \n    Question 3: The operator %in% is used to…\n    Calculate percentages\n    Test if elements of one vector appear in another\n    Apply a function to each element\n    Check exact equality of two vectors\n    \n  \n  CHECK ANSWERS",
+    "text": "Week 2 Progress\n      Loading…\n    \n    ← Dashboard\n  \n  \n    \n  \n\nIn this week you will work with a real diabetes dataset and learn how to prepare raw data for analysis and visualise distributions. Use the language toggle above to switch between R and Python.\n\n\n\n  1\n  Watch the Lecture Videos & Download the Slides\n\nWatch the four short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.\n\n\n  \n    \n    \n      Week 2 – Describing & Visualizing data (PDF slides)\n    \n  \n  \n    \n    \n      Video 1/4 – Which data?\n    \n  \n  \n    \n    \n      Video 2/4 – Visualization of data\n    \n  \n  \n    \n    \n      Video 3/4 – Describing data 1\n    \n  \n  \n    \n    \n      Video 4/4 – Describing data 2\n    \n  \n\n\n\n\n  \n    Note for Python learners: These lecture videos and slides were recorded using R. The concepts — data loading, cleanup, and visualisation — apply equally to Python. See the Basics in Coding reference page for Python syntax equivalents.\n  \n\n\n\n\n\n\n\n\n\n  2\n  Work Through the Practical Markdown\n\nDownload the R Markdown file and open it in RStudio. Work through all sections, then check it off below.\n\n  \n    \n    \n      Week 2 – Data Cleanup (R Markdown)\n      open in RStudio\n    \n  \n\n\n  Course dataset: Load the diabetes data in RStudio with:\n  dat &lt;- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1')\n\n\n\n\n\n\n  2\n  Work Through the Practical Markdown\n\n\n  🐍 Python Markdown — Coming Soon\n  A Python version of this practical markdown (using pandas and matplotlib) is currently being prepared.\n  In the meantime, the Basics in Coding reference page covers pandas DataFrames and data selection in Python.\n\n\n  Course dataset: Load the diabetes data in Python with:\n  import pandas as pd\ndat = pd.read_csv('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1', sep='\\t')\n\n\n\n\n\n\n\n  3\n  Comprehension Quiz\n\nUse the language toggle above to select R or Python, then work through the quizzes below.\n\n\n\n\nQuiz 1: Loading and Exploring ✓ Done\n\n  \n    Question 1: What does dim(dat) return for a dataframe with 400 rows and 17 columns?\n    c(17, 400)\n    c(400, 17)\n    400\n    6800\n    \n  \n  \n    Question 2: What does head(dat) show by default?\n    The last 6 rows\n    The first 6 rows\n    A summary of all columns\n    The first row only\n    \n  \n  \n    Question 3: How do you access the column age from a dataframe dat?\n    dat[age]\n    dat$age\n    dat[\"age\", ]\n    get(dat, \"age\")\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 2: Data Cleanup ✓ Done\n\n  \n    Question 1: which(x &gt; 5) for x &lt;- c(2, 8, 3, 7, 1) returns…\n    c(8, 7) — the values greater than 5\n    c(2, 4) — the indices (positions) where the condition is TRUE\n    c(FALSE, TRUE, FALSE, TRUE, FALSE)\n    An error\n    \n  \n  \n    Question 2: How do you remove columns 3 and 7 from dataframe dat?\n    dat[-c(3,7)]\n    dat[, -c(3,7)]\n    dat[c(3,7), ]\n    dat - c(3,7)\n    \n  \n  \n    Question 3: apply(dat, 1, function(x) sum(is.na(x))) counts the NAs…\n    Per column (one value per variable)\n    Per row (one value per patient)\n    In the entire dataframe (one total)\n    Per cell (one value per element)\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 3: Visualisation ✓ Done\n\n  \n    Question 1: What does the breaks parameter in hist() control?\n    The colour of the bars\n    The number of bins\n    The y-axis range\n    The x-axis title\n    \n  \n  \n    Question 2: In a boxplot, the central line inside the box represents…\n    The mean\n    The median (50th percentile)\n    The standard deviation\n    The minimum value\n    \n  \n  \n    Question 3: What does a Q-Q plot tell you?\n    The correlation between two variables\n    How many outliers the data has\n    How closely the data follows a theoretical distribution (e.g. normal)\n    The distribution of each group separately\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\nQuiz 4: Putting it all together ✓ Done\n\n  \n    Question 1: Which function creates a smooth probability density curve (not a histogram)?\n    hist()\n    density()\n    curve()\n    smooth()\n    \n  \n  \n    Question 2: You identified rows with NAs: i.missing &lt;- which(nb_NA &gt; 0). How do you remove them?\n    dat[i.missing, ]\n    dat[-i.missing, ]\n    dat[, -i.missing]\n    na.omit(i.missing)\n    \n  \n  \n    Question 3: The operator %in% is used to…\n    Calculate percentages\n    Test if elements of one vector appear in another\n    Apply a function to each element\n    Check exact equality of two vectors\n    \n  \n  CHECK ANSWERS\n  \n\n\n\n\n\n\nFour Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.\n\nQuiz 1: Loading & Exploring (pandas equivalent of R read.delim + head/dim)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: What does dat.shape return for a DataFrame with 400 rows and 17 columns?\n    (17, 400)\n    (400, 17)\n    6800\n  \n  COMING SOON\n\n\nQuiz 2: Data Cleanup (pandas equivalent of R which/apply/is.na)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: How do you count missing values per column in a pandas DataFrame dat?\n    sum(is.na(dat))\n    dat.isna().sum()\n    dat.count()\n  \n  COMING SOON\n\n\nQuiz 3: Visualisation (matplotlib equivalent of R hist/boxplot/qqnorm)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: Which matplotlib function creates a histogram?\n    plt.bar()\n    plt.hist()\n    plt.plot()\n  \n  COMING SOON\n\n\nQuiz 4: Putting it all together (Python full pipeline)\n\n  🐍 Python Quiz — Coming Soon\n  \n    Preview Question: How do you remove rows with missing values from a pandas DataFrame?\n    dat.drop_na()\n    dat.dropna()\n    dat.remove_na()\n  \n  COMING SOON",
     "crumbs": [
       "PYTHON",
       "Week 2: Data Cleanup"
@@ -121,7 +121,7 @@
     "href": "coding_basics.html",
     "title": "Basics in Coding",
     "section": "",
-    "text": "This page is a quick-reference for the R basics covered in Week 1. Keep it open in a browser tab while working through the markdowns in RStudio.",
+    "text": "This page is a quick-reference for the coding basics covered in Week 1. Keep it open in a browser tab while working through the markdowns. Use the language toggle above to switch between R and Python.",
     "crumbs": [
       "PYTHON",
       "Basics in Coding"
@@ -199,6 +199,303 @@
     "title": "Basics in Coding",
     "section": "Index Selection",
     "text": "Index Selection\n\nwhich, %in%, is.na\nx &lt;- c(2, 8, 3, 7, 1)\n\nwhich(x &gt; 5)          # c(2, 4)  — INDICES where condition is TRUE\nx[which(x &gt; 5)]       # c(8, 7)  — VALUES at those indices\n\nc(\"a\",\"b\",\"c\") %in% c(\"b\",\"d\")  # FALSE TRUE FALSE\n                                 # — is each element in the right-hand set?\n\nis.na(c(1, NA, 3))    # FALSE TRUE FALSE\nsum(is.na(x))         # count of NA values\n\n\n\nFunction / Operator\nWhat it does\n\n\nwhich(condition)\nReturns indices where condition is TRUE\n\n\nx %in% y\nFor each element of x: is it anywhere in y?\n\n\nis.na(x)\nTRUE for each NA element\n\n\nna.omit(x)\nRemove NA values from a vector or dataframe",
+    "crumbs": [
+      "PYTHON",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#variables-assignments",
+    "href": "1_datentypen.html#variables-assignments",
+    "title": "Orientation in This Course",
+    "section": "Variables & Assignments",
+    "text": "Variables & Assignments\n\nAssigning values\nUse &lt;- or = to assign a value to a variable. R is case-sensitive — hello and Hello are different objects.\na   &lt;- 2            # numeric\nb   &lt;- TRUE         # logical\nname &lt;- \"Rosalinde\" # character (string)\n\na + 3               # use in calculations: returns 5\nprint(name)         # explicitly print to console\n\n\n\nFunction\nWhat it does\n\n\nstr(x)\nShow structure and type of x\n\n\nls()\nList all objects in the environment\n\n\nrm(x)\nRemove variable x from the environment\n\n\nload(\"file.RData\")\nReload a saved environment",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#vectors",
+    "href": "1_datentypen.html#vectors",
+    "title": "Orientation in This Course",
+    "section": "Vectors",
+    "text": "Vectors\n\nCreating & accessing vectors\nA vector is a sequence of values of the same type. When you mix types, R converts everything to the lowest common type (logical → numeric → character).\ny &lt;- c(9, 3, 7, 2)   # numeric vector of length 4\nlength(y)             # 4\n\n# Indexing\ny[3]          # 7        — third element\ny[2:4]        # 3 7 2    — elements 2 to 4\ny[-2]         # 9 7 2    — all except element 2\ny[y &lt; 5]      # 3 2      — elements where condition is TRUE\n\n# Logical tests (applied to each element)\ny &lt; 5         # FALSE TRUE FALSE TRUE\nsum(y &lt; 5)    # 2  — count of elements satisfying condition\n\n# Modifying\ny[1] &lt;- 10    # replace first element\n\n  TRUE / FALSE in arithmetic: R treats TRUE as 1 and FALSE as 0.\n  So sum(c(TRUE, FALSE, TRUE, TRUE)) = 3 — a quick way to count matching elements.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#matrices",
+    "href": "1_datentypen.html#matrices",
+    "title": "Orientation in This Course",
+    "section": "Matrices",
+    "text": "Matrices\n\nCreating & accessing matrices\nA matrix is a 2-dimensional structure. All elements must be the same type. Indexing uses [row, column] — leave one side empty to select all.\nX &lt;- matrix(1:6, nrow = 2, ncol = 3, byrow = TRUE)\n#      [,1] [,2] [,3]\n# [1,]    1    2    3\n# [2,]    4    5    6\n\ndim(X)        # c(2, 3)  — rows, then columns\nX[1, 2]       # 2        — row 1, column 2\nX[2, ]        # 4 5 6    — entire second row\nX[, 1]        # 1 4      — entire first column\n\n# Building from vectors\nA &lt;- cbind(c(1,2), c(3,4), c(5,6))   # join as columns\nB &lt;- rbind(c(1,2,3), c(4,5,6))       # join as rows\n\n# Naming\nrownames(A) &lt;- c(\"r1\", \"r2\")\ncolnames(A) &lt;- c(\"p1\", \"p2\", \"p3\")\n\n\n\nFunction\nWhat it does\n\n\ndim(X)\nReturns c(rows, columns)\n\n\nnrow(X) / ncol(X)\nNumber of rows / columns\n\n\ncbind(x, y)\nCombine vectors as columns\n\n\nrbind(x, y)\nCombine vectors as rows\n\n\ncolnames(X)\nGet or set column names\n\n\nrownames(X)\nGet or set row names",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#lists",
+    "href": "1_datentypen.html#lists",
+    "title": "Orientation in This Course",
+    "section": "Lists",
+    "text": "Lists\n\nCreating & accessing lists\nLists can hold elements of different types and lengths — unlike vectors or matrices. Access elements with $name or [[ ]].\nL &lt;- list(color = c(\"blue\", \"red\"), size = 5, active = TRUE)\n\n# Accessing content (returns the actual value)\nL$color           # \"blue\" \"red\"\nL[[\"color\"]]      # same — \"blue\" \"red\"\nL[[\"color\"]][2]   # \"red\"\n\n# Single brackets return a list, not the content\nL[\"color\"]        # a list of length 1 (not the vector!)\nlength(L[\"color\"])   # 1\nlength(L[[\"color\"]]) # 2\n\n# Modifying & deleting\nL[[\"size\"]] &lt;- 10     # change an element\nL[[\"new\"]]  &lt;- \"hi\"   # add a new element\nL[[3]] &lt;- NULL         # delete third element\n\n  [ ] vs [[ ]]: Single brackets always return a list.\n  Double brackets return the content. Use [[ ]] when you want to work with the value.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#dataframes",
+    "href": "1_datentypen.html#dataframes",
+    "title": "Orientation in This Course",
+    "section": "Dataframes",
+    "text": "Dataframes\n\nCreating & accessing dataframes\nA dataframe is like a table: rows are observations, columns are variables. Unlike matrices, different columns can have different types.\nName   &lt;- c(\"Ben\", \"Alice\", \"Daniel\", \"Charlie\")\nYear   &lt;- c(1990, 1992, 1995, 1993)\nOption &lt;- c(\"Biology\", \"Physics\", \"Chemistry\", \"Mathematics\")\n\ndf &lt;- data.frame(First_Name = Name, Year = Year, Options = Option)\n\n# Accessing columns\ndf$Year           # 1990 1992 1995 1993\ndf[[\"Year\"]]      # same\ndf[, 2]           # same — all rows, column 2\n\n# Accessing elements\ndf$Options[3]     # \"Chemistry\"\ndf[2:3, 3]        # \"Physics\" \"Chemistry\"\n\n# Merging two dataframes\nFull_Names &lt;- data.frame(First_Name = c(\"Alice\",\"Ben\"),\n                         Last_Name  = c(\"Parker\",\"James\"))\n\nmerge(df, Full_Names)          # Inner join — only matching rows\nmerge(df, Full_Names, all=TRUE) # Outer join — all rows, NA for missing\n\n\n\nFunction\nWhat it does\n\n\ndata.frame(...)\nCreate a dataframe from named vectors\n\n\nas.data.frame(X)\nConvert a matrix to a dataframe\n\n\ndim(df)\nRows and columns\n\n\ncolnames(df)\nColumn names\n\n\nstr(df)\nStructure overview (types, first values)\n\n\nmerge(a, b)\nJoin two dataframes on shared columns",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#loops-iteration",
+    "href": "1_datentypen.html#loops-iteration",
+    "title": "Orientation in This Course",
+    "section": "Loops & Iteration",
+    "text": "Loops & Iteration\n\napply family & for loops\nMat &lt;- matrix(rnorm(12), nrow = 3)\n\napply(Mat, 1, mean)   # mean of each ROW    (MARGIN = 1)\napply(Mat, 2, mean)   # mean of each COLUMN (MARGIN = 2)\n\nx &lt;- c(1:5)\nsapply(x, sqrt)       # apply sqrt() to each element → returns vector\nlapply(x, sqrt)       # same but returns a list\n\n# For loop\nfor (i in 1:4) {\n  print(i * 3)\n}\n\n# If / else\na &lt;- 5; b &lt;- 10\nif (a &lt; b) { print(\"a is smaller\") } else { print(\"b is smaller\") }\n\n\n\nFunction\nWhat it does\n\n\napply(X, 1, fun)\nApply fun to each row of matrix/dataframe\n\n\napply(X, 2, fun)\nApply fun to each column\n\n\nsapply(x, fun)\nApply fun to each element of vector/list → vector\n\n\nlapply(x, fun)\nApply fun to each element → list",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#index-selection",
+    "href": "1_datentypen.html#index-selection",
+    "title": "Orientation in This Course",
+    "section": "Index Selection",
+    "text": "Index Selection\n\nwhich, %in%, is.na\nx &lt;- c(2, 8, 3, 7, 1)\n\nwhich(x &gt; 5)          # c(2, 4)  — INDICES where condition is TRUE\nx[which(x &gt; 5)]       # c(8, 7)  — VALUES at those indices\n\nc(\"a\",\"b\",\"c\") %in% c(\"b\",\"d\")  # FALSE TRUE FALSE\n                                 # — is each element in the right-hand set?\n\nis.na(c(1, NA, 3))    # FALSE TRUE FALSE\nsum(is.na(x))         # count of NA values\n\n\n\nFunction / Operator\nWhat it does\n\n\nwhich(condition)\nReturns indices where condition is TRUE\n\n\nx %in% y\nFor each element of x: is it anywhere in y?\n\n\nis.na(x)\nTRUE for each NA element\n\n\nna.omit(x)\nRemove NA values from a vector or dataframe",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#variables-assignments-1",
+    "href": "1_datentypen.html#variables-assignments-1",
+    "title": "Orientation in This Course",
+    "section": "Variables & Assignments",
+    "text": "Variables & Assignments\n\nAssigning values\nUse = to assign a value to a variable. Python is case-sensitive — hello and Hello are different objects. There is no &lt;- operator in Python.\na    = 2              # integer\nb    = True           # boolean  (note capital T)\nname = \"Rosalinde\"   # string\n\na + 3                # 5\nprint(name)          # Rosalinde\n\n\n\nFunction\nWhat it does\n\n\ntype(x)\nShow the type of x\n\n\ndir()\nList all names in the current scope\n\n\ndel x\nRemove variable x",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#lists-1",
+    "href": "1_datentypen.html#lists-1",
+    "title": "Orientation in This Course",
+    "section": "Lists",
+    "text": "Lists\n\nCreating & accessing lists (R: vectors)\nPython lists use 0-based indexing and can hold mixed types. Use [ ] for indexing and slicing.\ny = [9, 3, 7, 2]    # list of length 4\nlen(y)               # 4\n\n# Indexing (0-based!)\ny[2]                 # 7        — third element (index 2)\ny[1:3]               # [3, 7]   — elements at index 1 and 2\ny[:-1]               # [9,3,7]  — all except last\n\n# Filter with list comprehension\n[x for x in y if x &lt; 5]      # [3, 2]\n[x &lt; 5 for x in y]           # [False, True, False, True]\nsum(x &lt; 5 for x in y)        # 2  — count matching\n\n# Modifying\ny[0] = 10            # replace first element (index 0)\n\n  Mixed types: Unlike R vectors, Python lists allow mixed types:\n  [True, \"hello\", 3] stays as-is — no automatic conversion.\n  Indexing starts at 0, not 1.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#numpy-arrays",
+    "href": "1_datentypen.html#numpy-arrays",
+    "title": "Orientation in This Course",
+    "section": "NumPy Arrays",
+    "text": "NumPy Arrays\n\nCreating & accessing arrays (R: matrices)\nNumPy arrays are the Python equivalent of R matrices. Requires import numpy as np. Indexing is 0-based.\nimport numpy as np\n\nX = np.array([[1, 2, 3],\n              [4, 5, 6]])\n# Shape: (2, 3)\n\nX.shape          # (2, 3)  — rows, then columns\nX[0, 1]          # 2       — row 0, column 1 (0-based!)\nX[1, :]          # [4 5 6] — entire second row\nX[:, 0]          # [1 4]   — entire first column\n\n# Building from vectors\nA = np.column_stack(([1,2], [3,4], [5,6]))  # join as columns\nB = np.vstack([[1,2,3], [4,5,6]])            # join as rows\n\n\n\nFunction\nWhat it does\n\n\nX.shape\nReturns (rows, columns) as a tuple\n\n\nX.reshape(r, c)\nReshape to r rows and c columns\n\n\nnp.hstack((a, b))\nCombine arrays side by side (columns)\n\n\nnp.vstack((a, b))\nStack arrays vertically (rows)",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#dictionaries",
+    "href": "1_datentypen.html#dictionaries",
+    "title": "Orientation in This Course",
+    "section": "Dictionaries",
+    "text": "Dictionaries\n\nCreating & accessing dicts (R: lists)\nDictionaries hold key–value pairs of any type. Use [ ] with the key to access values — there is no $ or [[ ]] in Python.\nL = {\"color\": [\"blue\", \"red\"], \"size\": 5, \"active\": True}\n\n# Accessing content\nL[\"color\"]           # [\"blue\", \"red\"]\nL[\"color\"][1]        # \"red\"   — second element (0-based)\n\n# Check if key exists\n\"color\" in L         # True\n\n# Modifying & deleting\nL[\"size\"] = 10       # change a value\nL[\"new\"]  = \"hi\"     # add a new key\ndel L[\"size\"]        # delete a key\n\n  R vs Python: R's L[[\"color\"]] → Python's L[\"color\"].\n  Square brackets always return the value directly in Python — no double-bracket distinction.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#dataframes-1",
+    "href": "1_datentypen.html#dataframes-1",
+    "title": "Orientation in This Course",
+    "section": "DataFrames",
+    "text": "DataFrames\n\nCreating & accessing DataFrames (R: data.frame)\nPandas DataFrames are the Python equivalent of R dataframes. Requires import pandas as pd.\nimport pandas as pd\n\nName   = [\"Ben\", \"Alice\", \"Daniel\", \"Charlie\"]\nYear   = [1990, 1992, 1995, 1993]\nOption = [\"Biology\", \"Physics\", \"Chemistry\", \"Mathematics\"]\n\ndf = pd.DataFrame({\"First_Name\": Name, \"Year\": Year, \"Options\": Option})\n\n# Accessing columns\ndf[\"Year\"]            # Series: 1990 1992 1995 1993\ndf.Year               # same — attribute-style access\ndf.iloc[:, 1]         # same — all rows, column index 1 (0-based)\n\n# Accessing elements\ndf[\"Options\"].iloc[2]    # \"Chemistry\"\ndf.iloc[1:3, 2]          # \"Physics\", \"Chemistry\"\n\n# Merging two DataFrames\nFull_Names = pd.DataFrame({\"First_Name\": [\"Alice\",\"Ben\"],\n                            \"Last_Name\":  [\"Parker\",\"James\"]})\n\npd.merge(df, Full_Names)                    # Inner join — matching rows only\npd.merge(df, Full_Names, how=\"outer\")       # Outer join — all rows, NaN for missing\n\n\n\nFunction\nWhat it does\n\n\npd.DataFrame({...})\nCreate a DataFrame from a dict of lists\n\n\ndf.shape\nRows and columns as (r, c)\n\n\ndf.columns\nColumn names\n\n\ndf.dtypes\nData type of each column\n\n\ndf.describe()\nSummary statistics for numeric columns\n\n\npd.merge(a, b)\nJoin two DataFrames on shared columns",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#loops-iteration-1",
+    "href": "1_datentypen.html#loops-iteration-1",
+    "title": "Orientation in This Course",
+    "section": "Loops & Iteration",
+    "text": "Loops & Iteration\n\nfor loops, list comprehensions & numpy\nimport numpy as np\n\nMat = np.random.randn(3, 4)\n\nnp.mean(Mat, axis=0)        # mean of each COLUMN\nnp.mean(Mat, axis=1)        # mean of each ROW\n\nx = list(range(1, 6))       # [1, 2, 3, 4, 5]\n[np.sqrt(i) for i in x]     # list comprehension — apply to each element\nlist(map(np.sqrt, x))        # same result with map()\n\n# For loop\nfor i in range(1, 5):\n    print(i * 3)\n\n# If / else\na = 5; b = 10\nif a &lt; b:\n    print(\"a is smaller\")\nelse:\n    print(\"b is smaller\")\n\n\n\nFunction / Syntax\nWhat it does\n\n\nnp.mean(X, axis=0)\nMean of each column (axis 0 = rows collapse)\n\n\nnp.mean(X, axis=1)\nMean of each row (axis 1 = columns collapse)\n\n\n[f(x) for x in lst]\nList comprehension — apply f to each element\n\n\nmap(f, lst)\nApply f to each element → map object\n\n\nfilter(f, lst)\nKeep elements where f returns True",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#index-selection-1",
+    "href": "1_datentypen.html#index-selection-1",
+    "title": "Orientation in This Course",
+    "section": "Index Selection",
+    "text": "Index Selection\n\nnp.where, in, pd.isna\nimport numpy as np\nimport pandas as pd\n\nx = np.array([2, 8, 3, 7, 1])\n\nnp.where(x &gt; 5)          # (array([1, 3]),)  — INDICES where condition is TRUE\nx[np.where(x &gt; 5)]       # array([8, 7])     — VALUES at those indices\nx[x &gt; 5]                 # array([8, 7])     — direct boolean indexing (shortcut)\n\n\"a\" in [\"b\", \"d\"]        # False  — membership test\n[\"a\" in [\"b\",\"d\"], \"b\" in [\"b\",\"d\"], \"c\" in [\"b\",\"d\"]]  # [False, True, False]\n\npd.isna(pd.Series([1, None, 3]))   # [False, True, False]\nnp.isnan(x.astype(float))          # array of bool (for float arrays)\n\n\n\nFunction / Operator\nWhat it does\n\n\nnp.where(condition)\nReturns tuple of indices where condition is TRUE\n\n\nx in y\nTrue if x appears in sequence y\n\n\npd.isna(x)\nTrue for each NaN / None element\n\n\nnp.isnan(x)\nTrue for each NaN in a NumPy float array\n\n\ndf.dropna()\nRemove rows with any missing value",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#structure-course-materials",
+    "href": "1_datentypen.html#structure-course-materials",
+    "title": "Orientation in This Course",
+    "section": "Structure & Course Materials",
+    "text": "Structure & Course Materials\nWelcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.\nOn this platform you will find everything in one place: lecture videos and slide decks, practical markdown files to work through in RStudio or VS Code, and short comprehension quizzes to consolidate what you have learned.\nEach week page guides you through three steps: watch the videos & download the slides → work through the practical markdown → complete the comprehension quiz. Your progress is tracked automatically.\nYou have full freedom of choice: using the button in the top right corner, you can switch between the programming languages R and Python at any time. For weeks where Python materials are still being prepared, a placeholder will indicate what is coming.\nThe Basics in Coding page provides a quick-reference for syntax in both R and Python — keep it open while working through the markdowns.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#programming-languages-and-their-working-environments",
+    "href": "1_datentypen.html#programming-languages-and-their-working-environments",
+    "title": "Orientation in This Course",
+    "section": "Programming Languages and Their Working Environments",
+    "text": "Programming Languages and Their Working Environments\nBefore we start, it is important to understand the difference between the programming language itself and the program in which we write.\n\n1. The Language: R and Python\nR and Python are the “engines” behind your analysis. For your computer to understand what you want from it, you need to download the language as base software.\n\nPython: Installed as a program from python.org.\nR: Installed as “Base R” from the CRAN network.\n\nImportant: You will almost never open these programs directly. They “rest” in the background of your operating system and wait for commands.\n\n\n2. The Tool: The IDE (RStudio & VS Code)\nTo actually write code, we use an IDE (Integrated Development Environment). This is your actual control center.\n\nRStudio is the standard environment for R.\nVS Code is the most popular environment for Python.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#what-do-you-need-for-setup",
+    "href": "1_datentypen.html#what-do-you-need-for-setup",
+    "title": "Orientation in This Course",
+    "section": "What Do You Need for Setup?",
+    "text": "What Do You Need for Setup?\nIf you later want to work on your own computer, this is the correct order:\n\nInstall the engine: Download Python or R (provides the “language”).\nSet up the workspace: Install an IDE like RStudio or VS Code (your workstation).\nUnpack the tools: Install so-called “packages” within the IDE. These are extensions for specific tasks, such as drawing biological diagrams.\n\n\n\n\n\n\n\nTipOur Tip for Getting Started\n\n\n\nTo watch videos, follow the course and take quizzes, no installation is required. However, to work through the practical markdown files, you will need RStudio (for R) or VS Code (for Python) installed on your computer. We recommend setting this up early — these tools will be your daily companions throughout the course.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#working-with-markdown",
+    "href": "1_datentypen.html#working-with-markdown",
+    "title": "Orientation in This Course",
+    "section": "Working with Markdown",
+    "text": "Working with Markdown\nIn this course we do not use ordinary text documents or pure program code. In addition to this website, we work with Markdown files as an offline alternative.\nIn science, reproducibility (traceability) is crucial. Markdown allows us to do so-called Literate Programming: * We write our text (explanations, hypotheses). * We embed the actual code (R or Python) directly within it. * We let the computer render the document (in RStudio often via the Knit button).\nThe result is a finished document (HTML, PDF, or Word) in which the text, the code, and the resulting graphics are perfectly combined.\n\nThe Structure of a File\n\nThe text: Regular text with simple formatting (**bold**, *italic*, # Heading).\nThe code chunks: Blocks that begin with three backticks. This is where the actual code is executed. It is recommended to name each chunk — this keeps your document tidy and greatly facilitates troubleshooting.\nThe YAML header: The area at the very top between the --- lines for title and author.\n\n\n\n\n\n\n\n\nNoteLanguage-Specific Introduction\n\n\n\nDepending on whether you have switched to “R” or “Python” above, you will now see a more detailed introduction to the respective environment below.",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#focus-r-and-rstudio",
+    "href": "1_datentypen.html#focus-r-and-rstudio",
+    "title": "Orientation in This Course",
+    "section": "Focus: R and RStudio",
+    "text": "Focus: R and RStudio\nR is a powerful language for statistical data analysis. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. RStudio is an “Integrated Development Environment” (IDE) that helps you write code, visualize data, and save results.\n\nThe RStudio Interface\nThe interface is divided into four main areas:\n\nSource (top left): This is where you write your scripts and Markdown files. To create a new file, click on the New File icon (green plus) at the top left. Everything written here can be saved.\nConsole (bottom left): Code is executed immediately here. For example, type 3 + 4 and press Enter — the result appears immediately. The console is ideal for commands that you do not need to save permanently.\nEnvironment (top right): All variables, lists, and datasets that you have created and defined during your session are displayed here.\nFiles/Plots/Help (bottom right): Here you manage your files, view generated graphics, or search the help for functions (e.g., with ?matrix).\n\n\n\n\nThe main areas of RStudio\n\n\n\n\nFirst Steps in Programming\n\nAssignments: Values are loaded into variables with &lt;- or = (e.g., a &lt;- 10). The variable then appears in the Environment.\nR as a calculator: R is excellent for mathematical calculations. You can calculate directly with variables:\n\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nlibrary(shiny)\nui &lt;- fluidPage(\n  textAreaInput(\"code\", \"R Chunk: Mathematical Operations\", value = \"x &lt;- 5\\ny &lt;- 3\\nSum &lt;- x + y\\nSum * 5\", width = '100%', height = '100px'),\n  actionButton(\"run\", \"Run Code\", class = \"btn-success\"),\n  verbatimTextOutput(\"out\")\n)\nserver &lt;- function(input, output) {\n  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })\n}\nshinyApp(ui, server)\n\nCase Sensitivity: R is extremely picky. hello is a different variable from Hello.\nGetting help: Use the documentation directly in RStudio or online resources:\n\nguru99 R Tutorial\nBabraham Bioinformatics\nR for Data Science\n\nWorkspace: Use ls() to list your variables and rm(a) to delete them — Caution: rm() deletes irreversibly, so use it carefully! Your entire environment can be saved as an .RData file and restored in a later session with load(\"MyEnvironment.RData\").\nWorking Directory: Via the Files -&gt; More -&gt; Set As Working Directory tab, you define which folder R should look in for your files.\n\n\nHelpful Tips in the Editor\n\nAutocomplete: In RStudio, quotation marks \"\" and brackets () usually appear automatically in pairs. This helps you avoid syntax errors caused by forgotten characters.\nHistory: Using the arrow keys (up/down) you can scroll through your most recently used commands in the console.\nComments: Everything after a # is ignored by R. Use this generously to explain your code to yourself and others.\n\n\n\nVariables & Assignments\nWe can load values (numbers or text) into variables. In R, the arrow &lt;- is traditionally used for this, but = is also possible.\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nlibrary(shiny)\nui &lt;- fluidPage(\n  textAreaInput(\"code\", \"R Chunk: Variables & Assignments\", value = \"a &lt;- \\\"Hello world!\\\"\\nhello = \\\"Hello world!\\\"\\nprint(a)\\nprint(hello)\", width = '100%', height = '120px'),\n  actionButton(\"run\", \"Run Code\", class = \"btn-success\"),\n  verbatimTextOutput(\"out\")\n)\nserver &lt;- function(input, output) {\n  observeEvent(input$run, { output$out &lt;- renderPrint({ eval(parse(text = input$code)) }) })\n}\nshinyApp(ui, server)",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "1_datentypen.html#python-and-vs-code",
+    "href": "1_datentypen.html#python-and-vs-code",
+    "title": "Orientation in This Course",
+    "section": "Python and VS Code",
+    "text": "Python and VS Code\nPython is a versatile and widely used programming language that is particularly well-suited for data analysis, machine learning, and scientific computing. We recommend that you also take the introductory courses at DataCamp to get a feel for the syntax. VS Code is a flexible development environment (IDE) that can be optimally adapted for Python through extensions.\n\nThe VS Code Interface\nThe interface is divided into four main areas:\n\nEditor (center): This is where you write your scripts and notebooks. To create a new file, click on the New File icon at the top left in the Explorer. Everything written here can be saved. The file extensions determine in which programming language you are writing and how the file can be used (.py/.ipynb for Python, .r for R, .md for Markdown).\nTerminal (bottom): Code is executed immediately here and files can be launched. Connections to clusters, communication with GitHub, or searching for files also work via the terminal. The terminal can be opened, for example, at the top right (3rd icon from the right).\nExplorer (left): Here you manage your files and folders. These are either stored locally on your computer or on a cluster.\nControl Center (far left): Here you can, for example, search documents for a keyword, connect and manage GitHub repositories, debug, install extensions, and manage remote connections (e.g., clusters).\n\n\n\n\nThe main areas of VS Code\n\n\n\n\nFirst Steps in Programming\n\nAssignments: In Python, values are loaded into variables with = (e.g., a = 10). Unlike R, there is no &lt;- in Python.\nPython as a calculator: Python is excellent for mathematical calculations. You can calculate directly with variables:\n\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nfrom shiny import App, ui, render, reactive\nimport io, contextlib\n\napp_ui = ui.page_fluid(\n    ui.input_text_area(\"code\", \"Python Chunk: Mathematical Operations\", value=\"x = 5\\ny = 3\\nSum = x + y\\nprint(Sum * 5)\", width='100%', height='100px'),\n    ui.input_action_button(\"run\", \"Run Code\", class_=\"btn-success\"),\n    ui.output_text_verbatim(\"out\")\n)\n\ndef server(input, output, session):\n    @render.text\n    @reactive.event(input.run)\n    def out():\n        f = io.StringIO()\n        with contextlib.redirect_stdout(f):\n            exec(input.code(), {})\n        return f.getvalue()\n\napp = App(app_ui, server)\n\nCase Sensitivity: Python is just as picky as R. hello is a different variable from Hello.\n\n\n\nGetting Help:\nUse the documentation directly in VS Code or online resources: Python Documentation W3Schools Python Tutorial Python for Data Science Handbook\n\nWorkspace: Use dir() to list all current variables and objects, and del a to delete a variable — Caution: del deletes irreversibly, so use it carefully!\nWorking Directory: With import os and os.getcwd() you can display the current directory; with os.chdir(\"path/to/folder\") you change it.\n\n\n\nHelpful Tips in the Editor\n\nAutocomplete: VS Code automatically suggests functions, variable names, and brackets. Quotation marks \"\" and brackets () often appear automatically in pairs — this helps avoid syntax errors.\nHistory: In the terminal you can scroll through your most recently used commands using the arrow keys (up/down).\nComments: Everything after a # is ignored by Python — just like in R. Use comments generously to explain your code.\n\n\n\nVariables & Assignments\nWe can load values (numbers or text) into variables. In Python, = is used exclusively for assignments.\n#| '!! shinylive warning !!': |\n#|   shinylive does not work in self-contained HTML documents.\n#|   Please set `embed-resources: false` in your metadata.\n#| standalone: true\n#| viewerHeight: 300\nfrom shiny import App, ui, render, reactive\nimport io, contextlib\n\napp_ui = ui.page_fluid(\n    ui.input_text_area(\"code\", \"Python Chunk: Variables & Assignments\", value='a = \"Hello world!\"\\nhello = \"Hello world!\"\\nprint(a)\\nprint(hello)', width='100%', height='120px'),\n    ui.input_action_button(\"run\", \"Run Code\", class_=\"btn-success\"),\n    ui.output_text_verbatim(\"out\")\n)\n\ndef server(input, output, session):\n    @render.text\n    @reactive.event(input.run)\n    def out():\n        f = io.StringIO()\n        with contextlib.redirect_stdout(f):\n            exec(input.code(), {})\n        return f.getvalue()\n\napp = App(app_ui, server)",
+    "crumbs": [
+      "PYTHON",
+      "Week 1: Datatypes"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#variables-assignments-1",
+    "href": "coding_basics.html#variables-assignments-1",
+    "title": "Basics in Coding",
+    "section": "Variables & Assignments",
+    "text": "Variables & Assignments\n\nAssigning values\nUse = to assign a value to a variable. Python is case-sensitive — hello and Hello are different objects. There is no &lt;- operator in Python.\na    = 2              # integer\nb    = True           # boolean  (note capital T)\nname = \"Rosalinde\"   # string\n\na + 3                # 5\nprint(name)          # Rosalinde\n\n\n\nFunction\nWhat it does\n\n\ntype(x)\nShow the type of x\n\n\ndir()\nList all names in the current scope\n\n\ndel x\nRemove variable x",
+    "crumbs": [
+      "PYTHON",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#lists-1",
+    "href": "coding_basics.html#lists-1",
+    "title": "Basics in Coding",
+    "section": "Lists",
+    "text": "Lists\n\nCreating & accessing lists (R: vectors)\nPython lists use 0-based indexing and can hold mixed types. Use [ ] for indexing and slicing.\ny = [9, 3, 7, 2]    # list of length 4\nlen(y)               # 4\n\n# Indexing (0-based!)\ny[2]                 # 7        — third element (index 2)\ny[1:3]               # [3, 7]   — elements at index 1 and 2\ny[:-1]               # [9,3,7]  — all except last\n\n# Filter with list comprehension\n[x for x in y if x &lt; 5]      # [3, 2]\n[x &lt; 5 for x in y]           # [False, True, False, True]\nsum(x &lt; 5 for x in y)        # 2  — count matching\n\n# Modifying\ny[0] = 10            # replace first element (index 0)\n\n  Mixed types: Unlike R vectors, Python lists allow mixed types:\n  [True, \"hello\", 3] stays as-is — no automatic conversion.\n  Indexing starts at 0, not 1.",
+    "crumbs": [
+      "PYTHON",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#numpy-arrays",
+    "href": "coding_basics.html#numpy-arrays",
+    "title": "Basics in Coding",
+    "section": "NumPy Arrays",
+    "text": "NumPy Arrays\n\nCreating & accessing arrays (R: matrices)\nNumPy arrays are the Python equivalent of R matrices. Requires import numpy as np. Indexing is 0-based.\nimport numpy as np\n\nX = np.array([[1, 2, 3],\n              [4, 5, 6]])\n# Shape: (2, 3)\n\nX.shape          # (2, 3)  — rows, then columns\nX[0, 1]          # 2       — row 0, column 1 (0-based!)\nX[1, :]          # [4 5 6] — entire second row\nX[:, 0]          # [1 4]   — entire first column\n\n# Building from vectors\nA = np.column_stack(([1,2], [3,4], [5,6]))  # join as columns\nB = np.vstack([[1,2,3], [4,5,6]])            # join as rows\n\n\n\nFunction\nWhat it does\n\n\nX.shape\nReturns (rows, columns) as a tuple\n\n\nX.reshape(r, c)\nReshape to r rows and c columns\n\n\nnp.hstack((a, b))\nCombine arrays side by side (columns)\n\n\nnp.vstack((a, b))\nStack arrays vertically (rows)",
+    "crumbs": [
+      "PYTHON",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#dictionaries",
+    "href": "coding_basics.html#dictionaries",
+    "title": "Basics in Coding",
+    "section": "Dictionaries",
+    "text": "Dictionaries\n\nCreating & accessing dicts (R: lists)\nDictionaries hold key–value pairs of any type. Use [ ] with the key to access values — there is no $ or [[ ]] in Python.\nL = {\"color\": [\"blue\", \"red\"], \"size\": 5, \"active\": True}\n\n# Accessing content\nL[\"color\"]           # [\"blue\", \"red\"]\nL[\"color\"][1]        # \"red\"   — second element (0-based)\n\n# Check if key exists\n\"color\" in L         # True\n\n# Modifying & deleting\nL[\"size\"] = 10       # change a value\nL[\"new\"]  = \"hi\"     # add a new key\ndel L[\"size\"]        # delete a key\n\n  R vs Python: R's L[[\"color\"]] → Python's L[\"color\"].\n  Square brackets always return the value directly in Python — no double-bracket distinction.",
+    "crumbs": [
+      "PYTHON",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#dataframes-1",
+    "href": "coding_basics.html#dataframes-1",
+    "title": "Basics in Coding",
+    "section": "DataFrames",
+    "text": "DataFrames\n\nCreating & accessing DataFrames (R: data.frame)\nPandas DataFrames are the Python equivalent of R dataframes. Requires import pandas as pd.\nimport pandas as pd\n\nName   = [\"Ben\", \"Alice\", \"Daniel\", \"Charlie\"]\nYear   = [1990, 1992, 1995, 1993]\nOption = [\"Biology\", \"Physics\", \"Chemistry\", \"Mathematics\"]\n\ndf = pd.DataFrame({\"First_Name\": Name, \"Year\": Year, \"Options\": Option})\n\n# Accessing columns\ndf[\"Year\"]            # Series: 1990 1992 1995 1993\ndf.Year               # same — attribute-style access\ndf.iloc[:, 1]         # same — all rows, column index 1 (0-based)\n\n# Accessing elements\ndf[\"Options\"].iloc[2]    # \"Chemistry\"\ndf.iloc[1:3, 2]          # \"Physics\", \"Chemistry\"\n\n# Merging two DataFrames\nFull_Names = pd.DataFrame({\"First_Name\": [\"Alice\",\"Ben\"],\n                            \"Last_Name\":  [\"Parker\",\"James\"]})\n\npd.merge(df, Full_Names)                    # Inner join — matching rows only\npd.merge(df, Full_Names, how=\"outer\")       # Outer join — all rows, NaN for missing\n\n\n\nFunction\nWhat it does\n\n\npd.DataFrame({...})\nCreate a DataFrame from a dict of lists\n\n\ndf.shape\nRows and columns as (r, c)\n\n\ndf.columns\nColumn names\n\n\ndf.dtypes\nData type of each column\n\n\ndf.describe()\nSummary statistics for numeric columns\n\n\npd.merge(a, b)\nJoin two DataFrames on shared columns",
+    "crumbs": [
+      "PYTHON",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#loops-iteration-1",
+    "href": "coding_basics.html#loops-iteration-1",
+    "title": "Basics in Coding",
+    "section": "Loops & Iteration",
+    "text": "Loops & Iteration\n\nfor loops, list comprehensions & numpy\nimport numpy as np\n\nMat = np.random.randn(3, 4)\n\nnp.mean(Mat, axis=0)        # mean of each COLUMN\nnp.mean(Mat, axis=1)        # mean of each ROW\n\nx = list(range(1, 6))       # [1, 2, 3, 4, 5]\n[np.sqrt(i) for i in x]     # list comprehension — apply to each element\nlist(map(np.sqrt, x))        # same result with map()\n\n# For loop\nfor i in range(1, 5):\n    print(i * 3)\n\n# If / else\na = 5; b = 10\nif a &lt; b:\n    print(\"a is smaller\")\nelse:\n    print(\"b is smaller\")\n\n\n\nFunction / Syntax\nWhat it does\n\n\nnp.mean(X, axis=0)\nMean of each column (axis 0 = rows collapse)\n\n\nnp.mean(X, axis=1)\nMean of each row (axis 1 = columns collapse)\n\n\n[f(x) for x in lst]\nList comprehension — apply f to each element\n\n\nmap(f, lst)\nApply f to each element → map object\n\n\nfilter(f, lst)\nKeep elements where f returns True",
+    "crumbs": [
+      "PYTHON",
+      "Basics in Coding"
+    ]
+  },
+  {
+    "objectID": "coding_basics.html#index-selection-1",
+    "href": "coding_basics.html#index-selection-1",
+    "title": "Basics in Coding",
+    "section": "Index Selection",
+    "text": "Index Selection\n\nnp.where, in, pd.isna\nimport numpy as np\nimport pandas as pd\n\nx = np.array([2, 8, 3, 7, 1])\n\nnp.where(x &gt; 5)          # (array([1, 3]),)  — INDICES where condition is TRUE\nx[np.where(x &gt; 5)]       # array([8, 7])     — VALUES at those indices\nx[x &gt; 5]                 # array([8, 7])     — direct boolean indexing (shortcut)\n\n\"a\" in [\"b\", \"d\"]        # False  — membership test\n[\"a\" in [\"b\",\"d\"], \"b\" in [\"b\",\"d\"], \"c\" in [\"b\",\"d\"]]  # [False, True, False]\n\npd.isna(pd.Series([1, None, 3]))   # [False, True, False]\nnp.isnan(x.astype(float))          # array of bool (for float arrays)\n\n\n\nFunction / Operator\nWhat it does\n\n\nnp.where(condition)\nReturns tuple of indices where condition is TRUE\n\n\nx in y\nTrue if x appears in sequence y\n\n\npd.isna(x)\nTrue for each NaN / None element\n\n\nnp.isnan(x)\nTrue for each NaN in a NumPy float array\n\n\ndf.dropna()\nRemove rows with any missing value",
     "crumbs": [
       "PYTHON",
       "Basics in Coding"
