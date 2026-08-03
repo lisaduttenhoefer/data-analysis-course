@@ -1,0 +1,351 @@
+---
+title: "Week 8: Non-Parametric & Proportion Tests"
+format:
+  html:
+    include-in-header:
+      - language-switch.html
+    include-after-body:
+      - week8-script.html
+---
+
+```{=html}
+<style>
+  .step-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
+  }
+  .step-badge {
+    background: #1a4d1a; color: white; border-radius: 50%;
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .step-header h2 { margin: 0; font-size: 1.35rem; }
+
+  .resource-list { list-style: none; padding: 0; margin: 0; }
+  .resource-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: #f8f9fa; border: 2px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
+  .resource-item input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
+  }
+  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
+  .resource-item label a { color: #1a4d1a; font-weight: 600; }
+  .resource-item label a:hover { text-decoration: underline; }
+
+  .quiz-card {
+    background: #f8f9fa; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 1.5rem;
+    border-left: 4px solid #1a4d1a;
+  }
+  .quiz-done-badge {
+    display: none; background: #a8d5a2; color: #1a4d1a;
+    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
+    font-weight: 800; margin-left: 10px; vertical-align: middle;
+  }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
+  .warning-note {
+    background: #fdecea; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #d9534f; color: #555;
+  }
+</style>
+
+<!-- Progress bar -->
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 8 Progress</strong>
+      <div id="week8-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week8-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+</div>
+```
+
+This week covers **non-parametric tests** (Wilcoxon), **proportion tests** (Fisher / chi-square) for categorical data, and the **power of a test**. Use the language toggle above to switch between R and Python.
+
+---
+
+```{=html}
+<!-- ─── STEP 1: Videos & Slides (shared) ─────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">1</div>
+  <h2>Watch the Lecture Videos &amp; Download the Slides</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Watch the short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
+
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w8_slides" onchange="markCheckDone(this)">
+    <label for="check_w8_slides">
+      <a href="WEEK7/week7_lecture_slides.pdf" download>Week 8 – Non-Parametric &amp; Proportion Tests (PDF slides)</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w8_vid1" onchange="markCheckDone(this)">
+    <label for="check_w8_vid1">
+      <a href="https://www.youtube.com/watch?v=sd_L_M4FYCE" target="_blank" rel="noopener">Video 1/3 – 7.3 Non-parametric tests</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w8_vid2" onchange="markCheckDone(this)">
+    <label for="check_w8_vid2">
+      <a href="https://www.youtube.com/watch?v=CwFh76QrHQo" target="_blank" rel="noopener">Video 2/3 – 7.4 Proportion tests</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w8_vid3" onchange="markCheckDone(this)">
+    <label for="check_w8_vid3">
+      <a href="https://www.youtube.com/watch?v=t0z9tu4J3AU" target="_blank" rel="noopener">Video 3/3 – 8 Power of a test</a>
+    </label>
+  </li>
+</ul>
+
+<!-- Python note -->
+<div class="lang-python">
+  <div class="lang-note">
+    <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — Wilcoxon test, Fisher/chi-square tests, statistical power — apply equally to Python (e.g. <code>scipy.stats.mannwhitneyu</code>, <code>fisher_exact</code>, <code>chi2_contingency</code>). See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+  </div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 2: Markdown ──────────────────────────────────────────────────── -->
+
+<!-- R version -->
+<div class="lang-r">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Markdown</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w8_md" onchange="markCheckDone(this)">
+    <label for="check_w8_md">
+      <a href="WEEK7/_07_hypothesis_testing%3Aprop.Rmd" download="_07_hypothesis_testing_prop.Rmd">Week 8 – Non-Parametric &amp; Proportion Tests (R Markdown)</a>
+      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
+    </label>
+  </li>
+</ul>
+<div class="warning-note">
+  <strong>Note:</strong> this exercise file is still being finalized on our end — if the download looks empty, check back soon, it will be filled in shortly.
+</div>
+<blockquote style="margin-top:1rem;">
+  <p><strong>Datasets:</strong> This sheet uses the ALL/AML leukemia gene expression data and a breast cancer clinical dataset, both loaded directly inside the R Markdown file — no separate download needed.</p>
+</blockquote>
+<p style="margin-top:1rem;"><strong>Bonus reference:</strong> a plenum recap computing the Wilcoxon test by hand and exploring false-positive/false-negative rates in depth. Quizzes 1 &amp; 4 below draw on this material.</p>
+<div class="d-flex gap-3 mb-3 flex-wrap">
+  <a href="WEEK7/_07_plenum_wilcox_sum.Rmd" download="_07_plenum_wilcox_sum.Rmd" class="btn btn-outline-danger btn-sm">Plenum: Wilcoxon &amp; Test Errors (R Markdown)</a>
+</div>
+</div>
+
+<!-- Python version -->
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Notebook</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Notebook — Coming Soon</p>
+  <p style="color:#555;margin-bottom:0;">A Python version of this week's exercise (non-parametric and proportion tests with <code>scipy.stats</code>) is in preparation. Use the R Markdown material for now — the underlying concepts transfer directly.</p>
+</div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 3: Quiz ───────────────────────────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">3</div>
+  <h2>Comprehension Quiz</h2>
+</div>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+
+<!-- R quizzes -->
+<div class="lang-r">
+
+<h3>Quiz 1: Non-Parametric Tests <span id="quiz-done-w8_q_nonparam" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> When should you use a Wilcoxon test instead of a t-test?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="np1" id="np1a"><label class="form-check-label" for="np1a">When the data is not normally distributed</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="np1" id="np1b"><label class="form-check-label" for="np1b">When you have more than 1000 data points</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="np1" id="np1c"><label class="form-check-label" for="np1c">When comparing more than 2 groups</label></div>
+    <div id="np1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> The Wilcoxon test operates on the...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="np2" id="np2a"><label class="form-check-label" for="np2a">Raw values, exactly like the t-test</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="np2" id="np2b"><label class="form-check-label" for="np2b">Ranks of the values, not the raw values themselves</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="np2" id="np2c"><label class="form-check-label" for="np2c">Squared differences between values</label></div>
+    <div id="np2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> In the plenum's by-hand computation, the U statistic (<code>U = R1 - n1(n1+1)/2</code>) is derived from...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="np3" id="np3a"><label class="form-check-label" for="np3a">The sum of ranks (R1) of one group, corrected for the group's own size</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="np3" id="np3b"><label class="form-check-label" for="np3b">The mean of the raw values</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="np3" id="np3c"><label class="form-check-label" for="np3c">The standard deviation of the combined sample</label></div>
+    <div id="np3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkNonparamQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="nonparam-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 2: Proportion Tests <span id="quiz-done-w8_q_proportion" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What kind of question are proportion tests (Fisher / chi-square) designed to answer?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt1" id="pt1a"><label class="form-check-label" for="pt1a">Whether the means of two continuous variables differ</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt1" id="pt1b"><label class="form-check-label" for="pt1b">Whether there is a significant relationship between two categorical variables</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pt1" id="pt1c"><label class="form-check-label" for="pt1c">Whether a dataset follows a normal distribution</label></div>
+    <div id="pt1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> An odds-ratio (OR) of exactly 1 in a 2×2 contingency table means...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt2" id="pt2a"><label class="form-check-label" for="pt2a">There is no association between the two categorical variables</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt2" id="pt2b"><label class="form-check-label" for="pt2b">There is a perfect positive association</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pt2" id="pt2c"><label class="form-check-label" for="pt2c">The test cannot be run</label></div>
+    <div id="pt2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> The chi-square test statistic compares which two things?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt3" id="pt3a"><label class="form-check-label" for="pt3a">The observed counts in the contingency table vs. the counts expected if there were no relationship</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt3" id="pt3b"><label class="form-check-label" for="pt3b">Two means</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pt3" id="pt3c"><label class="form-check-label" for="pt3c">Two standard deviations</label></div>
+    <div id="pt3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkProportionQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="proportion-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 3: Power of a Test <span id="quiz-done-w8_q_power" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> In the biomarker diagnostic example, what does β (the Type II error rate) represent?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pw1" id="pw1a"><label class="form-check-label" for="pw1a">The false-positive rate — diagnosing a healthy patient as sick</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pw1" id="pw1b"><label class="form-check-label" for="pw1b">The false-negative rate — failing to detect the condition in a patient who actually has it</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pw1" id="pw1c"><label class="form-check-label" for="pw1c">The proportion of patients tested</label></div>
+    <div id="pw1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> The power of a test is defined as...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pw2" id="pw2a"><label class="form-check-label" for="pw2a">α, the significance level</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pw2" id="pw2b"><label class="form-check-label" for="pw2b">1 − β, the probability of correctly detecting a real effect</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pw2" id="pw2c"><label class="form-check-label" for="pw2c">The sample mean</label></div>
+    <div id="pw2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Which of the following would <strong>increase</strong> the power of the diagnostic test in the example?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pw3" id="pw3a"><label class="form-check-label" for="pw3a">Taking fewer measurements per patient (smaller n)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pw3" id="pw3b"><label class="form-check-label" for="pw3b">Taking more measurements per patient (larger n), which shrinks the standard error</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pw3" id="pw3c"><label class="form-check-label" for="pw3c">Ignoring the significance level entirely</label></div>
+    <div id="pw3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkPowerQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="power-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 4: False Positives, False Negatives &amp; FDR (Plenum) <span id="quiz-done-w8_q_errors" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> When H0 is actually true, what should the distribution of p-values look like across many repeated tests?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="fd1" id="fd1a"><label class="form-check-label" for="fd1a">Uniformly distributed between 0 and 1</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="fd1" id="fd1b"><label class="form-check-label" for="fd1b">Always exactly 0.05</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="fd1" id="fd1c"><label class="form-check-label" for="fd1c">Concentrated near 0</label></div>
+    <div id="fd1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In the plenum's gene expression simulation (900 genes with no real difference, 100 genes with a real difference), what does the False Discovery Rate (FDR) measure?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="fd2" id="fd2a"><label class="form-check-label" for="fd2a">The proportion of all 1000 genes that are truly different</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="fd2" id="fd2b"><label class="form-check-label" for="fd2b">The proportion of genes called "significant" (test-positive) that are actually false positives</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="fd2" id="fd2c"><label class="form-check-label" for="fd2c">The total number of genes tested</label></div>
+    <div id="fd2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Why does the FPR (false-positive rate) stop equaling α when the data is not normally distributed and you still use a t-test?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="fd3" id="fd3a"><label class="form-check-label" for="fd3a">Because the t-test's theoretical guarantees rely on the normality assumption, which is violated</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="fd3" id="fd3b"><label class="form-check-label" for="fd3b">Because R computes p-values incorrectly for non-normal data</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="fd3" id="fd3c"><label class="form-check-label" for="fd3c">α always equals the FPR no matter what</label></div>
+    <div id="fd3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkErrorsQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="errors-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+</div><!-- end .lang-r -->
+
+<!-- Python placeholder quizzes -->
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;">Quiz 1: Non-Parametric Tests <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scipy.stats.mannwhitneyu)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which scipy.stats function is the Python equivalent of R's <code>wilcox.test()</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.mannwhitneyu()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.ttest_ind()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.pearsonr()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 2: Proportion Tests <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scipy.stats.fisher_exact / chi2_contingency)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which scipy.stats function performs a chi-square test of independence on a contingency table?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.chi2_contingency()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.ttest_ind()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.shapiro()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 3: Power of a Test <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(statsmodels.stats.power)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Increasing sample size n generally has what effect on a test's power?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Decreases power</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Increases power</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Has no effect on power</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 4: False Positives, False Negatives &amp; FDR <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> The False Discovery Rate (FDR) is the proportion of...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">All tests that are false positives</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">"Significant" (test-positive) results that are actually false positives</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">True positives among all positives</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+</div><!-- end .lang-python -->
+```

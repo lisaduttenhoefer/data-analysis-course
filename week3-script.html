@@ -1,0 +1,195 @@
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+const W3_CHECKS   = ['check_w3_slides','check_w3_vid1','check_w3_vid2','check_w3_vid3','check_w3_vid4','check_w3_md'];
+const W3_QUIZ_IDS = ['w3_q_correlation','w3_q_missing','w3_q_clustering','w3_q_kmeans','w3_q_plenum'];
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W3_CHECKS, ...W3_QUIZ_IDS.map(id => 'quiz_r_w3_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w3_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W3_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W3_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w3_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W3_CHECKS.length + W3_QUIZ_IDS.length;
+  let done = 0;
+  W3_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W3_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w3_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week3-progress-bar');
+  const txt = document.getElementById('week3-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: Correlation ───────────────────────────────────────────────────
+function checkCorrelationQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="cor1"]:checked'), q1f = document.getElementById('cor1-feedback');
+  if (q1 && q1.id === 'cor1b') { q1f.innerHTML = '✅ Correct! Pearson uses raw values (linear relationship), Spearman uses ranks (monotonic relationship).'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Pearson = linear relationship on raw values. Spearman = monotonic relationship on ranks.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="cor2"]:checked'), q2f = document.getElementById('cor2-feedback');
+  if (q2 && q2.id === 'cor2a') { q2f.innerHTML = '✅ Correct! cor() returns the correlation coefficient itself.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ cor() returns the correlation coefficient, not a p-value or mean difference.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="cor3"]:checked'), q3f = document.getElementById('cor3-feedback');
+  if (q3 && q3.id === 'cor3b') { q3f.innerHTML = '✅ Exactly! Ranks compress the effect of extreme values.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Spearman is rank-based — an extreme value only shifts a rank by one position, not by its raw magnitude.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('correlation-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_correlation'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: Missing Data ───────────────────────────────────────────────────
+function checkMissingQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="md1"]:checked'), q1f = document.getElementById('md1-feedback');
+  if (q1 && q1.id === 'md1b') { q1f.innerHTML = '✅ Correct! which() on a logical condition returns the row indices.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ rmv.rows > 0 is a logical vector per row; which() turns it into the indices of TRUE rows.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="md2"]:checked'), q2f = document.getElementById('md2-feedback');
+  if (q2 && q2.id === 'md2b') { q2f.innerHTML = '✅ Right! Functions like cor() or kmeans() propagate or reject NAs.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ R can store NA fine — the issue is that many statistical functions cannot compute with them.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="md3"]:checked'), q3f = document.getElementById('md3-feedback');
+  if (q3 && q3.id === 'md3b') { q3f.innerHTML = '✅ Correct! The minus sign excludes those row indices.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ dat[i.missing, ] would KEEP those rows. The minus sign removes them.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('missing-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_missing'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Introduction to Clustering ─────────────────────────────────────
+function checkClusteringQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="cl1"]:checked'), q1f = document.getElementById('cl1-feedback');
+  if (q1 && q1.id === 'cl1b') { q1f.innerHTML = '✅ Correct! No labels — the structure is found purely from the data.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Unsupervised = no known group labels are used, the method discovers structure itself.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="cl2"]:checked'), q2f = document.getElementById('cl2-feedback');
+  if (q2 && q2.id === 'cl2b') { q2f.innerHTML = '✅ Exactly! Group similar observations, separate dissimilar ones.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ Clustering is about grouping similar observations — it is not a prediction method.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="cl3"]:checked'), q3f = document.getElementById('cl3-feedback');
+  if (q3 && q3.id === 'cl3b') { q3f.innerHTML = '✅ Correct! We transpose with t() so that samples become the rows being clustered.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ brca.exp has genes as rows and samples as columns — t() flips it so kmeans clusters the samples.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('clustering-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_clustering'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 4: K-means Clustering ──────────────────────────────────────────────
+function checkKmeansQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="km1"]:checked'), q1f = document.getElementById('km1-feedback');
+  if (q1 && q1.id === 'km1a') { q1f.innerHTML = '✅ Correct! centers = the number of clusters requested.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ centers sets k, the number of clusters. nstart controls the number of random restarts.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="km2"]:checked'), q2f = document.getElementById('km2-feedback');
+  if (q2 && q2.id === 'km2b') { q2f.innerHTML = '✅ Right! Lower WSS = tighter, more compact clusters.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ WSS measures compactness within each cluster, not overall spread or cluster size.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="km3"]:checked'), q3f = document.getElementById('km3-feedback');
+  if (q3 && q3.id === 'km3b') { q3f.innerHTML = '✅ Exactly! With more clusters, points get closer to their own centroid — that is why we look for an "elbow".'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ More clusters mean fewer points per cluster, so distances to centroids shrink — down to zero at k = n.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('kmeans-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_kmeans'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 5: Plenum Recap ────────────────────────────────────────────────────
+function checkPlenumQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="pl1"]:checked'), q1f = document.getElementById('pl1-feedback');
+  if (q1 && q1.id === 'pl1b') { q1f.innerHTML = '✅ Correct! Ranks stay the same however far the point moves, so Spearman is constant while Pearson keeps drifting.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Pearson uses raw distances and keeps changing; Spearman only cares about rank order, which stays fixed.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="pl2"]:checked'), q2f = document.getElementById('pl2-feedback');
+  if (q2 && q2.id === 'pl2b') { q2f.innerHTML = '✅ Exactly! Without real structure, k-means results become unstable and depend heavily on the starting points.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ The 25 different-looking clusterings from the same data show that initialization matters a lot when there is no clear structure.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="pl3"]:checked'), q3f = document.getElementById('pl3-feedback');
+  if (q3 && q3.id === 'pl3b') { q3f.innerHTML = '✅ Correct! Different distance metrics (and mean vs. median centers) can assign points to different clusters.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ The point of the demo is that Euclidean/mean-based and Manhattan/median-based clustering can disagree on the same data.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('plenum-result');
+  if (score === total) { res.innerHTML = '🎉 Week 3 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_plenum'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>

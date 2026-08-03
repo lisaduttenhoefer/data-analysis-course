@@ -1,0 +1,138 @@
+---
+title: "Augensumme"
+author: "Maïwen Caudron-Herger"
+date: "2024-11-19"
+output: html_document
+---
+
+# Beispiel
+
+Welche Augensumme bekomme ich mit 2 Würfel
+Für jeden Wurfel, Zufallziehung von einer Zahl zwischen 1 und 6.
+und dann Summe von beide Zahlen.
+
+N = 1 (eine Ziehung = eine Realisierung)
+```{r}
+W1 <- sample(c(1,2,3,4,5,6),1)
+W1
+W2 <- sample(c(1,2,3,4,5,6),1)
+W2
+AS <- W1 + W2
+```
+
+Ich wiederhole dieses Experiment 100 Mal (= 100 Realisierungen) und mache einen Histogramm der Augensumme.
+```{r}
+N = 1
+Augensumme <- sapply (1:100, function (x)
+  {
+  sample(c(1,2,3,4,5,6),1) + sample(c(1,2,3,4,5,6),1)
+})
+Augensumme
+hist(Augensumme, xlim = c(0.5,13.5), main = paste("Augensumme for N = ",N))
+```
+Wie sieht es für N = 2 aus?
+Das bedeutet, ich notiere 2 Augensummen bei jedes Versuch und berechne den Mittelwert.
+Realisierung = Mittelwert von zwei Ziehungen.
+
+```{r}
+N = 2
+Augensumme <- sapply (1:100, function (x) # 100 Wiederholungen
+  {
+  mean(sapply(1:N, function(y)
+  {
+    sample(c(1,2,3,4,5,6),1) + sample(c(1,2,3,4,5,6),1)
+  }
+  ))
+})
+Augensumme
+hist(Augensumme, xlim = c(0.5,13.5), main = paste("Augensumme for N = ",N))
+```
+N = 10?
+```{r}
+N = 10
+Augensumme <- sapply (1:100, function (x)
+  {
+  mean(sapply(1:N, function(y)
+  {
+    sample(c(1,2,3,4,5,6),1) + sample(c(1,2,3,4,5,6),1)
+  }
+  ))
+})
+Augensumme
+hist(Augensumme, xlim = c(0.5,13.5), main = paste("Augensumme for N = ",N))
+```
+For N = 100
+```{r}
+N = 100
+Augensumme <- sapply (1:100, function (x)
+  {
+  mean(sapply(1:N, function(y)
+  {
+    sample(c(1,2,3,4,5,6),1) + sample(c(1,2,3,4,5,6),1)
+  }
+  ))
+})
+Augensumme
+hist(Augensumme, xlim = c(0.5,13.5), main = paste("Augensumme for N = ",N))
+```
+Wie verteilen sich die Mittelwerte, wenn N größer wird?
+
+```{r}
+Augensumme <- sapply (1:500, function (N)
+  {
+  mean(sapply(1:N, function(y)
+  {
+    sample(c(1,2,3,4,5,6),1) + sample(c(1,2,3,4,5,6),1)
+  }
+  ))
+})
+Augensumme
+plot(1:500,Augensumme, ylim = c(2, 12), main = "Mittelwert Augensumme wenn N größer wird");abline(h = 7, col = "red")
+```
+
+Wie verteilen sich die Standardabweichungen, wenn N größer wird?
+
+```{r}
+SD_Augensumme <- sapply (1:500, function (N)
+  {
+  sd(sapply(1:N, function(y)
+  {
+    sample(c(1,2,3,4,5,6),1) + sample(c(1,2,3,4,5,6),1)
+  }
+  ))
+})
+SD_Augensumme
+plot(1:500,SD_Augensumme, main = "SD Augensumme wenn N größer wird")
+```
+
+
+Was ist mit dem Standardfehler? (SE = standard error)
+```{r}
+SE_Augensumme <- sapply (1:500, function (N)
+  {
+  sd(sapply(1:N, function(y)
+  {
+    sample(c(1,2,3,4,5,6),1) + sample(c(1,2,3,4,5,6),1)
+  }
+  ))/sqrt(N)
+})
+SE_Augensumme
+plot(1:500,SE_Augensumme, main = "SE wenn N größer wird")
+lines(2.4/sqrt(seq(1,500,1)), lty = 2, col="blue", lwd=2)
+```
+# Zentraler Grenzwertsatz
+
+Sind die Ziehungen unabhängig?
+```{r}
+W1 <- sapply(1:100,function(x) {sample(c(1,2,3,4,5,6),1)})
+W2 <- sapply(1:100,function(x) {sample(c(1,2,3,4,5,6),1)})
+plot(W1,W2)
+```
+```{r}
+hist(W1)
+hist(W2)
+```
+
+
+
+

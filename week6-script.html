@@ -1,0 +1,178 @@
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+const W6_CHECKS   = ['check_w6_slides','check_w6_vid1','check_w6_vid2','check_w6_md'];
+const W6_QUIZ_IDS = ['w6_q_clt','w6_q_se','w6_q_ci','w6_q_plenum'];
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W6_CHECKS, ...W6_QUIZ_IDS.map(id => 'quiz_r_w6_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w6_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W6_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W6_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w6_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W6_CHECKS.length + W6_QUIZ_IDS.length;
+  let done = 0;
+  W6_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W6_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w6_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week6-progress-bar');
+  const txt = document.getElementById('week6-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: The Central Limit Theorem ───────────────────────────────────────
+function checkCltQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="clt1"]:checked'), q1f = document.getElementById('clt1-feedback');
+  if (q1 && q1.id === 'clt1b') { q1f.innerHTML = '✅ Correct! That is the core statement of the CLT.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ The CLT says sample means become approximately normal, no matter the shape of the original distribution.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="clt2"]:checked'), q2f = document.getElementById('clt2-feedback');
+  if (q2 && q2.id === 'clt2b') { q2f.innerHTML = '✅ Right! Independence of the underlying random variables is essential.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ The CLT explicitly requires the variables being averaged to be independent (and identically distributed).'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="clt3"]:checked'), q3f = document.getElementById('clt3-feedback');
+  if (q3 && q3.id === 'clt3b') { q3f.innerHTML = '✅ Exactly! Larger n means a better fit to normality.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ As n grows, the Q-Q plot fits the diagonal (normal) line better and better.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('clt-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w6_q_clt'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: Standard Error & Sample Size ────────────────────────────────────
+function checkSeQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="se1"]:checked'), q1f = document.getElementById('se1-feedback');
+  if (q1 && q1.id === 'se1a') { q1f.innerHTML = '✅ Correct! Larger samples give more precise (less variable) mean estimates.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ SE = σ/√n shrinks as n grows — more data means a more precise estimate of the mean.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="se2"]:checked'), q2f = document.getElementById('se2-feedback');
+  if (q2 && q2.id === 'se2a') { q2f.innerHTML = '✅ Right! The square root creates diminishing returns.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ Because SE scales with 1/√n, each extra observation matters less as n grows.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="se3"]:checked'), q3f = document.getElementById('se3-feedback');
+  if (q3 && q3.id === 'se3a') { q3f.innerHTML = '✅ Correct! Only the spread shrinks, not the center.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ The mean of sample means stays centered on the true population mean regardless of n.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('se-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w6_q_se'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Confidence Intervals ────────────────────────────────────────────
+function checkCiQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="ci1"]:checked'), q1f = document.getElementById('ci1-feedback');
+  if (q1 && q1.id === 'ci1b') { q1f.innerHTML = '✅ Correct! It is a statement about the long-run behavior of the method, not a single interval.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ A 95% CI means: repeat the sampling procedure many times, and ~95% of the resulting intervals contain the true parameter.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="ci2"]:checked'), q2f = document.getElementById('ci2-feedback');
+  if (q2 && q2.id === 'ci2a') { q2f.innerHTML = '✅ Right! Small samples with an estimated (not known) SD call for the t-distribution.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ With small n and an unknown population SD, the t-distribution accounts for the extra uncertainty.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="ci3"]:checked'), q3f = document.getElementById('ci3-feedback');
+  if (q3 && q3.id === 'ci3b') { q3f.innerHTML = '✅ Correct! Higher confidence (95% > 90%) needs a wider interval.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ To be more confident of capturing the true value, the interval must be wider — 95% CI > 90% CI in width.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('ci-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w6_q_ci'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 4: Plenum Demos — CLT in Action ────────────────────────────────────
+function checkPlenumCltQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="pd1"]:checked'), q1f = document.getElementById('pd1-feedback');
+  if (q1 && q1.id === 'pd1b') { q1f.innerHTML = '✅ Correct! Averaging more dice rolls concentrates the result around the true mean of 7.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ As N grows, the averaged dice sum becomes more concentrated and bell-shaped around 7 — CLT in action.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="pd2"]:checked'), q2f = document.getElementById('pd2-feedback');
+  if (q2 && q2.id === 'pd2b') { q2f.innerHTML = '✅ Exactly! Summing many independent uniform errors gives an approximately normal total error.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ Even though each error source is uniform, their sum becomes approximately normal — confirmed by the Q-Q plot.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="pd3"]:checked'), q3f = document.getElementById('pd3-feedback');
+  if (q3 && q3.id === 'pd3b') { q3f.innerHTML = '✅ Correct! That is the universal message of the CLT, demonstrated across Normal, Poisson and t starting distributions.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ The plenum shows the same pattern regardless of starting distribution: sample means cluster around the true mean with shrinking spread.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('plenum-clt-result');
+  if (score === total) { res.innerHTML = '🎉 Week 6 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w6_q_plenum'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>

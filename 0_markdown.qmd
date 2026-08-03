@@ -12,9 +12,9 @@ On this platform you will find everything in one place: lecture videos and slide
 
 Each week page guides you through three steps: **watch the videos & download the slides** → **work through the practical markdown** → **complete the comprehension quiz**. Your progress is tracked automatically.
 
-You have full freedom of choice: using the **button in the top right corner**, you can switch between the programming languages **R** and **Python** at any time. For weeks where Python materials are still being prepared, a placeholder will indicate what is coming.
+While the lecture videos and slides are only available for R, for the quizzes and markdown files you have full freedom of choice! Using the **button in the top right corner**, you can switch between the programming languages **R** and **Python** at any time.
 
-The [Basics in Coding](coding_basics.html) page provides a quick-reference for syntax in both R and Python — keep it open while working through the markdowns.
+The [Basics in Coding](coding_basics.html) page provides a quick-reference for syntax in both R and Python, keep it open while working through the markdowns.
 
 ---
 

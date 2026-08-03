@@ -1,0 +1,91 @@
+---
+title: "Plenum 13.11.25"
+author: "Carl Herrmann, Maïwen Caudron-Herger"
+date: "11/14/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Distributions
+
+Find all distributions
+
+```{r}
+help(distributions)
+```
+
+### density
+
+```{r}
+x = seq(-4,4,by=0.1)
+dnorm(x)
+```
+
+```{r}
+plot(x,dnorm(x),type='l',lwd=3,col='red');lines(x,dnorm(x,3,2),type='l',lwd=3,col='blue')
+```
+
+### Quantiles
+
+```{r}
+#p = seq(0,1,by=0.05)
+p = c(0,0.25,0.5,0.75,1)
+qnorm(p,3)
+```
+
+### Cumulative distribution
+
+```{r}
+x = seq(-4,4,by=0.1)
+P0 = pnorm(x)
+P0
+```
+
+```{r}
+P1 = pnorm(x,lower.tail = FALSE)
+P1
+```
+
+```{r}
+plot(x,P0,type='l',col='red',lwd=3,main='Cumulative distributions',xlab='x value',ylab='Probability');lines(x,P1,col='blue',lwd=3)
+```
+
+## Relationship between distributions: Poisson vs. Normal distribution
+
+We have seen that in certain cases, distributions become equivalent to each other. For example the Poisson distribution becomes equivalent to the normal distribution when $\lambda\to\infty$. Let's check that!
+
+First, we visualize the distributions
+
+```{r}
+l = 3; mu= l ; s = sqrt(l)
+x0 = seq(mu-3*s,mu+3*s,by=0.01);y0 = dnorm(x0,mean=mu,sd=s)
+x1 = 0:(10*l) ;y1 = dpois(x1,lambda=l);names(y1) = x1
+plot(x0,y0,col='red',lwd=3,type='l',ylim=c(0,max(c(y1,y0))));points(x1,y1,pch=19,col='blue')
+```
+
+Let's make a QQplot
+
+```{r}
+p = seq(0.005,0.995,by=0.005)
+x = qpois(p,lambda=l) # quantiles of the Poisson distribution
+y = qnorm(p,mean=mu,sd=s) # quantiles of the normal distribution
+plot(x,y,pch=20);abline(0,1)
+# Alternative
+qqnorm(qpois(p,lambda=l));qqline(qpois(p,lambda=l)) # Why does it look slightly different from the previous plot?
+```
+
+## Poisson vs Binomial
+
+```{r}
+lambda = 3
+n = 5; p = lambda/n
+x= 0:(5*lambda)
+y1 = dpois(x,lambda=lambda)
+y2 = dbinom(x,size=n,prob=p)
+#plot(x,y1,pch=19,col='blue',ylim=c(0,max(c(y1,y2))));points(x,y2,pch=19,col='red')
+plot(x,y2,pch=19,col='red');points(x,y1,pch=19,col='blue')
+```
+

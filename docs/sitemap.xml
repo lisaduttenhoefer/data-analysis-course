@@ -2,23 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/index.html</loc>
-    <lastmod>2026-06-10T06:57:35.695Z</lastmod>
+    <lastmod>2026-08-03T20:26:59.450Z</lastmod>
   </url>
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/admin.html</loc>
     <lastmod>2026-05-22T12:37:56.031Z</lastmod>
   </url>
   <url>
-    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/1_datentypen.html</loc>
-    <lastmod>2026-06-10T07:37:19.511Z</lastmod>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/8_nonparametric_proportion_tests.html</loc>
+    <lastmod>2026-08-03T20:24:01.968Z</lastmod>
   </url>
   <url>
-    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/0_markdown.html</loc>
-    <lastmod>2026-06-10T07:23:47.533Z</lastmod>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/6_clt_confidence_intervals.html</loc>
+    <lastmod>2026-08-03T20:19:50.127Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/4_unsupervised_learning.html</loc>
+    <lastmod>2026-08-03T19:12:30.511Z</lastmod>
   </url>
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/2_data_cleanup.html</loc>
-    <lastmod>2026-06-10T07:41:51.367Z</lastmod>
+    <lastmod>2026-06-10T12:28:27.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/0_markdown.html</loc>
+    <lastmod>2026-06-10T14:38:14.251Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/1_datentypen.html</loc>
+    <lastmod>2026-06-10T12:28:06.877Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/3_correlation_clustering.html</loc>
+    <lastmod>2026-08-03T19:56:42.446Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/5_probability_distributions.html</loc>
+    <lastmod>2026-08-03T20:16:57.231Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/7_hypothesis_testing.html</loc>
+    <lastmod>2026-08-03T20:21:56.171Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lisaduttenhoefer.github.io/data-analysis-course/9_regression_analysis.html</loc>
+    <lastmod>2026-08-03T20:26:00.209Z</lastmod>
   </url>
   <url>
     <loc>https://lisaduttenhoefer.github.io/data-analysis-course/coding_basics.html</loc>

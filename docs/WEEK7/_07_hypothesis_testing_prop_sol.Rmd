@@ -1,0 +1,625 @@
+---
+title: "Exercise Sheet 7"
+author: "Maiwen Caudron-Herger ; Carl Herrmann"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+We will work with a dataset of tumor expression data of patients with
+acute myeloid leukemia (AML) or acute lymphocytic leukemia (ALL):
+
+```{r, echo = FALSE}
+all.aml = read.delim('https://www.dropbox.com/scl/fi/q4rbpl3un6oqbbwoxe1qw/all.aml.cleaned.csv?rlkey=igwbna22d6hpdmw3os79zoy7z&dl=1',header=TRUE)
+all.aml.anno = readRDS(url("https://www.dropbox.com/scl/fi/0lqjh3jcskki2bb8hxwj6/all.aml.anno.rds?rlkey=cijsx39kr9gx9bjl6wzpmkgnz&dl=1"))
+#
+# we convert all.aml into a data matrix rather than a data.frame
+all.aml = data.matrix(all.aml)
+i.all = which(all.aml.anno$ALL.AML=='AML') ## we extract the row numbers of the ALL patients
+```
+
+# 0. Introduction and Objectives
+
+In the previous Exercise Sheet we have looked at **hypothesis testing**,
+learned how the process works and then learned about the t-test
+function.
+
+In this Exercise Sheet you will learn more about hypothesis testing,
+specifically about how to deal with **non-parametric tests** and
+**proportion testing**.
+
+You should be familiar with both these problems from the lecture.
+
+# 1. Non-parametric test
+
+What if the data is not normally distributed? In that case, we are no
+supposed to use the t-test for testing differences between mean values!
+Let us us see an example.
+
+At the beginning, we checked if the distribution of the data in the
+samples corresponds to a normal distribution.
+
+Check again the distribution of the expression values for the gene FOSB
+
+```{r}
+expression = all.aml['FOSB',]
+hist(expression,breaks = 30);qqnorm(expression);qqline(expression)
+```
+
+This looks everything but normal! In that case, we cannot apply the
+t.test, but need to apply a **non-parametric test** called the *Wilcoxon
+test* (check the lecture notes!). This test is performed not on the
+*values* (like the t-test) but on the *ranks* of these values (remember
+the difference between the Pearson's and the Spearman's correlations!)
+
+```{r}
+exp.all = all.aml['FOSB',i.all]
+exp.aml = all.aml['FOSB',-i.all]
+wilcox.test(exp.all,exp.aml)
+```
+
+Compare the obtained p-value with the p-value obtained if we would have
+used the t-test:
+
+```{r}
+exp.all = all.aml['FOSB',i.all]
+exp.aml = all.aml['FOSB',-i.all]
+t.test(exp.all,exp.aml)
+```
+
+The p-values are very different!! So is the difference of expression
+between ALL and AML patients for this gene significant or not taking
+$\alpha=0.05$?
+
+Here, we **cannot** trust the t-test due to the non-normality of the
+data! Hence, the correct p-value is the one from the Wilcoxon test.
+
+> Check another random gene!
+
+# 2. Proportion tests
+
+The t-test and wilcoxon tests are **tests of the mean**; we are
+comparing the means of two samples and looking for significant
+differences.
+
+But there are other hypothesis that one might want to test, related to
+the relationship between two categorical variables:
+
+-   is the proportion of men **significantly** higher in the patients
+    from Louisa compared to the ones from Buckingham?
+-   is the propotion of smothers in under 18 in Germany
+    **significantly** higher than in other european countries?
+
+The proportion test (Fisher Extact Test or chi2 test) are used to
+investigate the relationship between 2 categorical variables, starting
+from a **contingency table**. We will use a dataset with clinical
+informations about breast cancer patients.
+
+```{r}
+dat.brca = read.delim(url('https://www.dropbox.com/scl/fi/gy2jnj7o7p1398azkw6b1/gbsg_ba_ca.dat?rlkey=a0j003a1ehtt68usuyd32ta56&dl=1'), stringsAsFactors = FALSE)
+```
+
+Check which variables in this dataset are categorical/ordinal/numerical.
+We can now check if there is a significant relationship between some
+variables. For example, we can verify if the choice of treatment with
+tamoxifen (variable `hormon`) is related to the pre-/post-monopausal
+status (variable `meno`)
+
+First, we can build the contingency table table for these 2 variables:
+
+```{r}
+## build contingency table
+table(dat.brca$meno,dat.brca$hormon)
+```
+
+------------------------------------------------------------------------
+
+We can compute the **odds-ratio (OR)** for these two variables:
+
+```{r}
+CT = table(dat.brca$meno,dat.brca$hormon)
+
+OR = (CT[1,1]/CT[1,2])/(CT[2,1]/CT[2,2])
+OR
+```
+
+> How would the odds-ratio look like if you would transpose the matrix?
+
+Now we can run the one-sided Fisher Exact Test (FET). The H0/H1
+hypothesis are:
+
+-   H0: the odds-ratio is not significantly larger than one
+-   H1: the odds-ratio is significantly larger than one
+
+```{r}
+## build contingency table
+tab = table(dat.brca$meno,dat.brca$hormon)
+#
+## run the FET
+fisher.test(tab)
+```
+
+Check if your computation of the odds-ratio is right!
+
+> Run the two-sided Fisher test; first, formulate the hypothesis! Check
+> the p-values: what do you observe?
+
+We can also use the **chi-square test** to answer the same question. The
+Chi-square test compares the **observed** number of occurences in the
+contingency table to the **expected** number of occurences if there was
+no relationship between the variables.
+
+-   H0: the observed and expected occurences are not significantly
+    different
+-   H1: the observed and expected occurences are significantly different
+
+```{r}
+chisq.test(tab)
+```
+
+```{r}
+x = seq(0,10,by=0.1)
+y = dchisq(x,df=1)
+plot(x,y,type='l',col='red',lwd=2)
+```
+
+> Is this a one-sided or 2-sided test?
+
+Now we want to verify the impact of age on the grade of the tumor. We
+categorize the patients in under and over 40 year groups, and perform a
+chi-squared test:
+
+```{r}
+## contingency table
+tab = table(dat.brca$age>40,dat.brca$grade)
+tab
+##
+chisq.test(tab)
+```
+
+We can determine the table of expected counts:
+
+```{r}
+tot = apply(tab,2,sum) # this is the total number of occurences in the 3 categories, independently of age
+tot
+
+age = apply(tab,1,sum) # this is the total number of persons above/below 40, independently of grade
+age
+```
+
+```{r}
+tot.proportions = tot/sum(tot)
+
+tab.exp = sapply(tot.proportions,function(x) {x*age})
+tab.exp
+```
+
+> How would you compute the chi-square test statistic using the `tab`
+> and `tab.exp` tables?
+
+```{r}
+sum((tab-tab.exp)^2/tab.exp)
+```
+
+# 3. Power of a test
+
+We have seen that $\alpha$ controls the **False-positive rate**. False
+positive means seing an difference that is not there...
+
+The other type of error are **False-negatives**, i.e. **not seeing** a
+difference that actually exists!
+
+Let us imagine the following scenario:
+
+You are working in a clinical laboratory, testing patients for a rare
+genetic condition that affects enzyme levels in blood. The condition can
+be detected by measuring the concentration of a specific biomarker.
+
+**Healthy individuals** have an average biomarker level of
+$\mu_H = 50\,\mu g/L$ with a standard deviation of
+$\sigma = 12\,\mu g/L$.
+
+**Patients with the condition** have elevated levels:
+$\mu_D = 58\,\mu g/L$ with the same standard deviation
+$\sigma = 12\,\mu g/L$.
+
+Due to biological variation, you measure each patient's biomarker level
+$n=5$ times and use the average of these measurements for diagnosis.
+
+```{r}
+mu_healthy = 50    # mean biomarker level in healthy individuals
+mu_disease = 58    # mean biomarker level in diseased individuals
+sigma = 12         # standard deviation (same for both groups)
+n = 5              # number of replicate measurements per patient
+alpha = 0.05       # significance level
+```
+
+The **null hypothesis H0** is: *"The patient is healthy (does not have
+the condition)"*
+
+Here are the average biomarker measurements from your first 5 patients
+today:
+
+```{r}
+patient_means = c(56.3, 62.1, 51.8, 49.2, 54.7)
+```
+
+## What is the expected distribution of mean biomarker levels?
+
+For healthy individuals, when taking $n=5$ measurements and averaging
+them, the distribution of sample means is:
+
+```{r}
+x = seq(35, 65, by = 0.1)
+y = dnorm(x, mean = mu_healthy, sd = sigma/sqrt(n))
+plot(x, y, type='l', lwd=3, col='blue',
+     xlab='Average biomarker level (μg/L)',
+     ylab='Density',
+     main=paste0('Distribution of mean biomarker levels in healthy individuals (n=',n,' measurements)'))
+```
+
+## When would you reject H0 and diagnose the patient as having the condition?
+
+Using a one-sided test with $\alpha=0.05$:
+
+```{r}
+rejection_threshold = qnorm(p = alpha, mean = mu_healthy, sd = sigma/sqrt(n), lower.tail = FALSE)
+rejection_threshold
+```
+
+If a patient's average biomarker level is **above** this value, you
+would reject H0 and diagnose them with the condition (**positive**
+diagnosis). Otherwise, you would not reject H0 (**negative** diagnosis).
+
+```{r}
+plot(x, y, type='l', lwd=3, col='blue',
+     xlab='Average biomarker level (μg/L)',
+     ylab='Density',
+     main=paste0('Diagnostic decision rule (n=',n,' measurements)'))
+abline(v = rejection_threshold, lwd=3, lty=2, col='red')
+abline(v = patient_means, lty=3, lwd=2, col='darkgreen')
+legend('topright', 
+       legend=c('Healthy distribution','Diagnostic threshold','Patient measurements'),
+       col=c('blue','red','darkgreen'), lwd=c(3,3,2), lty=c(1,2,3))
+text(rejection_threshold, max(y)*0.8, 
+     paste0('Threshold = ', round(rejection_threshold,2)), 
+     pos=4, col='red')
+```
+
+Based on this threshold, patient 2 would be diagnosed with the
+condition, while the other 4 patients would be classified as healthy.
+
+## The problem: False negatives in diseased patients
+
+**However**, it turns out that all 5 of these patients actually **DO
+have the condition**! They were referred from a specialist clinic that
+had already identified them through genetic testing. So H0 is **false**
+for **all** of these patients.
+
+This means you failed to detect the disease in 4 out of 5 patients:
+**80% false-negatives**!
+
+This is the **Type II error rate (β)**, also called the **false-negative
+rate**. The complement **(1-β)** is called the **power** or
+**sensitivity** of the test.
+
+## Calculating the false-negative rate (β)
+
+Let's simulate what happens when we test 1000 patients who **actually
+have the condition**:
+
+```{r}
+### Parameters
+mu_healthy = 50
+mu_disease = 58
+sigma = 12
+n = 5
+alpha = 0.1
+
+### Simulate 1000 patients with the disease (n measurements each)
+patient_means = sapply(1:1000, function(i) {
+  measurements = rnorm(n, mean = mu_disease, sd = sigma)
+  mean(measurements)
+})
+
+### Diagnostic threshold for H0: "patient is healthy"
+rejection_threshold = qnorm(alpha, mean = mu_healthy, sd = sigma/sqrt(n), lower.tail = FALSE)
+
+### For how many patients did we FAIL to detect the disease?
+### H0 is rejected (disease detected) if mean is ABOVE threshold
+### H0 is NOT rejected (disease missed) if mean is BELOW threshold
+beta = sum(patient_means < rejection_threshold) / length(patient_means)
+
+cat(sprintf("False-negative rate (β) = %.1f%%\n", beta*100))
+cat(sprintf("Test power/sensitivity (1-β) = %.1f%%\n", (1-beta)*100))
+```
+
+This means our diagnostic test only detects the disease in about 43 % of
+patients who actually have it. This is a **very poor sensitivity** for a
+diagnostic test!
+
+## Visualizing Type II errors
+
+```{r}
+# Plot both distributions
+x = seq(35, 75, by = 0.1)
+y_healthy = dnorm(x, mean = mu_healthy, sd = sigma/sqrt(n))
+y_disease = dnorm(x, mean = mu_disease, sd = sigma/sqrt(n))
+
+plot(x, y_healthy, type='l', lwd=3, col='blue',
+     xlab='Average biomarker level (μg/L)',
+     ylab='Density',
+     main='Understanding false-negatives in diagnostic testing',
+     ylim=c(0, max(c(y_healthy, y_disease))))
+lines(x, y_disease, lwd=3, col='purple')
+abline(v = rejection_threshold, lwd=3, lty=2, col='red')
+
+# Shade the false-negative region
+x_fn = x[x < rejection_threshold]
+y_fn = dnorm(x_fn, mean = mu_disease, sd = sigma/sqrt(n))
+polygon(c(x_fn, rev(x_fn)), c(y_fn, rep(0, length(y_fn))), 
+        col=rgb(0.5,0,0.5,0.3), border=NA)
+
+legend('topright', 
+       legend=c('Healthy patients','Diseased patients','Diagnostic threshold','False-negative region'),
+       col=c('blue','purple','red',rgb(0.5,0,0.5,0.3)), 
+       lwd=c(3,3,3,10), lty=c(1,1,2,1))
+```
+
+The **purple shaded area** represents diseased patients whose biomarker
+levels fall below the threshold—these are the **false-negatives** that
+we fail to diagnose.
+
+> How does the false-negative rate β change with increasing number of
+> measurements per patient (i.e., increasing n)? Try n = 5, 10, 20, 50.
+
+> Try to find a combination of: - Effect size (difference between
+> μ_healthy and μ_disease) - Significance level (α) - Number of
+> measurements (n)
+>
+> ...so that the test has at least 80% power (β \< 20%) while
+> maintaining α = 0.05.
+
+------------------------------------------------------------------------
+
+**SOLUTION**
+
+* there are 3 parameters you can use to influence the power
+  * the size of the sample n (i.e. taking more samples from each patient)
+  * the significance alpha (i.e. relaxing the significance level)
+  * the effect size (e.g. choosing another enzyme with a greater difference between control and disease patients.)
+
+
+```{r}
+### Parameters
+mu_healthy = 50
+mu_disease = 58
+sigma = 12
+n = 14. # taking 14 samples from each patient...
+alpha = 0.05
+
+### Simulate 1000 patients with the disease (n measurements each)
+patient_means = sapply(1:1000, function(i) {
+  measurements = rnorm(n, mean = mu_disease, sd = sigma)
+  mean(measurements)
+})
+
+### Diagnostic threshold for H0: "patient is healthy"
+rejection_threshold = qnorm(alpha, mean = mu_healthy, sd = sigma/sqrt(n), lower.tail = FALSE)
+
+### For how many patients did we FAIL to detect the disease?
+### H0 is rejected (disease detected) if mean is ABOVE threshold
+### H0 is NOT rejected (disease missed) if mean is BELOW threshold
+beta = sum(patient_means < rejection_threshold) / length(patient_means)
+
+cat(sprintf("False-negative rate (β) = %.1f%%\n", beta*100))
+cat(sprintf("Test power/sensitivity (1-β) = %.1f%%\n", (1-beta)*100))
+```
+
+
+
+
+# Exercises
+
+#### Exercise 1
+
+1.  Check the expression of a random gene in the ALL/AML dataset. Are
+    the values normally distributed?
+2.  Run both tests on this gene. Is there a difference between p-values?
+    What did you expect?
+3.  Write a code that runs both tests on every gene and registers each
+    p-value in a vector.
+4.  Do a scatter plot of -log10(Pvalue of t-test) vs. -log10(Pvalue of
+    wilcoxon test); are there strong deviations?
+
+**SOLUTION**
+
+```{r}
+# select a random gene
+i = sample(1:nrow(all.aml),size=1)
+
+expression = all.aml[i,]
+hist(expression,breaks = 30,main=rownames(all.aml)[i]);qqnorm(expression);qqline(expression)
+
+```
+
+```{r}
+pt = t.test(all.aml[i,i.all],all.aml[i,-i.all])$p.value
+pw = wilcox.test(all.aml[i,i.all],all.aml[i,-i.all])$p.value
+pt;pw
+```
+
+```{r}
+pvals <- apply(all.aml,1,function(x) {
+  pt = t.test(x[i.all],x[-i.all])$p.value
+  pw = wilcox.test(x[i.all],x[-i.all])$p.value
+  return(c(pt,pw))
+})
+```
+
+```{r}
+plot(-log10(pvals[1,]),-log10(pvals[2,]),pch=19,xlab='-log10(T-test)',ylab='-log10(Wilcoxon)')
+```
+
+```{r}
+lpvals <- -log10(pvals)
+
+# check for which genes there is a big difference in pvalues
+top <- head(sort(apply(lpvals,2,function(x) {abs(x[1]-x[2])}),decreasing = TRUE))
+top
+```
+
+```{r}
+labels <- rownames(all.aml)
+labels[!(labels %in% names(top))] <- NA
+```
+
+```{r}
+plot(-log10(pvals[1,]),-log10(pvals[2,]),pch=19,xlab='-log10(T-test)',ylab='-log10(Wilcoxon)')
+text(-log10(pvals[1,]),-log10(pvals[2,]),labels,pos=1,cex=0.7)
+
+```
+
+```{r}
+boxplot(all.aml['CLU',i.all], all.aml['CLU',-i.all], outline = FALSE)
+
+```
+
+#### Exercise 2
+
+What test would you use for the following questions?
+
+-   A lotion company has to figure out whether their last product is
+    more likely to give men acne rather than females
+    
+**SOLUTION**: 2 categorical variables (men/women and acne/no-acne), so proportion test (chisquare or fischer)
+
+-   The department of education wants to find out whether social science
+    students have higher grades than science students
+    
+**SOLUTION** one categorical variable (social science / natural science) but the grades are continuous variables. So t-test or Wilcoxon test would be appropriate!
+    
+-   A biologist needs to find out whether a specific gene is more likely
+    to be silenced in lactose intolerant people.
+
+
+**SOLUTION** two categorical variable (tolerant/intolerant and silenced/non silences) so proportion test (chisquare or fischer)
+
+#### Exercise 3
+
+A pharmaceutical company has a new corona vaccine that works on 178 out
+of 200 patient. 75% of the batch of patients had been previously
+vaccinated against corona with another previous vaccine, and on 143 of
+these did the vaccine work. Is there a significant disproportion to say
+that the vaccine has a higher chance of working on people who are
+already vaccinated against corona if our p-value threshold is 0.05?
+
+**SOLUTION**
+
+We have two populations: previously vaccinated or not
+
+```{r}
+N = 200
+prev_vacc  = N*0.75
+non_prev_vacc = N - prev_vacc
+```
+
+For the previously vaccinated (n=150 patients), the new vaccine worked
+for 143 patients, so failed for 7. For the non-previously vaccinated (50
+patients), it hence worked for 35 patients (178-143) and failed for 15
+(50-35). So we can build the following contingency table:
+
+```{r}
+M = matrix(c(143,35,7,15),nrow=2,dimnames = list(c('prev vacc','non-prev. vacc'),c('works','fails')))
+M
+```
+
+We want to test if the new vaccine works better for vaccinated people,
+so we perform a one-sided test:
+
+```{r}
+fisher.test(M,alternative = 'greater')
+```
+
+------------------------------------------------------------------------
+
+# Going further
+
+What does it mean, when we say that we cannot trust the t-test when the
+data is not normaly distributed? Remember that the significance value
+$\alpha$ represents the **false-positive rate (FPR)**. Hence, with an
+$\alpha$ of 5%, if $H_0$ is true, we have a 5% risk of rejecting $H_0$
+(False-positive).
+
+Let us suppose that the $H_0$ Hypothesis: "The expectation values of two
+distributions are equal" holds. For example, we can generate 2 random
+samples, drawn from the same distribution, and perform a t-test. Here,
+$H_0$ would hold! What would the p-value be? Well, if we perform this
+10000 times, we would obtain a uniform distribution:
+
+```{r}
+set.seed(123)
+alpha = 0.05
+p = sapply(1:10000,function(i) {
+  x = rnorm(10);y = rnorm(10)
+  t.test(x,y)$p.value
+})
+hist(p,breaks=20);abline(v=alpha,col='red',lwd=3)
+```
+
+Approximately 5% of these p-values are smaller than $\alpha$ (see red
+line):
+
+```{r}
+sum(p<alpha)/length(p)
+```
+
+These would be **False positives**. So here, we indeed have $\alpha$ =
+False-positive rate!
+
+This also holds true for different values of $\alpha$:
+
+```{r}
+alphas = c(0.01,0.02,0.03,0.04,0.05,0.07,0.1,0.2)
+fpr = sapply(alphas,function(alpha) {
+  sum(p<alpha)/length(p)
+})
+plot(alphas,fpr,xlab='alpha',pch=19,col='red');abline(0,1,lwd=2,lty=2,col='lightgrey')
+```
+
+Now what if the distributions of values had same expectation values, but
+were not normaly distributed? Let's sample x and y from a
+t-Distribution, instead of a normal distribution:
+
+```{r}
+p = sapply(1:10000,function(i) {
+  x = rt(10,df=1);y = rt(10,df=1)
+  t.test(x,y)$p.value
+})
+hist(p,breaks=20);abline(v=alpha,col='red',lwd=3)
+```
+
+No longer a uniform distribution!! How often would we reject $H_0$ here?
+
+```{r}
+sum(p<alpha)/length(p)
+```
+
+Not exactly $\alpha$ anymore... What if we user different values of
+$\alpha$?
+
+```{r}
+alphas = c(0.01,0.02,0.03,0.04,0.05,0.07,0.1,0.2)
+fpr = sapply(alphas,function(alpha) {
+  sum(p<alpha)/length(p)
+})
+plot(alphas,fpr,xlab='alpha',pch=19,col='red');abline(0,1,lwd=2,lty=2,col='lightgrey')
+```
+
+So in the case of a non-normal distribution of the data, the
+false-positive rate (FPR) is no longer equal to the significance level
+$\alpha$... **Hence, we can no longer control the FPR with** $\alpha$!

@@ -110,60 +110,6 @@ ul.task-list li input[type="checkbox"] {
     }
     applyFinalStyle();
   });
-
-  // Sub-page access lock check (reads course_schedule from Supabase)
-  (function() {
-    const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
-
-    function getPageWeekInfo() {
-      const path = window.location.pathname;
-      // Exercise pages: .../exercises/week{n}_exercises.html
-      const exMatch = path.match(/week(\d+)_exercises/);
-      if (exMatch) return { week: parseInt(exMatch[1]), type: 'exercises' };
-      // Content pages: .../{n}_something.html (n >= 1)
-      const contentMatch = path.match(/\/(\d+)_[^/]+\.html/);
-      if (contentMatch) {
-        const n = parseInt(contentMatch[1]);
-        if (n >= 1) return { week: n, type: 'content' };
-      }
-      return null;
-    }
-
-    function redirectToRoot() {
-      const pathParts = window.location.pathname.split('/');
-      const isExercise = window.location.pathname.includes('/exercises/');
-      const depth = isExercise ? 2 : 1;
-      const rootPath = pathParts.slice(0, pathParts.length - depth).join('/') + '/';
-      window.location.href = window.location.origin + rootPath;
-    }
-
-    function doCheck() {
-      if (typeof supabase === 'undefined') { setTimeout(doCheck, 100); return; }
-      const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      const pageInfo = getPageWeekInfo();
-      client.from('course_schedule')
-        .select('content_unlocked, exercises_unlocked')
-        .eq('week', pageInfo.week)
-        .single()
-        .then(({ data }) => {
-          if (!data) { redirectToRoot(); return; }
-          const unlocked = pageInfo.type === 'content'
-            ? data.content_unlocked
-            : data.exercises_unlocked;
-          if (!unlocked) redirectToRoot();
-        });
-    }
-
-    const pageInfo = getPageWeekInfo();
-    if (!pageInfo) return; // index, admin, getting-started — no locking
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', doCheck);
-    } else {
-      doCheck();
-    }
-  })();
 </script>
 <script src="coi-serviceworker.js"></script>
 
@@ -248,6 +194,48 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Week 2: Data Cleanup</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_correlation_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 3: Correlation &amp; Clustering</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_unsupervised_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 4: Hierarchical Clustering &amp; PCA</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_probability_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 5: Probability Distributions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_clt_confidence_intervals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 6: CLT &amp; Confidence Intervals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_hypothesis_testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 7: Hypothesis Testing &amp; t-Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_nonparametric_proportion_tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 8: Non-Parametric &amp; Proportion Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9_regression_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 9: Regression Analysis</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -276,60 +264,18 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <div class="global-progress-banner relative-box" id="progress-tile">
-  <div id="progress-content">
-    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
-      <div>
-        <h2 style="margin-bottom: 2px; font-weight: 800; color: white;" class="anchored">Your Progress</h2>
-        <div id="gp-subtext" style="opacity:0.85;font-size:0.95rem; color: white;">Loading…</div>
-      </div>
-      <div id="auth-status"></div>
-    </div>
-    <div class="d-flex align-items-center gap-3 mt-3">
-      <div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);">
-        <div id="global-progress-bar" class="progress-bar" role="progressbar" style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"></div>
-      </div>
-      <div style="font-size:2.4rem;font-weight:900;opacity:0.9; line-height: 1; color: white;" id="gp-percent-badge">0%</div>
+  <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+    <div>
+      <h2 style="margin-bottom: 2px; font-weight: 800; color: white;" class="anchored">Your Progress</h2>
+      <div id="gp-subtext" style="opacity:0.85;font-size:0.95rem; color: white;">0 weeks completed</div>
     </div>
   </div>
-
-  <!-- Login Button Overlay -->
-  <div id="login-overlay" class="centered-overlay-btn" style="display:none;">
-     <button onclick="sbLogin()" class="btn btn-lg" style="background:white; color:#1a4d1a; border:none; border-radius:50px; font-weight:800; padding:12px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        🐙 LOGIN WITH GITHUB
-     </button>
-  </div>
-</div>
-
-<!-- LEADERBOARD KACHEL -->
-<div id="leaderboard-section" class="global-progress-banner relative-box" style="margin-top: 2rem; background: linear-gradient(135deg, #1a4d1a 0%, #2d7a2d 100%); min-height: 150px;">
-  <div id="leaderboard-content">
-     <h3 style="color:white; font-weight:800; margin-bottom:1.5rem;" class="anchored">🏆 Class Leaderboard</h3>
-     <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
-     <div id="leaderboard-expand-container" style="text-align: center; margin-top: 15px; display: none;">
-        <button onclick="toggleLeaderboard()" id="btn-expand" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 5px 20px;">SHOW ALL</button>
-     </div>
-  </div>
-
-  <!-- Nickname Button Overlay -->
-  <div id="nickname-overlay-btn" class="centered-overlay-btn" style="display:none;">
-     <button onclick="showNicknameModal()" class="btn btn-lg" style="background:#a8d5a2; color:#1a4d1a; border:none; border-radius:50px; font-weight:800; padding:12px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        🥇 CHOOSE NICKNAME
-     </button>
-  </div>
-</div>
-
-<!-- Nickname Modal -->
-<div id="nickname-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; align-items:center; justify-content:center;">
-  <div style="background:white; padding:40px; border-radius:20px; text-align:center; max-width:450px; width:90%;">
-    <h2 style="color:#1a4d1a; font-weight:800;" class="anchored">Almost there!</h2>
-    <p style="color:#555; margin-bottom:25px;">Pick a nickname to join the leaderboard.</p>
-    <input type="text" id="nickname-input" placeholder="Your Nickname" maxlength="15" style="width:100%; padding:15px; border-radius:50px; border:2px solid #eee; margin-bottom:20px; font-size:1.1rem; text-align:center;">
-    <button onclick="saveNickname()" class="btn btn-lg w-100" style="background:#1a4d1a; color:white; border-radius:50px; font-weight:800; padding:12px;">
-      SAVE &amp; START
-    </button>
+  <div class="d-flex align-items-center gap-3 mt-3">
+    <div class="progress" style="height:22px; flex-grow: 1; background-color: rgba(255,255,255,0.2);">
+      <div id="global-progress-bar" class="progress-bar" role="progressbar" style="width:0%;background-color:#a8d5a2;color:#1a4d1a;font-weight:900;border-radius:50px;"></div>
+    </div>
+    <div style="font-size:2.4rem;font-weight:900;opacity:0.9; line-height: 1; color: white;" id="gp-percent-badge">0%</div>
   </div>
 </div>
 
@@ -337,139 +283,53 @@ ul.task-list li input[type="checkbox"] {
 <div class="grid" id="week-cards-grid" style="align-items: stretch;"></div>
 
 <script>
-const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
-
-let sbClient;
-let _initialized = false;
-let _isRendering = false;
-let allLeaderboardData = [];
-let isLeaderboardExpanded = false;
-let courseSchedule = {};
-
 const WEEKS = [
-  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", checkIds:["check_w1_slides","check_w1_vid1","check_w1_vid2","check_w1_vid3","check_w1_md1","check_w1_md2"], quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"], lang:"r" },
-  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", checkIds:["check_w2_slides","check_w2_vid1","check_w2_vid2","check_w2_vid3","check_w2_vid4","check_w2_markdown"], quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
-  { n:3, title:"Week 3", topics:"Coming soon" },
-  { n:4, title:"Week 4", topics:"Coming soon" },
-  { n:5, title:"Week 5", topics:"Coming soon" },
-  { n:6, title:"Week 6", topics:"Coming soon" },
-  { n:7, title:"Week 7", topics:"Coming soon" },
-  { n:8, title:"Week 8", topics:"Coming soon" },
-  { n:9, title:"Week 9", topics:"Coming soon" }
+  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", unlocked:true, checkIds:["check_w1_slides","check_w1_vid1","check_w1_vid2","check_w1_vid3","check_w1_md1","check_w1_md2"], quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"], lang:"r" },
+  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", unlocked:true, checkIds:["check_w2_slides","check_w2_vid1","check_w2_vid2","check_w2_vid3","check_w2_vid4","check_w2_markdown"], quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
+  { n:3, title:"Week 3: Correlation & Clustering", topics:"Pearson vs Spearman · Missing Data · Intro to Clustering · K-means", href:"3_correlation_clustering.html", unlocked:true, checkIds:["check_w3_slides","check_w3_vid1","check_w3_vid2","check_w3_vid3","check_w3_vid4","check_w3_md"], quizIds:["w3_q_correlation","w3_q_missing","w3_q_clustering","w3_q_kmeans","w3_q_plenum"], lang:"r" },
+  { n:4, title:"Week 4: Hierarchical Clustering & PCA", topics:"Dendrograms · Linkage Methods · PCA · Scree Plots · Loadings", href:"4_unsupervised_learning.html", unlocked:true, checkIds:["check_w4_slides","check_w4_vid1","check_w4_vid2","check_w4_vid3","check_w4_md"], quizIds:["w4_q_hclust","w4_q_pca","w4_q_together"], lang:"r" },
+  { n:5, title:"Week 5: Probability Distributions", topics:"Random Variables · p/d/q/r Functions · Binomial · Poisson · Normal · t-Distribution", href:"5_probability_distributions.html", unlocked:true, checkIds:["check_w5_slides","check_w5_vid1","check_w5_vid2","check_w5_vid3","check_w5_md"], quizIds:["w5_q_functions","w5_q_binomial","w5_q_poisson","w5_q_normal","w5_q_relationships"], lang:"r" },
+  { n:6, title:"Week 6: CLT & Confidence Intervals", topics:"Central Limit Theorem · Standard Error · Confidence Intervals", href:"6_clt_confidence_intervals.html", unlocked:true, checkIds:["check_w6_slides","check_w6_vid1","check_w6_vid2","check_w6_md"], quizIds:["w6_q_clt","w6_q_se","w6_q_ci","w6_q_plenum"], lang:"r" },
+  { n:7, title:"Week 7: Hypothesis Testing & t-Tests", topics:"H0/H1 · One- vs Two-Sided · t-Test · Normality", href:"7_hypothesis_testing.html", unlocked:true, checkIds:["check_w7_slides","check_w7_vid1","check_w7_vid2","check_w7_md"], quizIds:["w7_q_hypotheses","w7_q_ttest","w7_q_normality","w7_q_null"], lang:"r" },
+  { n:8, title:"Week 8: Non-Parametric & Proportion Tests", topics:"Wilcoxon Test · Fisher/Chi-Square · Power of a Test", href:"8_nonparametric_proportion_tests.html", unlocked:true, checkIds:["check_w8_slides","check_w8_vid1","check_w8_vid2","check_w8_vid3","check_w8_md"], quizIds:["w8_q_nonparam","w8_q_proportion","w8_q_power","w8_q_errors"], lang:"r" },
+  { n:9, title:"Week 9: Regression Analysis", topics:"Linear Regression · Multiple Regression · RMSE · F-Test", href:"9_regression_analysis.html", unlocked:true, checkIds:["check_w9_slides","check_w9_vid1","check_w9_vid2","check_w9_vid3","check_w9_vid4","check_w9_vid5","check_w9_md"], quizIds:["w9_q_simple","w9_q_multiple","w9_q_evaluation","w9_q_ftest"], lang:"r" }
 ];
 
-// 2. INITIALISIERUNG
-async function initSupabase() {
-  if (typeof supabase === 'undefined') {
-    setTimeout(initSupabase, 100);
-    return;
-  }
-  if (!_initialized) {
-    try {
-      sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      _initialized = true;
-      console.log("Supabase initialized successfully");
-      
-      sbClient.auth.onAuthStateChange((event) => {
-        console.log("Auth event:", event);
-        render();
-      });
-    } catch (err) {
-      console.error("Supabase Init Error:", err);
-    }
-  }
-  render();
+function getLang() {
+  try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e) { return 'python'; }
 }
 
-initSupabase();
-
-// 3. RENDER FUNKTION
-async function render() {
-  if (_isRendering || !sbClient) return;
-  _isRendering = true;
-
-  try {
-    // Load course schedule (public – no auth needed)
-    const { data: scheduleData } = await sbClient.from('course_schedule').select('*');
-    if (scheduleData) {
-      courseSchedule = {};
-      scheduleData.forEach(row => { courseSchedule[row.week] = row; });
-    }
-
-    const { data: { session } } = await sbClient.auth.getSession();
-    const user = session?.user || null;
-
-    // 1. Elemente definieren
-    const loginOverlay = document.getElementById('login-overlay');
-    const nickOverlayBtn = document.getElementById('nickname-overlay-btn');
-    const cardsGrid = document.getElementById('week-cards-grid');
-    const mainContent = document.querySelector('main.content');
-    const progContent = document.getElementById('progress-content');
-    const leadContent = document.getElementById('leaderboard-content');
-
-    let dbData = null;
-
-    // 2. Logik-Zweige
-    if (!user) {
-      // --- NICHT EINGELOGGT ---
-      if (loginOverlay) loginOverlay.style.display = 'flex';
-      if (nickOverlayBtn) nickOverlayBtn.style.display = 'none';
-      if (cardsGrid) cardsGrid.classList.add('auth-locked-cards');
-      if (mainContent) mainContent.classList.add('content-locked-down');
-      if (progContent) progContent.classList.add('tile-locked');
-    } 
-    else {
-      // --- EINGELOGGT ---
-      if (loginOverlay) loginOverlay.style.display = 'none'; // Versteckt Login-Button
-      if (cardsGrid) cardsGrid.classList.remove('auth-locked-cards');
-      if (mainContent) mainContent.classList.remove('content-locked-down');
-      if (progContent) progContent.classList.remove('tile-locked');
-
-      // Nickname-Check für das Leaderboard
-      const { data: profile } = await sbClient.from('profiles').select('nickname').eq('id', user.id).maybeSingle();
-      
-      if (!profile || !profile.nickname) {
-        if (nickOverlayBtn) nickOverlayBtn.style.display = 'flex';
-        if (leadContent) leadContent.classList.add('tile-locked');
-      } else {
-        if (nickOverlayBtn) nickOverlayBtn.style.display = 'none'; // Versteckt Nickname-Button
-        if (leadContent) leadContent.classList.remove('tile-locked');
-        loadLeaderboard();
-      }
-
-      // Progress-Daten laden
-      const { data: rows } = await sbClient.from('progress').select('key, value').eq('id', user.id);
-      if (rows) {
-        dbData = rows.reduce((acc, r) => { acc[r.key] = (r.value === 'true'); return acc; }, {});
-      }
-    }
-
-    // 3. UI Zeichnen
-    updateAuthUI(user);
-    renderWeekCards(dbData); // Diese Funktion MUSS dbData verarbeiten können
-    updateGlobalUI(dbData);
-
-  } catch (err) {
-    console.error("Render Error:", err);
-  } finally {
-    _isRendering = false;
-  }
+function calculateWeekProgress(week) {
+  const hasChunks = !!week.chunkCount;
+  const hasChecks = !!(week.checkIds?.length);
+  if (!hasChunks && !hasChecks) return null;
+  const lang = week.lang || getLang();
+  const total = (week.chunkCount || 0) + (week.checkIds?.length || 0) + (week.quizIds?.length || 0);
+  let done = 0;
+  const isDone = (key) => { try { return localStorage.getItem(key) === 'true'; } catch(e) { return false; } };
+  if (hasChunks) for (let i = 1; i <= week.chunkCount; i++) if (isDone(`chunk_${lang}_w${week.n}_c${i}`)) done++;
+  week.checkIds?.forEach(cid => { if (isDone(cid)) done++; });
+  week.quizIds?.forEach(qid => { if (isDone(`quiz_${lang}_w${week.n}_${qid}`)) done++; });
+  return { done, total, pct: Math.round((done / total) * 100) };
 }
 
-function renderWeekCards(dbData) {
+function statusLabel(p, locked) {
+  if (locked) return '🔒 Locked';
+  if (!p || p.done === 0) return '⬜ Not started';
+  return p.pct === 100 ? '✅ Completed' : `🔄 ${p.done}/${p.total} done`;
+}
+
+function renderWeekCards() {
   const grid = document.getElementById('week-cards-grid');
   if (!grid) return;
-  grid.innerHTML = ''; // Leert das Grid bevor neu gezeichnet wird
+  grid.innerHTML = '';
 
   WEEKS.forEach(week => {
-    // Falls dbData null ist (Gast), wird calculateWeekProgress damit umgehen
-    const p = calculateWeekProgress(week, dbData);
+    const p = calculateWeekProgress(week);
     const col = document.createElement('div');
     col.className = 'g-col-12 g-col-sm-6 g-col-md-4';
 
-    const sched = courseSchedule[week.n];
-    const contentLocked = !(sched ? sched.content_unlocked : false);
+    const contentLocked = !week.unlocked;
 
     const card = document.createElement('div');
     card.className = 'week-card p-3' + (contentLocked ? ' opacity-50' : '');
@@ -490,11 +350,11 @@ function renderWeekCards(dbData) {
   });
 }
 
-function updateGlobalUI(dbData) {
+function updateGlobalUI() {
   let total = 0, done = 0, completedW = 0;
-  WEEKS.filter(w => courseSchedule[w.n]?.content_unlocked && (w.chunkCount || w.checkIds?.length)).forEach(w => {
-    const p = calculateWeekProgress(w, dbData);
-    if (p) { total += p.total; done += p.done; if(p.pct === 100) completedW++; }
+  WEEKS.filter(w => w.unlocked && (w.chunkCount || w.checkIds?.length)).forEach(w => {
+    const p = calculateWeekProgress(w);
+    if (p) { total += p.total; done += p.done; if (p.pct === 100) completedW++; }
   });
   const gPct = total > 0 ? Math.round((done / total) * 100) : 0;
   document.getElementById('global-progress-bar').style.width = gPct + '%';
@@ -502,121 +362,8 @@ function updateGlobalUI(dbData) {
   document.getElementById('gp-subtext').innerText = `${completedW} weeks completed`;
 }
 
-async function loadLeaderboard() {
-  const { data, error } = await sbClient.from('leaderboard').select('*');
-  if (!error && data) {
-    allLeaderboardData = data;
-    renderLeaderboard();
-  }
-}
-
-function renderLeaderboard() {
-  const container = document.getElementById('leaderboard-list');
-  const displayData = isLeaderboardExpanded ? allLeaderboardData : allLeaderboardData.slice(0, 5);
-  document.getElementById('leaderboard-expand-container').style.display = allLeaderboardData.length > 5 ? 'block' : 'none';
-
-  container.innerHTML = displayData.map((entry, index) => {
-    const icons = ["🥇", "🥈", "🥉"];
-    const rank = index < 3 ? icons[index] : `${index + 1}.`;
-    return `
-      <div class="leaderboard-row" style="color: white; margin-bottom: 10px;">
-        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-          <span style="font-weight: 700;">${rank} ${entry.nickname}</span>
-          <span>${entry.percent}%</span>
-        </div>
-        <div class="progress" style="height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px;">
-          <div class="progress-bar" style="width: ${entry.percent}%; background-color: #a8d5a2;"></div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function toggleLeaderboard() {
-  isLeaderboardExpanded = !isLeaderboardExpanded;
-  renderLeaderboard();
-  document.getElementById('btn-expand').innerText = isLeaderboardExpanded ? "SHOW LESS" : "SHOW ALL";
-}
-
-function showNicknameModal() { document.getElementById('nickname-modal').style.display = 'flex'; }
-
-async function saveNickname() {
-  const input = document.getElementById('nickname-input');
-  const name = input.value.trim();
-  if (name.length < 3) return alert("Name too short!");
-  
-  if (!sbClient) return;
-  const user = (await sbClient.auth.getUser()).data.user;
-  
-  const { error } = await sbClient.from('profiles').upsert({ id: user.id, nickname: name });
-  if (error) {
-    alert("Name taken or error!");
-  } else {
-    document.getElementById('nickname-modal').style.display = 'none';
-    render();
-  }
-}
-
-function getLang() {
-  try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e) { return 'python'; }
-}
-
-function calculateWeekProgress(week, dbData) {
-  const hasChunks = !!week.chunkCount;
-  const hasChecks = !!(week.checkIds?.length);
-  if (!hasChunks && !hasChecks) return null;
-  const lang = week.lang || getLang();
-  const total = (week.chunkCount || 0) + (week.checkIds?.length || 0) + (week.quizIds?.length || 0);
-  let done = 0;
-  // Check Supabase data first, fall back to localStorage
-  const isDone = (key) => dbData?.[key] === true || localStorage.getItem(key) === 'true';
-  if (hasChunks) for (let i = 1; i <= week.chunkCount; i++) if (isDone(`chunk_${lang}_w${week.n}_c${i}`)) done++;
-  week.checkIds?.forEach(cid => { if (isDone(cid)) done++; });
-  week.quizIds?.forEach(qid => { if (isDone(`quiz_${lang}_w${week.n}_${qid}`)) done++; });
-  return { done, total, pct: Math.round((done / total) * 100) };
-}
-
-function statusLabel(p, locked) {
-  if (locked) return '🔒 Locked';
-  if (!p || p.done === 0) return '⬜ Not started';
-  return p.pct === 100 ? '✅ Completed' : `🔄 ${p.done}/${p.total} done`;
-}
-
-function updateAuthUI(user) {
-  const statusContainer = document.getElementById('auth-status');
-  if (!statusContainer) return;
-
-  if (user) {
-    // Hole den Namen aus den GitHub-Metadaten oder nimm die E-Mail
-    const userName = user.user_metadata?.user_name || user.user_metadata?.full_name || user.email.split('@')[0];
-    
-    statusContainer.innerHTML = `
-      <div style="display:flex; align-items:center; gap:12px;">
-        <span style="font-size:0.9rem; font-weight:700; color:white;">👋 ${userName}</span>
-        <button onclick="sbLogout()" class="btn btn-sm" 
-                style="background:rgba(255,255,255,0.2); color:white; border:1px solid white; border-radius:50px; padding:4px 15px; font-weight:700;">
-          LOGOUT
-        </button>
-      </div>
-    `;
-  } else {
-    // Wenn nicht eingeloggt, bleibt der Bereich leer (da der Button ja im Overlay ist)
-    statusContainer.innerHTML = '';
-  }
-}
-
-async function sbLogin() { 
-  if (!sbClient) return alert("Supabase not ready!");
-  await sbClient.auth.signInWithOAuth({ 
-    provider: 'github', 
-    options: { redirectTo: window.location.origin + window.location.pathname } 
-  }); 
-}
-
-async function sbLogout() { 
-  await sbClient.auth.signOut(); 
-  sessionStorage.removeItem('sb-session'); 
-  window.location.reload(); 
-}
+renderWeekCards();
+updateGlobalUI();
 </script>
 
 

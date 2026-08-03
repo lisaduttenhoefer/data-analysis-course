@@ -1,0 +1,298 @@
+---
+title: "Week 4: Hierarchical Clustering & PCA"
+format:
+  html:
+    include-in-header:
+      - language-switch.html
+    include-after-body:
+      - week4-script.html
+---
+
+```{=html}
+<style>
+  .step-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
+  }
+  .step-badge {
+    background: #1a4d1a; color: white; border-radius: 50%;
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .step-header h2 { margin: 0; font-size: 1.35rem; }
+
+  .resource-list { list-style: none; padding: 0; margin: 0; }
+  .resource-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: #f8f9fa; border: 2px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
+  .resource-item input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
+  }
+  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
+  .resource-item label a { color: #1a4d1a; font-weight: 600; }
+  .resource-item label a:hover { text-decoration: underline; }
+
+  .quiz-card {
+    background: #f8f9fa; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 1.5rem;
+    border-left: 4px solid #1a4d1a;
+  }
+  .quiz-done-badge {
+    display: none; background: #a8d5a2; color: #1a4d1a;
+    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
+    font-weight: 800; margin-left: 10px; vertical-align: middle;
+  }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
+</style>
+
+<!-- Progress bar -->
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 4 Progress</strong>
+      <div id="week4-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week4-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+</div>
+```
+
+This week concludes unsupervised learning: **hierarchical clustering** (building dendrograms from a distance matrix) and **Principal Component Analysis (PCA)** for dimensionality reduction. Use the language toggle above to switch between R and Python.
+
+---
+
+```{=html}
+<!-- ─── STEP 1: Videos & Slides (shared) ─────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">1</div>
+  <h2>Watch the Lecture Videos &amp; Download the Slides</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Watch the three short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
+
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w4_slides" onchange="markCheckDone(this)">
+    <label for="check_w4_slides">
+      <a href="WEEK3/week3_lecture_slides.pdf" download>Week 4 – Hierarchical Clustering &amp; PCA (PDF slides)</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w4_vid1" onchange="markCheckDone(this)">
+    <label for="check_w4_vid1">
+      <a href="https://youtu.be/SK0dpUXoZI8" target="_blank" rel="noopener">Video 1/3 – 4.3 Hierarchical clustering</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w4_vid2" onchange="markCheckDone(this)">
+    <label for="check_w4_vid2">
+      <a href="https://youtu.be/OiQdxG9I0Tk" target="_blank" rel="noopener">Video 2/3 – 4.4.1 PCA</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w4_vid3" onchange="markCheckDone(this)">
+    <label for="check_w4_vid3">
+      <a href="https://youtu.be/LrSqVYHi23g" target="_blank" rel="noopener">Video 3/3 – 4.4.2 PCA (part 2)</a>
+    </label>
+  </li>
+</ul>
+
+<!-- Python note -->
+<div class="lang-python">
+  <div class="lang-note">
+    <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — dendrograms, linkage methods, principal components — apply equally to Python (e.g. <code>scipy.cluster.hierarchy</code>, <code>sklearn.decomposition.PCA</code>). See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+  </div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 2: Markdown ──────────────────────────────────────────────────── -->
+
+<!-- R version -->
+<div class="lang-r">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Markdown</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w4_md" onchange="markCheckDone(this)">
+    <label for="check_w4_md">
+      <a href="WEEK3/_03_unsupervised_learning.Rmd" download="_03_unsupervised_learning.Rmd">Week 4 – Hierarchical Clustering &amp; PCA (R Markdown)</a>
+      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
+    </label>
+  </li>
+</ul>
+<blockquote style="margin-top:1rem;">
+  <p><strong>Datasets:</strong> This sheet uses a leukemia gene expression dataset (ALL vs. AML) for hierarchical clustering, and the Breast Cancer Wisconsin dataset for PCA. Both are loaded directly inside the R Markdown file — no separate download needed.</p>
+</blockquote>
+</div>
+
+<!-- Python version -->
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Notebook</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Notebook — Coming Soon</p>
+  <p style="color:#555;margin-bottom:0;">A Python version of this week's exercise (hierarchical clustering with <code>scipy</code>, PCA with <code>scikit-learn</code>) is in preparation. Use the R Markdown material for now — the underlying concepts transfer directly.</p>
+</div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 3: Quiz ───────────────────────────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">3</div>
+  <h2>Comprehension Quiz</h2>
+</div>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+
+<!-- R quizzes -->
+<div class="lang-r">
+
+<h3>Quiz 1: Hierarchical Clustering <span id="quiz-done-w4_q_hclust" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What is the key difference between k-means and hierarchical clustering?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hc1" id="hc1a"><label class="form-check-label" for="hc1a">They are mathematically identical, just different function names</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hc1" id="hc1b"><label class="form-check-label" for="hc1b">K-means requires the number of clusters upfront; hierarchical clustering builds a dendrogram you can cut at any level afterwards</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="hc1" id="hc1c"><label class="form-check-label" for="hc1c">Hierarchical clustering can only be used on 2 variables at a time</label></div>
+    <div id="hc1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What property must a distance matrix always have, e.g. for use in <code>pheatmap()</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hc2" id="hc2a"><label class="form-check-label" for="hc2a">It must be symmetrical — the distance from A to B equals the distance from B to A</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hc2" id="hc2b"><label class="form-check-label" for="hc2b">It must only contain values between 0 and 1</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="hc2" id="hc2c"><label class="form-check-label" for="hc2c">It must be based on Euclidean distance only</label></div>
+    <div id="hc2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Why do we often select only the top 25% most variable genes before clustering samples?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hc3" id="hc3a"><label class="form-check-label" for="hc3a">To reduce file size only, it has no effect on the analysis</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hc3" id="hc3b"><label class="form-check-label" for="hc3b">Low-variance genes barely differ between samples, so they add mostly noise rather than useful signal</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="hc3" id="hc3c"><label class="form-check-label" for="hc3c"><code>pheatmap()</code> cannot handle more than 100 rows</label></div>
+    <div id="hc3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkHclustQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="hclust-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 2: Principal Component Analysis (PCA) <span id="quiz-done-w4_q_pca" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What is the main goal of PCA?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pc1" id="pc1a"><label class="form-check-label" for="pc1a">To remove every correlated variable from the dataset</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pc1" id="pc1b"><label class="form-check-label" for="pc1b">To reduce dimensionality by finding new, uncorrelated variables (principal components) that capture as much variance as possible</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pc1" id="pc1c"><label class="form-check-label" for="pc1c">To impute missing values automatically</label></div>
+    <div id="pc1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In <code>prcomp(bc_data, center = TRUE, scale = TRUE)</code>, why do we scale the data?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pc2" id="pc2a"><label class="form-check-label" for="pc2a">Scaling is mandatory syntax with no statistical purpose</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pc2" id="pc2b"><label class="form-check-label" for="pc2b">So variables measured on larger numeric scales don't dominate the PCA just because of their range</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pc2" id="pc2c"><label class="form-check-label" for="pc2c">So the data gets converted to ranks, like Spearman correlation</label></div>
+    <div id="pc2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> What does a scree plot show?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pc3" id="pc3a"><label class="form-check-label" for="pc3a">The pairwise correlation between all original variables</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pc3" id="pc3b"><label class="form-check-label" for="pc3b">How much variance each principal component explains, usually shown in decreasing order</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pc3" id="pc3c"><label class="form-check-label" for="pc3c">The cluster assignment of each patient</label></div>
+    <div id="pc3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkPcaQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="pca-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 3: Putting it together <span id="quiz-done-w4_q_together" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> In the PCA loadings (<code>pca_result$rotation</code>), what does a large positive value for a variable on PC1 mean?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt1" id="pt1a"><label class="form-check-label" for="pt1a">That variable has too many missing values</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt1" id="pt1b"><label class="form-check-label" for="pt1b">That variable contributes strongly and positively to PC1</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pt1" id="pt1c"><label class="form-check-label" for="pt1c">That variable is uncorrelated with everything else</label></div>
+    <div id="pt1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> How can PCA be combined with k-means clustering?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt2" id="pt2a"><label class="form-check-label" for="pt2a">They cannot be combined</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt2" id="pt2b"><label class="form-check-label" for="pt2b">Run k-means on the first few principal components (<code>pca$x</code>) instead of the original variables</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pt2" id="pt2c"><label class="form-check-label" for="pt2c">PCA replaces the need for clustering entirely</label></div>
+    <div id="pt2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> What is one key difference between what hierarchical clustering and PCA each produce?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt3" id="pt3a"><label class="form-check-label" for="pt3a">Hierarchical clustering produces a dendrogram/tree of similarity; PCA produces new continuous axes (components) that summarize variance</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pt3" id="pt3b"><label class="form-check-label" for="pt3b">They always produce exactly the same plot</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pt3" id="pt3c"><label class="form-check-label" for="pt3c">PCA only works on categorical data, clustering does not</label></div>
+    <div id="pt3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkTogetherQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="together-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+</div><!-- end .lang-r -->
+
+<!-- Python placeholder quizzes -->
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Three Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;">Quiz 1: Hierarchical Clustering <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scipy equivalent of R hclust/pheatmap)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which module provides hierarchical clustering and dendrograms in Python?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>scipy.cluster.hierarchy</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>pandas.hierarchy</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>numpy.cluster</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 2: PCA <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scikit-learn equivalent of R prcomp())</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which scikit-learn class performs PCA?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sklearn.decomposition.PCA</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sklearn.cluster.PCA</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sklearn.linear_model.PCA</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 3: Putting it together <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> To cluster on principal components instead of raw variables, you would run k-means on...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The original raw dataset</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The transformed PCA scores (components)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The loadings matrix only</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+</div><!-- end .lang-python -->
+```

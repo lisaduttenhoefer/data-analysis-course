@@ -1,0 +1,195 @@
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+const W5_CHECKS   = ['check_w5_slides','check_w5_vid1','check_w5_vid2','check_w5_vid3','check_w5_md'];
+const W5_QUIZ_IDS = ['w5_q_functions','w5_q_binomial','w5_q_poisson','w5_q_normal','w5_q_relationships'];
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W5_CHECKS, ...W5_QUIZ_IDS.map(id => 'quiz_r_w5_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w5_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W5_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W5_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w5_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W5_CHECKS.length + W5_QUIZ_IDS.length;
+  let done = 0;
+  W5_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W5_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w5_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week5-progress-bar');
+  const txt = document.getElementById('week5-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: Distribution Functions in R ─────────────────────────────────────
+function checkFunctionsQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="fn1"]:checked'), q1f = document.getElementById('fn1-feedback');
+  if (q1 && q1.id === 'fn1b') { q1f.innerHTML = '✅ Correct! q = quantile, the inverse of the cumulative distribution function.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ q- like quantile: qnorm() takes a probability and returns the corresponding value.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="fn2"]:checked'), q2f = document.getElementById('fn2-feedback');
+  if (q2 && q2.id === 'fn2a') { q2f.innerHTML = '✅ Correct! lower.tail=FALSE flips pnorm() to give P(X > x).'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ lower.tail=FALSE means we want the probability above the value, not below it.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="fn3"]:checked'), q3f = document.getElementById('fn3-feedback');
+  if (q3 && q3.id === 'fn3b') { q3f.innerHTML = '✅ Exactly! qnorm() is the inverse CDF — probabilities in, values out.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ qnorm() goes from probability to value — the opposite direction of pnorm().'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('functions-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w5_q_functions'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: Binomial & Negative Binomial ────────────────────────────────────
+function checkBinomialQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="bn1"]:checked'), q1f = document.getElementById('bn1-feedback');
+  if (q1 && q1.id === 'bn1a') { q1f.innerHTML = '✅ Correct! dbinom() gives the probability of exactly that many successes.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ dbinom() is the density/probability mass function — probability of exactly k successes.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="bn2"]:checked'), q2f = document.getElementById('bn2-feedback');
+  if (q2 && q2.id === 'bn2a') { q2f.innerHTML = '✅ Right! L = trials, p = success probability per trial.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ L is the number of trials (here: penalties taken), p is the per-trial success probability.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="bn3"]:checked'), q3f = document.getElementById('bn3-feedback');
+  if (q3 && q3.id === 'bn3b') { q3f.innerHTML = '✅ Correct! It models the waiting time (failures/trials) until r successes.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Negative binomial = number of trials/failures needed to reach a fixed number of successes r.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('binomial-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w5_q_binomial'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Poisson Distribution ────────────────────────────────────────────
+function checkPoissonQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="ps1"]:checked'), q1f = document.getElementById('ps1-feedback');
+  if (q1 && q1.id === 'ps1b') { q1f.innerHTML = '✅ Correct! λ is the average/expected count in the interval.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ λ is the expected (average) number of events — here, mutations per generation.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="ps2"]:checked'), q2f = document.getElementById('ps2-feedback');
+  if (q2 && q2.id === 'ps2b') { q2f.innerHTML = '✅ Right! ppois() is cumulative — 10 or fewer events.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ ppois() is the cumulative distribution function: P(X ≤ q). For exactly 10, you would use dpois().'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="ps3"]:checked'), q3f = document.getElementById('ps3-feedback');
+  if (q3 && q3.id === 'ps3a') { q3f.innerHTML = '✅ Correct! dpois() gives the probability of an exact count.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ "Exactly 60" needs the density function dpois(), not the cumulative ppois().'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('poisson-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w5_q_poisson'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 4: Normal & t-Distribution ─────────────────────────────────────────
+function checkNormalQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="nt1"]:checked'), q1f = document.getElementById('nt1-feedback');
+  if (q1 && q1.id === 'nt1a') { q1f.innerHTML = '✅ Correct! Sample statistics are our best estimate of the population parameters.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ We use the sample mean/sd as estimates of the unknown population mean/sd, since we cannot measure everyone.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="nt2"]:checked'), q2f = document.getElementById('nt2-feedback');
+  if (q2 && q2.id === 'nt2a') { q2f.innerHTML = '✅ Correct! mu = 0, sigma = 1 defines the standard normal distribution.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ The standard normal distribution is defined by mean = 0 and sd = 1.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="nt3"]:checked'), q3f = document.getElementById('nt3-feedback');
+  if (q3 && q3.id === 'nt3b') { q3f.innerHTML = '✅ Exactly! For df = 100 the t-distribution is already very close to N(0,1).'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ As degrees of freedom grow, the t-distribution\'s tails shrink and it approaches the standard normal.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('normal-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w5_q_normal'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 5: Relationships Between Distributions ─────────────────────────────
+function checkRelationshipsQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="rl1"]:checked'), q1f = document.getElementById('rl1-feedback');
+  if (q1 && q1.id === 'rl1a') { q1f.innerHTML = '✅ Correct! For large λ, Poisson(λ) ≈ Normal(λ, √λ).'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ The plenum showed Poisson(λ) approaches Normal(λ, √λ) as λ gets large.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="rl2"]:checked'), q2f = document.getElementById('rl2-feedback');
+  if (q2 && q2.id === 'rl2b') { q2f.innerHTML = '✅ Right! Many trials, small per-trial probability, constant np = λ.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ Binom(n,p) → Pois(λ=np) as n → ∞ with np held constant — many rare-event trials.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="rl3"]:checked'), q3f = document.getElementById('rl3-feedback');
+  if (q3 && q3.id === 'rl3b') { q3f.innerHTML = '✅ Correct! Points hugging the diagonal mean the two distributions match closely.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ A close-to-diagonal Q-Q plot indicates the two distributions being compared are very similar.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('relationships-result');
+  if (score === total) { res.innerHTML = '🎉 Week 5 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w5_q_relationships'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>

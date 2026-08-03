@@ -1,0 +1,338 @@
+---
+title: "Week 6: Central Limit Theorem & Confidence Intervals"
+format:
+  html:
+    include-in-header:
+      - language-switch.html
+    include-after-body:
+      - week6-script.html
+---
+
+```{=html}
+<style>
+  .step-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
+  }
+  .step-badge {
+    background: #1a4d1a; color: white; border-radius: 50%;
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .step-header h2 { margin: 0; font-size: 1.35rem; }
+
+  .resource-list { list-style: none; padding: 0; margin: 0; }
+  .resource-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: #f8f9fa; border: 2px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
+  .resource-item input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
+  }
+  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
+  .resource-item label a { color: #1a4d1a; font-weight: 600; }
+  .resource-item label a:hover { text-decoration: underline; }
+
+  .quiz-card {
+    background: #f8f9fa; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 1.5rem;
+    border-left: 4px solid #1a4d1a;
+  }
+  .quiz-done-badge {
+    display: none; background: #a8d5a2; color: #1a4d1a;
+    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
+    font-weight: 800; margin-left: 10px; vertical-align: middle;
+  }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
+</style>
+
+<!-- Progress bar -->
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 6 Progress</strong>
+      <div id="week6-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week6-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+</div>
+```
+
+This week completes your training in distributions with the **Central Limit Theorem** and learns how to construct **confidence intervals**. Use the language toggle above to switch between R and Python.
+
+---
+
+```{=html}
+<!-- ─── STEP 1: Videos & Slides (shared) ─────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">1</div>
+  <h2>Watch the Lecture Videos &amp; Download the Slides</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Watch the short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
+
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w6_slides" onchange="markCheckDone(this)">
+    <label for="check_w6_slides">
+      <a href="WEEK5/week5_lecture_slides.pdf" download>Week 6 – CLT &amp; Confidence Intervals (PDF slides)</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w6_vid1" onchange="markCheckDone(this)">
+    <label for="check_w6_vid1">
+      <a href="https://www.youtube.com/watch?v=1etp-SpDIhQ" target="_blank" rel="noopener">Video 1/2 – 6.1 Statistical inference</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w6_vid2" onchange="markCheckDone(this)">
+    <label for="check_w6_vid2">
+      <a href="https://www.youtube.com/watch?v=3kKXZRjjLIE" target="_blank" rel="noopener">Video 2/2 – 6.2 Confidence intervals</a>
+    </label>
+  </li>
+</ul>
+
+<!-- Python note -->
+<div class="lang-python">
+  <div class="lang-note">
+    <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — the Central Limit Theorem, standard error, confidence intervals — apply equally to Python (e.g. <code>scipy.stats</code>). See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+  </div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 2: Markdown ──────────────────────────────────────────────────── -->
+
+<!-- R version -->
+<div class="lang-r">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Markdown</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w6_md" onchange="markCheckDone(this)">
+    <label for="check_w6_md">
+      <a href="WEEK5/_05_Distributions_CLT.Rmd" download="_05_Distributions_CLT.Rmd">Week 6 – Distributions, CLT &amp; Confidence Intervals (R Markdown)</a>
+      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
+    </label>
+  </li>
+</ul>
+<p style="margin-top:1rem;"><strong>Bonus reference:</strong> a companion script comparing 90%/95% confidence intervals, plenum recaps (dice-sum &amp; chocolate-weight simulations of the CLT), and comprehension questions with worked solutions. Quizzes 3 &amp; 4 below draw on this material.</p>
+<div class="d-flex gap-3 mb-3 flex-wrap">
+  <a href="WEEK5/_05_confidence_intervals.Rmd" download="_05_confidence_intervals.Rmd" class="btn btn-outline-danger btn-sm">CI Comparison (R Markdown)</a>
+  <a href="WEEK5/_05_plenum_augensumme.Rmd" download="_05_plenum_augensumme.Rmd" class="btn btn-outline-danger btn-sm">Plenum: Dice Sum (R Markdown)</a>
+  <a href="WEEK5/_05_plenum_zentraler_grenzwertsatz.Rmd" download="_05_plenum_zentraler_grenzwertsatz.Rmd" class="btn btn-outline-danger btn-sm">Plenum: CLT Demo (R Markdown)</a>
+  <a href="WEEK5/_05_Verständnisfragen.Rmd" download="_05_Verstaendnisfragen.Rmd" class="btn btn-outline-danger btn-sm">Comprehension Questions (R Markdown)</a>
+  <a href="WEEK5/_05_folien_plenum.pdf" target="_blank" class="btn btn-outline-danger btn-sm">Plenum Slides (PDF)</a>
+</div>
+</div>
+
+<!-- Python version -->
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Notebook</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Notebook — Coming Soon</p>
+  <p style="color:#555;margin-bottom:0;">A Python version of this week's exercise (CLT and confidence intervals with <code>scipy.stats</code>) is in preparation. Use the R Markdown material for now — the underlying concepts transfer directly.</p>
+</div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 3: Quiz ───────────────────────────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">3</div>
+  <h2>Comprehension Quiz</h2>
+</div>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+
+<!-- R quizzes -->
+<div class="lang-r">
+
+<h3>Quiz 1: The Central Limit Theorem <span id="quiz-done-w6_q_clt" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> In the coffee shop example, individual waiting times follow a right-skewed Gamma distribution. What does the Central Limit Theorem say about the distribution of <em>sample means</em> of waiting times as the sample size n grows?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="clt1" id="clt1a"><label class="form-check-label" for="clt1a">It stays right-skewed, just like the individual waiting times</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="clt1" id="clt1b"><label class="form-check-label" for="clt1b">It becomes approximately normal, regardless of the shape of the original distribution</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="clt1" id="clt1c"><label class="form-check-label" for="clt1c">It becomes uniform</label></div>
+    <div id="clt1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What is one essential condition for the Central Limit Theorem to hold?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="clt2" id="clt2a"><label class="form-check-label" for="clt2a">The original variable must already be normally distributed</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="clt2" id="clt2b"><label class="form-check-label" for="clt2b">The individual random variables being averaged must be independent of each other</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="clt2" id="clt2c"><label class="form-check-label" for="clt2c">The sample size must be exactly 30</label></div>
+    <div id="clt2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Looking at the Q-Q plots for n = 2, n = 10 and n = 200 sample means, what pattern do you see?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="clt3" id="clt3a"><label class="form-check-label" for="clt3a">The fit to the normal line gets worse as n increases</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="clt3" id="clt3b"><label class="form-check-label" for="clt3b">The fit to the normal line gets better as n increases, becoming almost perfect at n = 200</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="clt3" id="clt3c"><label class="form-check-label" for="clt3c">n has no effect on the Q-Q plot</label></div>
+    <div id="clt3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkCltQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="clt-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 2: Standard Error &amp; Sample Size <span id="quiz-done-w6_q_se" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What does the formula <code>SE = σ / √n</code> tell you?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="se1" id="se1a"><label class="form-check-label" for="se1a">The standard error shrinks as the sample size n grows</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="se1" id="se1b"><label class="form-check-label" for="se1b">The standard error grows as the sample size n grows</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="se1" id="se1c"><label class="form-check-label" for="se1c">The standard error is independent of n</label></div>
+    <div id="se1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> The exercise notes "diminishing returns": going from n=10 to n=20 helps more than going from n=80 to n=90. Why?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="se2" id="se2a"><label class="form-check-label" for="se2a">Because SE depends on √n, so each additional observation reduces SE less and less at larger n</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="se2" id="se2b"><label class="form-check-label" for="se2b">Because R has a bug for large sample sizes</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="se2" id="se2c"><label class="form-check-label" for="se2c">Because the mean changes at large n</label></div>
+    <div id="se2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Does the <em>mean</em> of the sample means change as the sample size n increases?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="se3" id="se3a"><label class="form-check-label" for="se3a">No — it stays centered on the true population mean; only the spread (SE) shrinks</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="se3" id="se3b"><label class="form-check-label" for="se3b">Yes — it increases proportionally with n</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="se3" id="se3c"><label class="form-check-label" for="se3c">Yes — it decreases proportionally with n</label></div>
+    <div id="se3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkSeQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="se-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 3: Confidence Intervals <span id="quiz-done-w6_q_ci" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What does a "95% confidence interval" mean?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="ci1" id="ci1a"><label class="form-check-label" for="ci1a">There is a 95% probability that any single observation falls in this range</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="ci1" id="ci1b"><label class="form-check-label" for="ci1b">If we repeated the sampling many times, about 95% of the constructed intervals would contain the true population parameter</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="ci1" id="ci1c"><label class="form-check-label" for="ci1c">The sample mean is wrong 95% of the time</label></div>
+    <div id="ci1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In the coffee-cup example (n = 9 cups), why do we use the <strong>t-distribution</strong> with 8 degrees of freedom rather than the normal distribution to compute the critical value?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="ci2" id="ci2a"><label class="form-check-label" for="ci2a">Because the sample size is small, and the true standard deviation is unknown and estimated from the sample</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="ci2" id="ci2b"><label class="form-check-label" for="ci2b">Because coffee cup volumes are always t-distributed</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="ci2" id="ci2c"><label class="form-check-label" for="ci2c">Because degrees of freedom only apply to normal distributions</label></div>
+    <div id="ci2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Comparing a 90% CI and a 95% CI computed from the same data, which one is wider?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="ci3" id="ci3a"><label class="form-check-label" for="ci3a">The 90% CI is wider</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="ci3" id="ci3b"><label class="form-check-label" for="ci3b">The 95% CI is wider — higher confidence requires a larger margin</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="ci3" id="ci3c"><label class="form-check-label" for="ci3c">They are always exactly the same width</label></div>
+    <div id="ci3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkCiQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="ci-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 4: Plenum Demos — CLT in Action <span id="quiz-done-w6_q_plenum" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> In the dice-sum ("Augensumme") plenum demo, rolling 2 dice and averaging over N repeated pairs of rolls, what happens to the distribution of the averaged sum as N grows from 1 to 100?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pd1" id="pd1a"><label class="form-check-label" for="pd1a">It stays exactly the same, uniformly spread between 2 and 12</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pd1" id="pd1b"><label class="form-check-label" for="pd1b">It becomes increasingly concentrated and bell-shaped around the theoretical mean of 7</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pd1" id="pd1c"><label class="form-check-label" for="pd1c">It becomes more spread out and skewed</label></div>
+    <div id="pd1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In the chocolate-bar weight demo, individual error sources (weighing cocoa, weighing sugar, ...) are each <strong>uniformly</strong> distributed on [-1, 1]. What happens to the distribution of the total error once you sum up 100 such independent uniform error sources?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pd2" id="pd2a"><label class="form-check-label" for="pd2a">It stays uniformly distributed, just wider</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pd2" id="pd2b"><label class="form-check-label" for="pd2b">It becomes approximately normally distributed — confirmed by the Q-Q plot lying on the diagonal</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pd2" id="pd2c"><label class="form-check-label" for="pd2c">It becomes a Poisson distribution</label></div>
+    <div id="pd2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> The plenum repeats the "mean of N samples" experiment starting from Normal, Poisson and t-distributed data. What is the common conclusion across all of them?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pd3" id="pd3a"><label class="form-check-label" for="pd3a">Only data that starts out normal ends up with normal sample means</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pd3" id="pd3b"><label class="form-check-label" for="pd3b">Regardless of the starting distribution, the sample means concentrate around the true mean with a spread shrinking like 1/√N — the CLT in action</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pd3" id="pd3c"><label class="form-check-label" for="pd3c">The sample mean is unrelated to the true mean</label></div>
+    <div id="pd3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkPlenumCltQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="plenum-clt-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+</div><!-- end .lang-r -->
+
+<!-- Python placeholder quizzes -->
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;">Quiz 1: Central Limit Theorem <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> According to the CLT, the distribution of sample means approaches a normal distribution as sample size grows, regardless of...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The programming language used</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The shape of the original population distribution</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The number of samples taken</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 2: Standard Error &amp; Sample Size <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(numpy/scipy equivalent)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> In Python, the standard error of the mean can be computed as...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>np.std(x) * np.sqrt(len(x))</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>np.std(x, ddof=1) / np.sqrt(len(x))</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>np.mean(x) / len(x)</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 3: Confidence Intervals <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scipy.stats.t.interval)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which scipy.stats function directly returns a confidence interval for a t-distribution?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>t.interval()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>t.pdf()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>t.rvs()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 4: Plenum Demos — CLT in Action <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Summing many independent, identically distributed error sources (regardless of their individual shape) tends to produce a...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Uniform distribution</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Normal distribution</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Binomial distribution</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+</div><!-- end .lang-python -->
+```

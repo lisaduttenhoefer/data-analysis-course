@@ -1,0 +1,178 @@
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+const W8_CHECKS   = ['check_w8_slides','check_w8_vid1','check_w8_vid2','check_w8_vid3','check_w8_md'];
+const W8_QUIZ_IDS = ['w8_q_nonparam','w8_q_proportion','w8_q_power','w8_q_errors'];
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W8_CHECKS, ...W8_QUIZ_IDS.map(id => 'quiz_r_w8_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w8_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W8_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W8_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w8_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W8_CHECKS.length + W8_QUIZ_IDS.length;
+  let done = 0;
+  W8_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W8_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w8_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week8-progress-bar');
+  const txt = document.getElementById('week8-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: Non-Parametric Tests ────────────────────────────────────────────
+function checkNonparamQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="np1"]:checked'), q1f = document.getElementById('np1-feedback');
+  if (q1 && q1.id === 'np1a') { q1f.innerHTML = '✅ Correct! Non-normal data calls for a non-parametric test like Wilcoxon.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Use Wilcoxon when the normality assumption behind the t-test fails.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="np2"]:checked'), q2f = document.getElementById('np2-feedback');
+  if (q2 && q2.id === 'np2b') { q2f.innerHTML = '✅ Right! Ranks, not raw values — like Spearman vs Pearson.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ The Wilcoxon test converts values to ranks before comparing groups.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="np3"]:checked'), q3f = document.getElementById('np3-feedback');
+  if (q3 && q3.id === 'np3a') { q3f.innerHTML = '✅ Correct! U is derived from the rank sum, corrected for the group size.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ U is computed from R1 (rank sum of group 1) minus a correction term based on n1.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('nonparam-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w8_q_nonparam'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: Proportion Tests ─────────────────────────────────────────────────
+function checkProportionQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="pt1"]:checked'), q1f = document.getElementById('pt1-feedback');
+  if (q1 && q1.id === 'pt1b') { q1f.innerHTML = '✅ Correct! Proportion tests work on categorical/contingency-table data.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Proportion tests (Fisher/chi-square) assess relationships between two categorical variables.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="pt2"]:checked'), q2f = document.getElementById('pt2-feedback');
+  if (q2 && q2.id === 'pt2a') { q2f.innerHTML = '✅ Right! OR = 1 is the null value — no association.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ An odds-ratio of 1 is the neutral value, meaning no association between the variables.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="pt3"]:checked'), q3f = document.getElementById('pt3-feedback');
+  if (q3 && q3.id === 'pt3a') { q3f.innerHTML = '✅ Exactly! Observed vs. expected counts under independence.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Chi-square compares observed counts in the table to the counts expected if the variables were independent.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('proportion-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w8_q_proportion'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Power of a Test ──────────────────────────────────────────────────
+function checkPowerQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="pw1"]:checked'), q1f = document.getElementById('pw1-feedback');
+  if (q1 && q1.id === 'pw1b') { q1f.innerHTML = '✅ Correct! β = false-negative rate, missing a real effect.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ β is the Type II error / false-negative rate — failing to detect a real effect.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="pw2"]:checked'), q2f = document.getElementById('pw2-feedback');
+  if (q2 && q2.id === 'pw2b') { q2f.innerHTML = '✅ Right! Power = 1 − β = sensitivity.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ Power is 1 − β: the probability of correctly detecting a real effect when it exists.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="pw3"]:checked'), q3f = document.getElementById('pw3-feedback');
+  if (q3 && q3.id === 'pw3b') { q3f.innerHTML = '✅ Correct! More measurements per patient shrinks SE and increases power.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Larger n shrinks the standard error, making the test more sensitive and increasing power.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('power-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w8_q_power'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 4: False Positives, False Negatives & FDR ──────────────────────────
+function checkErrorsQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="fd1"]:checked'), q1f = document.getElementById('fd1-feedback');
+  if (q1 && q1.id === 'fd1a') { q1f.innerHTML = '✅ Correct! Uniform p-values under H0 is the key validity check for a test.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Under a valid H0, p-values should be uniformly distributed between 0 and 1.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="fd2"]:checked'), q2f = document.getElementById('fd2-feedback');
+  if (q2 && q2.id === 'fd2b') { q2f.innerHTML = '✅ Right! FDR looks at test-positives specifically, not all genes.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ FDR = false positives divided by all test-positives (genes called "significant").'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="fd3"]:checked'), q3f = document.getElementById('fd3-feedback');
+  if (q3 && q3.id === 'fd3a') { q3f.innerHTML = '✅ Correct! The t-test\'s FPR = α guarantee depends on the normality assumption.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ The t-test only controls the FPR at exactly α when its normality assumption holds — violate that, and the guarantee breaks.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('errors-result');
+  if (score === total) { res.innerHTML = '🎉 Week 8 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w8_q_errors'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>

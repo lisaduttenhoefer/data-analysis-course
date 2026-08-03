@@ -1,0 +1,161 @@
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+const W4_CHECKS   = ['check_w4_slides','check_w4_vid1','check_w4_vid2','check_w4_vid3','check_w4_md'];
+const W4_QUIZ_IDS = ['w4_q_hclust','w4_q_pca','w4_q_together'];
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W4_CHECKS, ...W4_QUIZ_IDS.map(id => 'quiz_r_w4_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w4_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W4_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W4_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w4_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W4_CHECKS.length + W4_QUIZ_IDS.length;
+  let done = 0;
+  W4_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W4_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w4_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week4-progress-bar');
+  const txt = document.getElementById('week4-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: Hierarchical Clustering ─────────────────────────────────────────
+function checkHclustQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="hc1"]:checked'), q1f = document.getElementById('hc1-feedback');
+  if (q1 && q1.id === 'hc1b') { q1f.innerHTML = '✅ Correct! Hierarchical clustering gives you a dendrogram to cut at any level; k-means needs k in advance.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ K-means needs the number of clusters upfront. Hierarchical clustering builds a full dendrogram instead.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="hc2"]:checked'), q2f = document.getElementById('hc2-feedback');
+  if (q2 && q2.id === 'hc2a') { q2f.innerHTML = '✅ Correct! A distance matrix must be symmetrical.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ A valid distance matrix must be symmetrical — distance(A,B) = distance(B,A).'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="hc3"]:checked'), q3f = document.getElementById('hc3-feedback');
+  if (q3 && q3.id === 'hc3b') { q3f.innerHTML = '✅ Exactly! Low-variance genes look the same across samples and add mostly noise.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ It is about signal quality: high-variance genes actually differ between samples and are more informative for clustering.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('hclust-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w4_q_hclust'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: PCA ─────────────────────────────────────────────────────────────
+function checkPcaQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="pc1"]:checked'), q1f = document.getElementById('pc1-feedback');
+  if (q1 && q1.id === 'pc1b') { q1f.innerHTML = '✅ Correct! PCA reduces dimensionality while keeping as much variance as possible.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ PCA finds new uncorrelated components that summarize the variance in fewer dimensions.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="pc2"]:checked'), q2f = document.getElementById('pc2-feedback');
+  if (q2 && q2.id === 'pc2b') { q2f.innerHTML = '✅ Right! Scaling puts all variables on a comparable footing.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ Without scaling, a variable with a huge numeric range would dominate the PCA regardless of its actual importance.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="pc3"]:checked'), q3f = document.getElementById('pc3-feedback');
+  if (q3 && q3.id === 'pc3b') { q3f.innerHTML = '✅ Correct! The scree plot ranks components by how much variance they explain.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ A scree plot shows variance explained per component, not correlations or cluster membership.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('pca-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w4_q_pca'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Putting it together ─────────────────────────────────────────────
+function checkTogetherQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="pt1"]:checked'), q1f = document.getElementById('pt1-feedback');
+  if (q1 && q1.id === 'pt1b') { q1f.innerHTML = '✅ Correct! Large positive loadings mean a strong positive contribution to that component.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Loadings describe how strongly (and in which direction) each original variable feeds into a principal component.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="pt2"]:checked'), q2f = document.getElementById('pt2-feedback');
+  if (q2 && q2.id === 'pt2b') { q2f.innerHTML = '✅ Exactly! Running kmeans() on pca$x clusters in the reduced, decorrelated space.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ PCA and k-means combine nicely — cluster on the first few principal components instead of the raw variables.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="pt3"]:checked'), q3f = document.getElementById('pt3-feedback');
+  if (q3 && q3.id === 'pt3a') { q3f.innerHTML = '✅ Correct! One gives a similarity tree, the other gives new variance-maximizing axes.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Hierarchical clustering outputs a dendrogram; PCA outputs continuous components — different kinds of output entirely.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('together-result');
+  if (score === total) { res.innerHTML = '🎉 Week 4 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w4_q_together'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>

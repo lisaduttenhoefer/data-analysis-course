@@ -1,0 +1,425 @@
+---
+title: "Basic statistics - Probability Distributions"
+author: "Carl Herrmann, Maïwen Caudron-Herger"
+output: html_document
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="120")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=120)
+opts_knit$set(root.dir  = "~/")
+```
+
+# 0. Recap of the previous Sheet
+
+In the previous Exercise Sheet we have learnt more about unsupervised learning, like hierarchical clustering and especially PCA. These are among the fundamental methods of Data Analysis. Today we will learn more about another milestone of statistics: **probability distributions**.
+
+------------------------------------------------------------------------
+
+# 1. Introduction and Objectives
+
+In the previous lectures you learnt about different major types of probability distributions like Normal, Binomial, Negative binomial, Student t etc. In this tutorial you will practically experiment with these distributions make calculations and plot your results. You will also infer relations among these distributions and hopefully get a feeling of when each of these distributions are relevant.
+
+------------------------------------------------------------------------
+
+# 2. Let's get started
+
+R has in-built functions for almost all probability distributions (see below)
+
+```{r}
+# Get the list of all probability distribution related functions
+help(distributions)
+```
+
+All of these functions for probability distributions follow the same common scheme, the **root name** of the function prefixed by either of **p**, **d**, **q** and **r**. For example for the Normal distribution we have the four variants of function available - **pnorm**, **dnorm**, **qnorm** and **rnorm**.
+
+Here, you can find some specific help on these functions:
+
+```{r}
+?rnorm
+# or
+?rpois
+# etc ...
+```
+
+In the respective help documentation, you will find details on each of the functions.\
+Probably, the most difficult to distinguish or to remember are **pnorm()** and **qnorm()** (respectively **ppois()** and **qpois()**, etc ...).\
+We are going to look at them more deeply in the following.
+
+------------------------------------------------------------------------
+
+### Practice on the various functions
+
+1.  Let's get a grasp of what these functions actually do. You should be familiar with the cumulative distribution function, let's take a look at that and its inverse first. We will work with a Normal distribution. We calculate the **cumulative probability** for the values 1,2,3,4 in three different distributions, using one of the functions described previously. Short hint: **p** like **cumulative P-robability**. Which function are you going to use?
+
+```{r echo=TRUE}
+
+# Distribution 1: Mean = 2, Standard Deviation = 1
+pnorm(1:4,mean=2,sd=1)
+#
+# Distribution 2: Mean = 2, Standard Deviation = 2
+pnorm(1:4,mean=2,sd=2)
+#
+# Distribution 2: Mean = 4, Standard Deviation = 1
+pnorm(1:4,mean=4,sd=1)
+```
+
+> Do you understand why the cumulative distribution functions change the way they do? 
+
+Now, on the same distributions, we calculate the **inverse cdf** (inverse cumulative distribution function) for the cumulative probabilities of 25%, 50 % and 75%. We use the `qnorm()` function for this (**q- like quantile**): 
+
+```{r}
+# Distribution 1: Mean = 2, Standard Deviation = 1
+qnorm(c(0.25,0.5,0.75),mean=2,sd=1)
+
+# Distribution 2: Mean = 2, Standard Deviation = 2
+qnorm(c(0.25,0.5,0.75),mean=2,sd=2)
+
+# Distribution 3: Mean = 4, Standard Deviation = 1
+qnorm(c(0.25,0.5,0.75),mean=4,sd=1)
+```
+
+> Try with 100% on any of the distributions. Can you explain this result? Do you expect the result to be different in the other ones?
+
+2.  Now that you know the output of the p- and q- functions, let's look at **d- like density probability** functions. For any continuous distribution, the value of the function at any specific value is 0. This is why this probability function is used in discrete distribution such as the binomial distribution (function **dbinom()**). We first calculate the probability of getting 5 events out of 5 in a binomial distribution with a probability of 0.5. Then, we calculate the odds of **not** getting 5 out of 5.
+
+```{r}
+# probability of 5 out of 5
+dbinom(5, size=5, prob=0.5) 
+# size = number of trials; prob = probability of success on each trial
+
+# probability of NOT getting 5 out of 5
+1-dbinom(5, size=5, prob=0.5)
+# or
+pbinom(4, size=5, prob=0.5)
+# Remember, pbinom() returns the "cumulative probability" of ...
+```
+
+> What is the probability of getting 5 out of 10? And NOT getting 5 out of 10? 
+
+3.  Suppose that the distribution of body height is described by a **normal distribution** with **mean = 1.75 m** and standard deviation **sd = 0.15**. What is the probability that someone is taller than 1.9 m? We can use the parameter **lower.tail** of the function `pnorm()` for this. \ 
+What is the probability that someone is smaller than 1.6 m?
+
+```{r}
+## taller than 1.9
+pnorm(1.9, mean=1.75, sd=0.15, lower.tail=FALSE)
+# or
+1-pnorm(1.9, mean=1.75, sd=0.15)
+
+## smaller than 1.6
+pnorm(1.6, mean=1.75, sd=0.15, lower.tail=TRUE)
+# equivalent to 
+pnorm(1.6, mean=1.75, sd=0.15)
+# because: per defaults, lower.tail is set to TRUE (you can check the help page for further information using `?pnorm`)
+```
+
+Let's have a look at this distribution using the **dnorm()** function:
+
+```{r}
+x = seq(1, 2.5, by=0.01)
+y = dnorm(x, mean=1.75, sd=0.15)
+plot(x, y, type='l',col='red',lwd=2);abline(v=c(1.6,1.9),lty=3,lwd=2)
+```
+
+4.  Let's finally look at **r- like random** functions. These, unlike the others, don't return single probabilities or values but rather generate a random distribution of values. We can use this to generate a normal distribution with mean = 10, sd = 5.
+
+```{r}
+## normal distribution
+x = rnorm(n=1000,mean=10,sd=5)
+hist(x,breaks=20)
+```
+
+> Can you generate a Poisson distribution and a binomial distribution?
+
+------------------------------------------------------------------------
+
+# 3. Normal/Gaussian distribution
+
+The normal or the Gaussian distribution is given as:
+
+$$P(x) = \frac{1}{{\sigma \sqrt {2\pi } }} \cdot e ^ \frac{-(x- \mu)^2}{{2\sigma ^2 }} $$ where $\mu$ is the mean of the distribution and $\sigma$ is the standard deviation.
+
+The **standard normal distribution** is a special case of **normal distribution** where the values for $\mu = 0$ and $\sigma = 1$. Thus, the above equation for the Normal distribution simplifies to:
+
+$$P(x) = \frac{1}{{\sqrt {2\pi } }} \cdot e ^ \frac{-x^2}{2} $$ Now for any $x$ we can easily solve this equation since $\pi$ and $e$ are known constants.
+
+------------------------------------------------------------------------
+
+### 3.1 Visualization
+
+Let's generate three random normal distributions with different means and standard deviations and visualize them together
+
+```{r}
+## Use the function `dnorm()` to plot the density distribution
+x = seq(-10, 30, by=.1)
+d1 = dnorm(x, mean=0, sd=1)
+d2 = dnorm(x, mean=10, sd=1)
+d3 = dnorm(x, mean=20, sd=1)
+
+# Compare with the histogram build from 1000 random number drawn from the standard normal distribution
+r1 = rnorm(n=1000, mean=0, sd =1)  # random distributions of values
+r2 = rnorm(n=1000, mean=10, sd =1)
+r3 = rnorm(n=1000, mean=20, sd =1)
+
+# Histogram visualization
+hist(r1,breaks=seq(-10,30,by=.5),probability = TRUE,ylim=c(0,.5),main="",xlab="")
+hist(r2,breaks=seq(-10,30,by=.5),probability = TRUE,add=TRUE)
+hist(r3,breaks=seq(-10,30,by=.5),probability = TRUE,add=TRUE)
+
+# Line with the density distribution as above
+lines(x,d1,col='red',type='l',lwd=2)
+lines(x,d2,col='blue',lwd=2)
+lines(x,d3,col='green',lwd=2)
+```
+
+> Play with the mean and sd parameters and visualize the distributions (plain lines) as well as the corresponding histograms. What happens when you remove the parameter `probability=TRUE` in the histogram function?
+
+------------------------------------------------------------------------
+
+### 3.2 Application on a real dataset
+
+Now we will use the Normal distribution to make predictions about gene expression of TP53 in lung cancer. TP53 is the most commonly mutated gene across multiple cancer types especially in lung cancers. We will read a table containing measurements of TP53 expression levels in 586 patients.
+
+```{r}
+tp53.exp = read.table("https://www.dropbox.com/s/rwopdr8ycmdg8bd/TP53_expression_LungAdeno.txt?dl=1", header=T, sep="\t")[,1:2]
+summary(tp53.exp)
+```
+
+#### 3.2.1 Data cleaning and central values
+
+We will remove all the missing values and calculate the mean and standard deviation for the TP53 gene expression.
+
+```{r}
+tp53.exp = tp53.exp[!is.na(tp53.exp$TP53_expression),] # ! means NOT. Here, only if is.na(xx) is TRUE, !is.na(xx) will be FALSE and not included.
+m.tp53 = mean(tp53.exp$TP53_expression) # mean
+s.tp53 = sd(tp53.exp$TP53_expression) # standard deviation
+m.tp53;s.tp53
+```
+
+#### 3.2.2 Modeling of the data using a normal distribution
+
+Let's see how well a normal distribution with $\mu = 1380.822$ (m.tp53) and $\sigma = 719.5934$ (s.tp53) can approximate the **real** distribution of TP53 expression. We assume that the population mean and standard deviation is similar as calculated above since we cannot measure the expression of TP53 in each and every lung cancer patient in the world.
+
+```{r}
+# distribution of the measured data
+plot(density(tp53.exp$TP53_expression), main ="", xlim=c(-1500, 6000),lwd=3)
+```
+
+```{r}
+# Make a normal distribution with the above parameters
+x = seq(0,5000,by=5)
+d.pred = dnorm(x, mean = m.tp53, sd = s.tp53)
+
+# Now plot both, predicted and measured data
+plot(density(tp53.exp$TP53_expression), main ="", xlim=c(-1500, 6000),lwd=3);lines(x,d.pred, col="red",lwd=3)
+```
+
+#### 3.2.3 Data prediction using the model (normal distribution)
+
+Using a normal distribution with $\mu = 1380.822$ (m.tp53) and $\sigma = 719.5934$ (s.tp53), we will ask the following questions -
+
+-- **(Q1)** What is the probability of observing the expression of TP53 to be **less** than 1000?
+
+-- **(Q2)** What is the probability of observing the expression of TP53 to be **greater** than 1000?
+
+```{r}
+# Q1
+pnorm(q=1000, mean =m.tp53, sd = s.tp53) # returns the cumulative probability
+# Q2
+1 - pnorm(q=1000, mean =m.tp53, sd = s.tp53) 
+# is same as
+pnorm(q=1000, mean =m.tp53, sd = s.tp53, lower.tail = FALSE)
+# or pnorm(q=1000, mean =m.tp53, sd = s.tp53, lower.tail = F). FALSE or F is equivalent
+```
+
+#### 3.2.4 Evaluating the quality of the predictions
+
+Let's check how good these predictions are compared to **real** data.
+
+```{r}
+# Q1: What is the probability of observing the expression of TP53 to be **less** than 1000?
+sum(tp53.exp$TP53_expression < 1000)/nrow(tp53.exp)
+# Q2: What is the probability of observing the expression of TP53 to be **greater** than 1000?
+sum(tp53.exp$TP53_expression > 1000)/nrow(tp53.exp)
+```
+
+> I would say those predictions are pretty good !! Now, let's try to break this model. Re-execute the code above with different $q$ values `q=100, q=500, q=4000, q=4500` etc. At what values do you think the model would not perform well. HINT: Look at the tails of the distribution!
+
+```{r}
+# What is the probability of observing the expression of TP53 to be less than q?
+q = c(100,500,1000,4000,4500)
+
+# The function sapply() is used to calculate and store the predicted (a) and real (b) values
+model_mat =sapply(q,function(x) {
+   a = pnorm(q=x, mean =m.tp53, sd = s.tp53) 
+   b = sum(tp53.exp$TP53_expression < x)/nrow(tp53.exp)
+   return(c(a,b))
+})
+# Change into a dataframe and give row names
+model_mat <- as.data.frame(model_mat,row.names = c("Predicted","Measured"))
+# Set column names
+colnames(model_mat) <- c("q=100", "q=500", "q=1000", "q=4000", "q=4500")
+# Display the table (dataframe)
+model_mat
+```
+
+Again, using a normal distribution with $\mu = 1380.822$ and $\sigma = 719.5934$, what if we ask these kinds of questions:
+
+```{r}
+# Q1: What is the value of TP53 expression at the 10% quantile?
+qnorm(p = 0.1, mean = m.tp53, sd = s.tp53)
+# Q2: What is the value of TP53 expression at the 90% quantile?
+qnorm(p = 0.9, mean = m.tp53, sd = s.tp53)
+```
+
+Let's check how good these predictions are compared to our real data.
+
+```{r}
+quantile(tp53.exp$TP53_expression, probs = c(0.1, 0.9))
+```
+
+Again the predictions are pretty good!
+
+
+#### 3.2.5 Graphical visualization
+
+We can also visualize all of this on a simple graph:
+
+```{r}
+# Model prediction:
+x = seq(0,5000,by=5)
+d.pred = dnorm(x,mean = m.tp53, sd = s.tp53)
+
+# Model and measured data:
+plot(density(tp53.exp$TP53_expression), main ="", xlim=c(-1500, 6000),lwd=3);lines(x,d.pred, col="red",lwd=3)
+
+# Model and measured data and predicted versus measured 0.1 and 0.9 quantiles:
+plot(density(tp53.exp$TP53_expression), main ="", xlim=c(-1500, 6000),lwd=3);lines(x,d.pred, col="red",lwd=3);abline(v=quantile(tp53.exp$TP53_expression, probs = c(0.1, 0.9)));abline(v= c(qnorm(p = 0.1, mean = m.tp53, sd = s.tp53), qnorm(p = 0.9, mean = m.tp53, sd = s.tp53)),lty=3,lwd=2,col='red')
+
+# Appreciate the quality of the predictions! Compare the black and red vertical lines.
+```
+
+> Re-execute the code above with `p=0.25, p=0.5, p=0.75 etc` and check how good the predictions are.
+
+#### 3.2.6 Graphical visualization using a Q-Q plot
+
+Now, let's plot the sample quantiles against theoretical quantiles to check the similarity between the two. This is called a quantile - quantile plot or a Q-Q plot, which you are familiar with (see Exercises Sheet 1).
+
+```{r}
+q = seq(0,1,0.01) # Creating a vector of quantiles
+
+# Find values corresponding to these quantiles in the real data
+q.observed = quantile(tp53.exp$TP53_expression, probs = q)
+
+# Find values corresponding to these quantiles in the theoretical normal distribution
+q.theoretical = qnorm(p = q, mean = m.tp53, sd = s.tp53)
+
+# Correlate the above two values
+plot(x=q.theoretical, y=q.observed);abline(0,1,lty=1,lwd=2,col='red')
+```
+
+------------------------------------------------------------------------
+
+4 # Exercises 
+
+#### Exercise I
+
+1.  What is the expression of TP53 observed at 10th percentile? What is the expression of TP53 observed at 90th percentile?
+
+2.  Other distribution types can become very similar to the normal distribution under certain conditions. Plot the histogram of 1000 random numbers drawn from the Poisson distribution with lambda = 1, 10, 100, 1000. What do you observe?
+
+#### Exercise II
+
+1.  A patient has convulsions and needs to be injected every time he does. Every day he has an average of 3 cases. How many syringes should the hospital prepare daily to cover 99.9% of the scenarios?
+
+2.  What are the odds that he has 2 episodes or fewer? And 2 episodes or more?
+
+------------------------------------------------------------------------
+
+# 5. References
+
+1.  <http://www.stat.umn.edu/geyer/old/5101/rlook.html>
+2.  <https://www.huber.embl.de/msmb/Chap-Generative.html>
+3.  <https://stattrek.com>
+
+
+------------------------------------------------------------------------
+
+# 6 **Getting further (optional)**
+
+### Poisson distribution
+
+A Poisson distribution can be defined as - $$P(x) = \frac{{e^{ - \lambda } \lambda ^x }}{{x!}}$$
+
+where $\lambda$ is the mean which also equals variance and $x$ is the number of experiments done.
+
+An experiment follows a Poisson distribution if:
+
+-   The outcomes are of only two types (binary): success or failure, yes or no, present or absent etc
+-   The mean of successes $\lambda$ that occurs in a specified interval is known.
+-   The probability of success is proportional to the size of the interval.
+-   The probability of success in a very small interval approaches zero.
+-   Intervals can be length, area, volume, time, etc.
+
+### Practical example of a Poisson distribution
+
+A real example of an experiment following the Poisson distribution is gene mutation
+
+-   The outcomes are of only two types (binary): mutated vs not mutated
+-   Average mutation $\lambda$ that occurs in a specified interval (gene length) is known. Humans have a mutation rate of $10^{-8} mutations/bp/generation$ [(see here)](http://book.bionumbers.org/what-is-the-mutation-rate-during-genome-replication/)
+-   The probability of mutation is proportional to the length of the gene. Longer genes accumulate more mutation.
+-   The probability of mutation in a very small genomic region is close to zero
+
+------------------------------------------------------------------------
+
+Let's perform the following calculation:
+
+-   Human mutation rate = $1 \times 10^{-8} mutations/bp/replication$
+-   Human genome size = $3 \times 10^{9}$ bp
+-   Thus, number of mutation accumulated after one generation = $10^{-8} \cdot 3 \times 10^{9} = 30$
+
+Now, what if we ask the question, what is the probability of observing **10 or less** mutations after one generation using a Poisson distribution model build with the parameters $\lambda$ calculated above.
+
+```{r}
+ppois(q = 10, lambda = 30)
+```
+
+We can plot the probabilities for $q=0:60$ and see how the probabilities change:
+
+```{r}
+plot(ppois(q = 0:60, lambda = 30), type="b", xlab = "Average Mutations", ylab ="Probability")
+abline(v=30)
+```
+
+A different way of visualizing the data which is more intuitive and clear is by plotting the densities of probabilities. We do the same as before using the Poisson distribution.
+
+```{r fig.width=10}
+p.pred = dpois(x = 0:60, lambda = 30)
+barplot(p.pred, names.arg = c(0:60), las=2, cex.names = 0.7)
+```
+
+We clearly see that it is much likely to get 30 mutations than others.
+
+------------------------------------------------------------------------
+
+> Can you make the above prediction using the normal distribution instead? *Hint*: $\lambda = mean = variance$ see above equation. Derive the standard deviation from the variance. What difference do you see ? What is your interpretation ?
+
+```{r}
+pd = ppois(q = 0:60, lambda = 30)
+nd = pnorm(q = 0:60, mean = 30, sd = sqrt(30)) # since var = sd^2
+plot(pd, col="red", type="l", xlab = "Average Mutations", ylab ="Probability")
+lines(nd, col="grey", type="l")
+```
+
+------------------------------------------------------------------------
+

@@ -1,0 +1,635 @@
+---
+title: "Exercise Sheet 3 - Hierarchical Clustering / PCA"
+author: "Carl Herrmann - Maiwen Caudron-Herger"
+output: html_document
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="120")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=120)
+
+```
+
+We are going to work with a dataset of gene expression of patient with leukemia. There are 2 types of leukemia: ALL (acute lymphoid leukemia) and AML (acute myeloid leukemia).
+We have
+* one file with gene expression
+* one file with clinical annotatations for the patients
+
+Let's read the data for this tutorial:
+
+```{r, echo=FALSE, eval = TRUE}
+
+#### This is all pre-processing of the all/aml dataset
+#### RUN THIS CHUNK AT THE BEGINNING
+
+all.aml.anno = readRDS(url('https://www.dropbox.com/scl/fi/kfnxs5ltldmfj6px1sp13/all.aml.anno.rds?rlkey=yhahfyk4h240fbt1vctt3bp5b&dl=1'))
+all.aml.exp = readRDS(url("https://www.dropbox.com/scl/fi/grt6yud9yjmwqx3zgwhte/all.aml.exp.rds?rlkey=hs8p83tkxvy27t8v38tw51x7i&dl=1"))
+
+```
+
+# 0. Recap of the last sheet
+
+In the last sheet we have kept working with our diabetes dataset by learning how to **measure centrality** and other statistical information such as **quantiles**. Furthermore, we have learned functions to measure correlation between variables and explored different methods to do so. Finally, on a new dataset, we have moved over to the concept of unsupervised learning and used one of its most simple but effective methods, k-means clustering.
+
+
+# 1. Objectives of this week
+
+In this sheet we will conclude the topic of **unsupervised learning** by looking at **hierarchical clustering** and **Principal Component Analysis (PCA)**.
+
+# 2. Hierarchical clustering
+
+Clustering is a method by which we group together similar observations while separating out the dissimilar ones. We will cluster our samples from the cancer dataset to see which samples cluster together or separately. Hierarchical clustering does not generate discrete clusters of datapoints, but rather creates a dendrogram that indicates the magnitude of similitude between samples. Once again is up to the Data Scientist to decide the right amount of clusters.
+
+### Using the most variable, thus informative genes
+
+When performing clustering, we usually reduce the number of genes used, as some of them are not informative. For example, genes that show a mostly constant expression across all samples will not be useful to distinguish the samples, right? One simple method is to select genes that show a **high variance** across all samples.
+
+```{r}
+## compute the variance for all genes accross all samples
+topVar = apply(all.aml.exp, 1, var)
+summary(topVar)
+```
+
+We now want to find the top 25% with the highest variance
+
+```{r}
+## what is the 75% quantile of the variance?
+q75 = quantile(topVar, probs = 0.75)
+q75
+```
+
+So let us select all rows (genes) with a variance higher than `q75`:
+
+```{r}
+i.topvar = which(topVar >= q75)
+
+## only select the gene with a variance in the top 25%
+all.aml.exp.topVar = all.aml.exp[i.topvar,]
+dim(all.aml.exp.topVar)
+```
+
+
+### Computing the correlation between all patients (columns)
+
+```{r}
+## Creating a correlation based distance matrix
+cor.mat = cor(all.aml.exp.topVar, method="pearson")
+```
+
+Let us display the correlation matrix as a heatmap, using the `pheatmap` function:
+
+```{r}
+library(pheatmap)
+pheatmap(cor.mat)
+```
+
+Each cell of this heatmap represents the correlation value between the sample in the row and the sample in the column. The correlation of a sample to itself is always 1 (red diagonal).
+
+The function automatically determines the clustering trees of the rows and columns (which are identical, since the correlation matrix is symmetrical!)
+
+Note the color scale: it is biased by the 1's in the diagonal. Since these values are trivial, we can remove them to avoid distorting the color scale:
+
+```{r}
+diag(cor.mat) <- NA
+```
+
+```{r}
+pheatmap(cor.mat)
+```
+
+
+### Plotting the dendrogram along with clinical annotations
+
+This is a nice representation, but in order to interpret this clustering, we need to add some additional (clinical) information to interpret the clustering structure. To do this, we will create an annotation data frame containing as columns a number of clinical features.
+
+The clinical annotation is stored in the `all.aml.anno` data frame.
+
+```{r}
+head(all.aml.anno)
+```
+
+
+We can now plot again the heatmap, using the annotation dataframe to add additional information
+
+```{r,fig.height=8,fig.width=10}
+pheatmap(cor.mat,annotation_row = all.aml.anno,annotation_col = all.aml.anno)
+```
+
+> How would you interpret this dendrogram? How many clusters do you observe? Do they make clinical sense?
+
+> The function `pheatmap` accepts a parameter clustering_method to indicate alternative linkage methods; try other linkage methods (check which are available with the pheatmap help page!)
+
+> can you redo this analysis using all the genes instead of the most variable ones? Do you see a difference?
+
+# 3. Dimensionality reduction - PCA
+
+To illustrate PCA, we will use a different dataset on pathological features of tumor samples from breast cancer patients. Here, cells are described using different descriptors explained [here](https://www.geeksforgeeks.org/machine-learning/breast-cancer-wisconsin-diagnostic-dataset/). 
+
+We load the data and the descriptors
+
+```{r}
+# Load data (using UCI method)
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data"
+bc_data <- read.csv(url, header = FALSE)
+
+colnames(bc_data) <- c("ID", "Diagnosis", 
+                       "radius_mean", "texture_mean", "perimeter_mean", "area_mean", 
+                       "smoothness_mean", "compactness_mean", "concavity_mean", 
+                       "concave_points_mean", "symmetry_mean", "fractal_dimension_mean",
+                       "radius_se", "texture_se", "perimeter_se", "area_se", 
+                       "smoothness_se", "compactness_se", "concavity_se", 
+                       "concave_points_se", "symmetry_se", "fractal_dimension_se",
+                       "radius_worst", "texture_worst", "perimeter_worst", "area_worst", 
+                       "smoothness_worst", "compactness_worst", "concavity_worst", 
+                       "concave_points_worst", "symmetry_worst", "fractal_dimension_worst")
+
+bc_data$ID <- NULL
+
+Diagnosis <- factor(bc_data$Diagnosis, levels = c("M", "B"), 
+                            labels = c("Malignant", "Benign"))
+bc_data$Diagnosis <- NULL
+```
+
+The Diagnosis vector indicates if the patient had a Malignant or Benign for of tumor.
+
+**Important**: note that the patients are in rows, and the features (here the descriptors of the pathological slides) are in columns. This is important when performing PCA!
+
+### Running the PCA
+
+```{r}
+# Perform PCA with scaling (correlation-based PCA)
+pca_result <- prcomp(bc_data, center = TRUE, scale = TRUE)
+print(pca_result)
+```
+
+> How many principal components do you obtain? Compare this to the dimension of the matrix using the `dim` function! 
+
+Principal components are ranked by the amount of variance that they explain. This can be visualized using a **scree plot**, indicating how much variance each PC explains: the proportion of **standard deviation** explained by each principal component is contained in the `pca$sdev` vector:
+
+```{r}
+# Calculate variance explained
+var_explained <- pca_result$sdev^2
+pve <- var_explained / sum(var_explained)
+
+
+# Scree plot
+barplot(pve[1:10] * 100, names.arg = 1:10, 
+        col = "steelblue", 
+        main = "Scree Plot",
+        xlab = "Principal Component",
+        ylab = "Variance Explained (%)",
+        ylim = c(0, max(pve[1:10] * 100) * 1.1))
+lines(x = seq(0.7, 11.5, length.out = 10), y = pve[1:10] * 100, 
+      col = "red", lwd = 2, type = "b", pch = 19)
+```
+
+We see that the amount of explained variance is indeed going down! 
+
+### Plotting the patients
+
+We can now display the data points (i.e. patients) in the first two principal components. In addition, we can color the dots according to certain clinical parameters:
+
+```{r}
+colors <- c("red", "blue")
+plot(pca_result$x[, 1], pca_result$x[, 3],
+     col = colors[as.numeric(Diagnosis)],
+     pch = 19,
+     cex = 0.8,
+     xlab = paste0("PC1 (", round(pve[1] * 100, 1), "%)"),
+     ylab = paste0("PC3 (", round(pve[3] * 100, 1), "%)"),
+     main = "PCA Scores Plot Colored by Diagnosis")
+legend("topright", legend = levels(Diagnosis),
+       col = colors, pch = 19, cex = 0.9)
+```
+
+> Redo the plot by including some other PCs (e.g. PC1 vs. PC3)
+
+### Understanding the principal components
+
+What do the principal components describe? To understand this, we need to look at the **loadings**, i.e. the contributions of the initial variables to the new PCs.
+
+The correspondance between the initial variables and the new PCs is stored in the pca-result$rotation matrix; each column is a PC, and the values indicate the loadings:
+
+```{r}
+# Get loadings for PC1 and PC2
+loadings_pc1 <- pca_result$rotation[, 1]
+loadings_pc2 <- pca_result$rotation[, 2]
+
+# Create a data frame of loadings
+loadings_df <- data.frame(
+  PC1 = loadings_pc1,
+  PC2 = loadings_pc2
+)
+
+loadings_df
+```
+
+```{r}
+# PC1 loadings bar plot
+par(mfrow = c(1, 2), mar = c(5, 10, 4, 2))
+loadings_sorted <- sort(loadings_pc1)
+barplot(loadings_sorted, horiz = TRUE, las = 1,
+        col = ifelse(loadings_sorted > 0, "blue", "red"),
+        main = "PC1 Loadings",
+        xlab = "Loading",
+        cex.names = 0.7)
+abline(v = 0, lwd = 2)
+legend("bottomright", legend = c("Positive", "Negative"),
+       fill = c("blue", "red"), cex = 0.8)
+
+# PC2 loadings bar plot
+loadings_sorted_pc2 <- sort(loadings_pc2)
+barplot(loadings_sorted_pc2, horiz = TRUE, las = 1,
+        col = ifelse(loadings_sorted_pc2 > 0, "blue", "red"),
+        main = "PC2 Loadings",
+        xlab = "Loading",
+        cex.names = 0.7)
+abline(v = 0, lwd = 2)
+legend("bottomright", legend = c("Positive", "Negative"),
+       fill = c("blue", "red"), cex = 0.8)
+
+```
+
+```{r,fig.height=8,fig.width=8}
+library(factoextra)
+
+fviz_pca_var(pca_result,geom = c("point", "text"))
+```
+
+
+
+```{r,fig.height=8,fig.width=8}
+library(factoextra)
+
+fviz_pca_biplot(pca_result,geom='point',habillage=Diagnosis)
+```
+
+> How do you intepret that all arrows are going to the left?
+
+
+
+
+#### Exercice 1 - Hierarchical clustering and kmeans
+
+1. Based on the heatmap you have obtained from the correlation matrix, perform a kmeans clustering of your patients with the corresponding number of clusters (BEWARE that you need to transpose the matrix first!)
+`km <- kmeans(t(all.aml.exp), centers = k)`
+2. Add the cluster membership to the all.aml.anno dataframe as a new column cluster
+3. Redo the heatmap: the cluster membership should appear
+4. Repeat with other values of k
+
+
+```{r}
+km <- kmeans(t(all.aml.exp.topVar),centers=3)
+all.aml.anno$Cluster <- as.factor(km$cluster)
+```
+
+```{r,fig.height=8,fig.width=8}
+catcol <- list
+pheatmap(cor.mat,annotation_row = all.aml.anno,annotation_col = all.aml.anno)
+```
+
+### Step 4: Repeat with Other Values of K
+
+```{r other_k_values}
+# Repeat with other values of k
+for (k in 3:5) {
+  km <- kmeans(t(all.aml.exp), centers = k, nstart = 25)
+  all.aml.anno[[paste0("cluster_k", k)]] <- as.factor(km$cluster)
+}
+```
+
+```{r heatmap_k3}
+# Plot with k=3
+pheatmap(cor.mat,
+         annotation_row = all.aml.anno[, !colnames(all.aml.anno) %in% c("cluster","cluster_k4", "cluster_k5")],
+         annotation_col = all.aml.anno[, !colnames(all.aml.anno) %in% c("cluster","cluster_k4", "cluster_k5")],
+         main = "Correlation Heatmap with k=3 clusters")
+```
+
+```{r heatmap_k4}
+# Plot with k=4
+pheatmap(cor.mat,
+         annotation_row = all.aml.anno[, !colnames(all.aml.anno) %in% c("cluster","cluster_k3", "cluster_k5")],
+         annotation_col = all.aml.anno[, !colnames(all.aml.anno) %in% c("cluster","cluster_k3", "cluster_k5")],
+         main = "Correlation Heatmap with k=4 clusters")
+```
+
+```{r heatmap_k5}
+# Plot with k=5
+pheatmap(cor.mat,
+         annotation_row = all.aml.anno[, !colnames(all.aml.anno) %in% c("cluster","cluster_k3", "cluster_k4")],
+         annotation_col = all.aml.anno[, !colnames(all.aml.anno) %in% c("cluster","cluster_k3", "cluster_k4")],
+         main = "Correlation Heatmap with k=5 clusters")
+```
+
+## Exercise 2 - Hierarchical Clustering
+
+### Part 1: Create and Visualize Distance Matrix
+
+```{r distance_matrix_1}
+
+d <- matrix(c(0, 1.5, 4.2, 6.0,
+              1.5, 0, 3.8, 5.5,
+              4.2, 3.8, 0, 2.1,
+              6.0, 5.5, 2.1, 0),
+            nrow = 4)
+rownames(d) <- letters[1:4]
+colnames(d) <- letters[1:4]
+
+pheatmap(d, main = "Distance Matrix")
+```
+
+### Compare Different Linkage Methods
+
+```{r linkage_methods_1}
+# Try different linkage methods
+linkage_methods <- c("complete", "single", "average", "ward.D2")
+
+par(mfrow = c(2, 2))
+for (method in linkage_methods) {
+  hc <- hclust(as.dist(d), method = method)
+  plot(hc, main = paste("Linkage method:", method))
+}
+```
+
+#### Exercise 2 - Hierarchical clustering
+
+In section 2, we have computed a correlation matrix, and used this matrix to build a clustering tree.
+
+1.  Create a 4x4 distance matrix, following the example below (but with other values!); beware that a distance matrix should be **symmetrical**!!
+
+```{r}
+## this is the example from the lecture slides
+d = matrix(c(0,2,3,5,2,0,1,4.1,3,1,0,4,5,4.1,4,0),nrow=4)
+rownames(d) = letters[1:4]
+colnames(d) = letters[1:4]
+pheatmap(d)
+```
+```{r distance_matrix_2}
+d2 <- matrix(c(0,   1,   9,   10,
+               1,   0,   2,   11,
+               9,   2,   0,   3,
+               10,  11,  3,   0),
+             nrow = 4)
+rownames(d2) <- c("A", "B", "C", "D")
+colnames(d2) <- c("A", "B", "C", "D")
+
+pheatmap(d2, main = "Distance Matrix 2", 
+         display_numbers = TRUE, number_format = "%.1f")
+```
+
+```{r linkage_methods_2}
+par(mfrow = c(2, 2), mar = c(4, 4, 3, 1))
+for (method in linkage_methods) {
+  hc <- hclust(as.dist(d2), method = method)
+  plot(hc, main = paste("Linkage:", method), 
+       xlab = "", sub = "", cex.main = 1.2)
+}
+```
+
+### Extended Example with 5 Points
+
+```{r distance_matrix_3}
+d3 <- matrix(c(0,   1,   8,   9,   10,
+               1,   0,   2,   9,   10,
+               8,   2,   0,   3,   9,
+               9,   9,   3,   0,   4,
+               10,  10,  9,   4,   0),
+             nrow = 5)
+rownames(d3) <- c("A", "B", "C", "D", "E")
+colnames(d3) <- c("A", "B", "C", "D", "E")
+
+pheatmap(d3, main = "Distance Matrix 3", 
+         display_numbers = TRUE, number_format = "%.1f")
+```
+
+```{r linkage_methods_3}
+par(mfrow = c(2, 2), mar = c(4, 4, 3, 1))
+for (method in linkage_methods) {
+  hc <- hclust(as.dist(d3), method = method)
+  plot(hc, main = paste("Linkage:", method), 
+       xlab = "", sub = "", cex.main = 1.2)
+}
+```
+
+
+
+Try different linkage methods using the `clustering_method` parameter to see if the topology of the dendrogram changes!
+
+2.  Try building a distance matrix which would lead to different topologies of the dendrogram, depending on which linkage method is used! Show the dendrograms built with different linkage methods!
+
+#### Exercise 3 - PCA
+
+1. Redo the PCA analysis on the breast cancer dataset, but now only select the mean values for all the variables
+2. same, but selecting on the worst value
+
+
+### Load Breast Cancer Data
+
+```{r load_bc_data}
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data"
+bc_data <- read.csv(url, header = FALSE)
+colnames(bc_data) <- c("ID", "Diagnosis",
+                       "radius_mean", "texture_mean", "perimeter_mean", "area_mean",
+                       "smoothness_mean", "compactness_mean", "concavity_mean",
+                       "concave_points_mean", "symmetry_mean", "fractal_dimension_mean",
+                       "radius_se", "texture_se", "perimeter_se", "area_se",
+                       "smoothness_se", "compactness_se", "concavity_se",
+                       "concave_points_se", "symmetry_se", "fractal_dimension_se",
+                       "radius_worst", "texture_worst", "perimeter_worst", "area_worst",
+                       "smoothness_worst", "compactness_worst", "concavity_worst",
+                       "concave_points_worst", "symmetry_worst", "fractal_dimension_worst")
+bc_data$ID <- NULL
+Diagnosis <- factor(bc_data$Diagnosis, levels = c("M", "B"),
+                    labels = c("Malignant", "Benign"))
+bc_data$Diagnosis <- NULL
+```
+
+### Part 1: PCA with Only Mean Values
+
+```{r pca_mean}
+# PCA with only mean values
+mean_cols <- grep("_mean$", names(bc_data), value = TRUE)
+bc_data_mean <- bc_data[, mean_cols]
+
+pca_mean <- prcomp(bc_data_mean, center = TRUE, scale = TRUE)
+var_explained_mean <- pca_mean$sdev^2
+pve_mean <- var_explained_mean / sum(var_explained_mean)
+```
+
+```{r scree_mean}
+barplot(pve_mean * 100, names.arg = 1:length(pve_mean),
+        col = "steelblue",
+        main = "Scree Plot - Mean Values Only",
+        xlab = "Principal Component",
+        ylab = "Variance Explained (%)",
+        ylim = c(0, max(pve_mean * 100) * 1.1))
+lines(x = seq(0.7, length(pve_mean) + 0.5, length.out = length(pve_mean)),
+      y = pve_mean * 100,
+      col = "red", lwd = 2, type = "b", pch = 19)
+```
+
+```{r pca_plot_mean}
+colors <- c("red", "blue")
+plot(pca_mean$x[, 1], pca_mean$x[, 2],
+     col = colors[as.numeric(Diagnosis)],
+     pch = 19,
+     cex = 0.8,
+     xlab = paste0("PC1 (", round(pve_mean[1] * 100, 1), "%)"),
+     ylab = paste0("PC2 (", round(pve_mean[2] * 100, 1), "%)"),
+     main = "PCA - Mean Values Only")
+legend("topright", legend = levels(Diagnosis),
+       col = colors, pch = 19, cex = 0.9)
+```
+
+### Part 2: PCA with Only Worst Values
+
+```{r pca_worst}
+worst_cols <- grep("_worst$", names(bc_data), value = TRUE)
+bc_data_worst <- bc_data[, worst_cols]
+
+pca_worst <- prcomp(bc_data_worst, center = TRUE, scale = TRUE)
+var_explained_worst <- pca_worst$sdev^2
+pve_worst <- var_explained_worst / sum(var_explained_worst)
+```
+
+```{r scree_worst}
+barplot(pve_worst * 100, names.arg = 1:length(pve_worst),
+        col = "steelblue",
+        main = "Scree Plot - Worst Values Only",
+        xlab = "Principal Component",
+        ylab = "Variance Explained (%)",
+        ylim = c(0, max(pve_worst * 100) * 1.1))
+lines(x = seq(0.7, length(pve_worst) + 0.5, length.out = length(pve_worst)),
+      y = pve_worst * 100,
+      col = "red", lwd = 2, type = "b", pch = 19)
+```
+
+```{r pca_plot_worst}
+plot(pca_worst$x[, 1], pca_worst$x[, 2],
+     col = colors[as.numeric(Diagnosis)],
+     pch = 19,
+     cex = 0.8,
+     xlab = paste0("PC1 (", round(pve_worst[1] * 100, 1), "%)"),
+     ylab = paste0("PC2 (", round(pve_worst[2] * 100, 1), "%)"),
+     main = "PCA - Worst Values Only")
+legend("topright", legend = levels(Diagnosis),
+       col = colors, pch = 19, cex = 0.9)
+```
+
+## Going Further (Expert)
+
+### PCA on Leukemia Dataset
+
+```{r pca_leukemia}
+pca_leukemia <- prcomp(t(all.aml.exp.topVar), center = TRUE, scale = TRUE)
+```
+
+### Part 1: Elbow Method on PCA Space
+
+```{r elbow_method}
+# Test different numbers of PCs (2, 4, 6, 8, 10)
+pc_numbers <- c(2, 4, 6, 8, 10)
+k_values <- 1:10
+
+# Create a matrix to store WSS values
+wss_matrix <- matrix(NA, nrow = length(k_values), ncol = length(pc_numbers))
+colnames(wss_matrix) <- paste0("PC_", pc_numbers)
+rownames(wss_matrix) <- paste0("k=", k_values)
+
+for (i in seq_along(pc_numbers)) {
+  n_pcs <- pc_numbers[i]
+  pca_data <- pca_leukemia$x[, 1:n_pcs]
+  
+  wss <- sapply(k_values, function(k) {
+    km_result <- kmeans(pca_data, centers = k, nstart = 25)
+    return(km_result$tot.withinss)
+  })
+  
+  wss_matrix[, i] <- wss
+}
+
+# Plot the elbow curves
+par(mfrow = c(2, 3))
+for (i in seq_along(pc_numbers)) {
+  plot(k_values, wss_matrix[, i],
+       type = "b",
+       pch = 19,
+       col = "steelblue",
+       main = paste("Elbow Method -", pc_numbers[i], "PCs"),
+       xlab = "Number of Clusters (k)",
+       ylab = "Within Sum of Squares")
+  grid()
+}
+```
+
+### Part 2: Visualize Clusters in PCA Space
+
+```{r pca_clusters}
+# Use k=2 clusters with first 4 PCs
+pca_data_4pc <- pca_leukemia$x[, 1:4]
+km_pca <- kmeans(pca_data_4pc, centers = 2, nstart = 25)
+
+# Get variance explained for plotting
+var_explained_leuk <- pca_leukemia$sdev^2
+pve_leuk <- var_explained_leuk / sum(var_explained_leuk)
+
+# Create cluster colors
+cluster_colors <- c("purple", "orange")[km_pca$cluster]
+
+par(mfrow = c(1, 1))
+plot(pca_leukemia$x[, 1], pca_leukemia$x[, 2],
+     col = cluster_colors,
+     pch = 19,
+     cex = 1.2,
+     xlab = paste0("PC1 (", round(pve_leuk[1] * 100, 1), "%)"),
+     ylab = paste0("PC2 (", round(pve_leuk[2] * 100, 1), "%)"),
+     main = "K-means Clustering in PCA Space (k=2, 4 PCs used)")
+legend("topright", 
+       legend = c("Cluster 1", "Cluster 2"),
+       col = c("purple", "orange"), 
+       pch = 19, 
+       cex = 0.9)
+```
+
+### Compare with Actual Diagnosis
+
+```{r compare_diagnosis}
+# Compare with actual diagnosis
+if ("ALL.AML" %in% colnames(all.aml.anno)) {
+  par(mfrow = c(1, 2))
+  
+  # Clusters
+  plot(pca_leukemia$x[, 1], pca_leukemia$x[, 2],
+       col = cluster_colors,
+       pch = 19,
+       cex = 1.2,
+       xlab = paste0("PC1 (", round(pve_leuk[1] * 100, 1), "%)"),
+       ylab = paste0("PC2 (", round(pve_leuk[2] * 100, 1), "%)"),
+       main = "K-means Clusters")
+  legend("topright", legend = c("Cluster 1", "Cluster 2"),
+         col = c("purple", "orange"), pch = 19)
+  
+  # Actual diagnosis
+  diagnosis_colors <- c("darkgreen", "darkred")[as.numeric(as.factor(all.aml.anno$ALL.AML))]
+  plot(pca_leukemia$x[, 1], pca_leukemia$x[, 2],
+       col = diagnosis_colors,
+       pch = 19,
+       cex = 1.2,
+       xlab = paste0("PC1 (", round(pve_leuk[1] * 100, 1), "%)"),
+       ylab = paste0("PC2 (", round(pve_leuk[2] * 100, 1), "%)"),
+       main = "Actual Diagnosis")
+  legend("topright", legend = levels(as.factor(all.aml.anno$ALL.AML)),
+         col = c("darkgreen", "darkred"), pch = 19)
+}
+```

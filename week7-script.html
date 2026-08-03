@@ -1,0 +1,178 @@
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+const W7_CHECKS   = ['check_w7_slides','check_w7_vid1','check_w7_vid2','check_w7_md'];
+const W7_QUIZ_IDS = ['w7_q_hypotheses','w7_q_ttest','w7_q_normality','w7_q_null'];
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W7_CHECKS, ...W7_QUIZ_IDS.map(id => 'quiz_r_w7_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w7_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W7_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W7_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w7_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W7_CHECKS.length + W7_QUIZ_IDS.length;
+  let done = 0;
+  W7_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W7_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w7_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week7-progress-bar');
+  const txt = document.getElementById('week7-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: Formulating Hypotheses ──────────────────────────────────────────
+function checkHypothesesQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="hy1"]:checked'), q1f = document.getElementById('hy1-feedback');
+  if (q1 && q1.id === 'hy1b') { q1f.innerHTML = '✅ Correct! One sample compared to a fixed target, difference can go either way.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ One group of chocolate bars vs. one fixed target value (100g) = one-sample, two-sided ("different from", not "higher/lower than").'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="hy2"]:checked'), q2f = document.getElementById('hy2-feedback');
+  if (q2 && q2.id === 'hy2b') { q2f.innerHTML = '✅ Right! "greater" tests specifically for a higher mean in the first group.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ To test "higher than", use alternative = "greater" (with the first group as the one expected to be higher).'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="hy3"]:checked'), q3f = document.getElementById('hy3-feedback');
+  if (q3 && q3.id === 'hy3b') { q3f.innerHTML = '✅ Correct! α is the false-positive rate under H0.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ α is the proportion of tests that would wrongly detect a difference when H0 is actually true.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('hypotheses-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w7_q_hypotheses'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: Running & Interpreting t-Tests ──────────────────────────────────
+function checkTtestQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="tt1"]:checked'), q1f = document.getElementById('tt1-feedback');
+  if (q1 && q1.id === 'tt1a') { q1f.innerHTML = '✅ Correct! Two-tailed = area in both tails = ~2× the one-tailed p-value.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ The two-sided p-value sums the area in both tails of the t-distribution, so it is about double the one-sided p-value.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="tt2"]:checked'), q2f = document.getElementById('tt2-feedback');
+  if (q2 && q2.id === 'tt2b') { q2f.innerHTML = '✅ Right! 0.052 < 0.1 but not < 0.05, so the conclusion flips with a looser α.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ The p-value stays the same; only the threshold for "significant" changes, which can flip the conclusion.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="tt3"]:checked'), q3f = document.getElementById('tt3-feedback');
+  if (q3 && q3.id === 'tt3b') { q3f.innerHTML = '✅ Exactly! α must be fixed in advance, not chosen after seeing results.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Picking α after seeing the p-value defeats its purpose — always decide H0, H1 and α beforehand.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('ttest-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w7_q_ttest'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Checking Normality ──────────────────────────────────────────────
+function checkNormalityQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="nm1"]:checked'), q1f = document.getElementById('nm1-feedback');
+  if (q1 && q1.id === 'nm1a') { q1f.innerHTML = '✅ Correct! t-tests assume approximately normal data.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ t-tests require the data to be approximately normally distributed.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="nm2"]:checked'), q2f = document.getElementById('nm2-feedback');
+  if (q2 && q2.id === 'nm2a') { q2f.innerHTML = '✅ Right! Same p-value logic as any hypothesis test: p ≥ α means we cannot reject "data is normal".'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ For p ≥ 0.05 we cannot reject normality (data looks normal); for p < 0.05, we reject it (not normal).'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="nm3"]:checked'), q3f = document.getElementById('nm3-feedback');
+  if (q3 && q3.id === 'nm3a') { q3f.innerHTML = '✅ Correct! Non-parametric tests like Wilcoxon don\'t require normality.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ When data isn\'t normal, switch to a non-parametric test (e.g. Wilcoxon) — covered next week.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('normality-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w7_q_normality'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 4: Understanding the Null Distribution ─────────────────────────────
+function checkNullQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="nd1"]:checked'), q1f = document.getElementById('nd1-feedback');
+  if (q1 && q1.id === 'nd1a') { q1f.innerHTML = '✅ Correct! Random splits of the same population shouldn\'t systematically differ.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Two random subsets of the same cohort come from the same underlying population — no real difference is expected.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="nd2"]:checked'), q2f = document.getElementById('nd2-feedback');
+  if (q2 && q2.id === 'nd2a') { q2f.innerHTML = '✅ Right! The empirical H0 distribution matches the theoretical t-distribution closely.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ The simulated t-values follow a t-distribution with df = n − 2, matching the theoretical null distribution of the t-test.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="nd3"]:checked'), q3f = document.getElementById('nd3-feedback');
+  if (q3 && q3.id === 'nd3a') { q3f.innerHTML = '✅ Correct! Since both samples truly come from the same population, any rejection of H0 is a false positive.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Since H0 is actually true here (same population), wrongly rejecting it is a Type I error / false positive.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('null-result');
+  if (score === total) { res.innerHTML = '🎉 Week 7 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w7_q_null'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>

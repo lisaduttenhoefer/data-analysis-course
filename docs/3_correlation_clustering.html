@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 3: Correlation &amp; Clustering – METHODS IN DATA ANALYSIS</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function applyFinalStyle() {
+      // Wir suchen alle Links in der Navbar
+      const links = document.querySelectorAll('.navbar-nav .nav-link');
+      let pyBtn, rBtn;
+
+      links.forEach(link => {
+        if (link.textContent.trim() === 'PYTHON') pyBtn = link;
+        if (link.textContent.trim() === 'R') rBtn = link;
+      });
+
+      if (!pyBtn || !rBtn) {
+        setTimeout(applyFinalStyle, 200);
+        return;
+      }
+
+      const darkGreen = "#1a4d1a";
+
+      function updateView(lang) {
+        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+
+        // Style Python
+        pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+
+        // Style R
+        rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
+
+        localStorage.setItem('da_course_lang', lang);
+      }
+
+      pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
+      rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
+
+      updateView(localStorage.getItem('da_course_lang') || 'python');
+    }
+    applyFinalStyle();
+  });
+</script>
+<script src="coi-serviceworker.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">METHODS IN DATA ANALYSIS</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">PYTHON</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text">R</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_correlation_clustering.html">Week 3: Correlation &amp; Clustering</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">WELCOME</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./0_markdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./coding_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics in Coding</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 1: Datatypes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_data_cleanup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 2: Data Cleanup</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_correlation_clustering.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Week 3: Correlation &amp; Clustering</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_unsupervised_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 4: Hierarchical Clustering &amp; PCA</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_probability_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 5: Probability Distributions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_clt_confidence_intervals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 6: CLT &amp; Confidence Intervals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_hypothesis_testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 7: Hypothesis Testing &amp; t-Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_nonparametric_proportion_tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 8: Non-Parametric &amp; Proportion Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9_regression_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 9: Regression Analysis</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 3: Correlation &amp; Clustering</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+  .step-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
+  }
+  .step-badge {
+    background: #1a4d1a; color: white; border-radius: 50%;
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .step-header h2 { margin: 0; font-size: 1.35rem; }
+
+  .resource-list { list-style: none; padding: 0; margin: 0; }
+  .resource-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: #f8f9fa; border: 2px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
+  .resource-item input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
+  }
+  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
+  .resource-item label a { color: #1a4d1a; font-weight: 600; }
+  .resource-item label a:hover { text-decoration: underline; }
+
+  .quiz-card {
+    background: #f8f9fa; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 1.5rem;
+    border-left: 4px solid #1a4d1a;
+  }
+  .quiz-done-badge {
+    display: none; background: #a8d5a2; color: #1a4d1a;
+    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
+    font-weight: 800; margin-left: 10px; vertical-align: middle;
+  }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
+</style>
+
+<!-- Progress bar -->
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 3 Progress</strong>
+      <div id="week3-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week3-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+</div>
+<p>This week you will measure <strong>associations between variables</strong> with correlation, handle <strong>missing data points</strong>, and take your first steps into <strong>unsupervised learning</strong> with clustering. Use the language toggle above to switch between R and Python.</p>
+<hr>
+<!-- ─── STEP 1: Videos & Slides (shared) ─────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">1</div>
+  <h2 class="anchored">Watch the Lecture Videos &amp; Download the Slides</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Watch the four short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
+
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w3_slides" onchange="markCheckDone(this)">
+    <label for="check_w3_slides">
+      <a href="WEEK2/week2_lecture_slides.pdf" download="">Week 3 – Correlation &amp; Clustering (PDF slides)</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w3_vid1" onchange="markCheckDone(this)">
+    <label for="check_w3_vid1">
+      <a href="https://youtu.be/l4spkWoXclw" target="_blank" rel="noopener">Video 1/4 – 2.3 Correlations</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w3_vid2" onchange="markCheckDone(this)">
+    <label for="check_w3_vid2">
+      <a href="https://youtu.be/zJmp2SYoMts" target="_blank" rel="noopener">Video 2/4 – 3. Dealing with missing data points</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w3_vid3" onchange="markCheckDone(this)">
+    <label for="check_w3_vid3">
+      <a href="https://youtu.be/5J5k26YfKig" target="_blank" rel="noopener">Video 3/4 – 4.1 Introduction to clustering</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w3_vid4" onchange="markCheckDone(this)">
+    <label for="check_w3_vid4">
+      <a href="https://youtu.be/FHaIoNhHcKY" target="_blank" rel="noopener">Video 4/4 – 4.2 K-means clustering</a>
+    </label>
+  </li>
+</ul>
+
+<!-- Python note -->
+<div class="lang-python">
+  <div class="lang-note">
+    <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — correlation, missing data, k-means clustering — apply equally to Python (e.g. <code>pandas.DataFrame.corr()</code>, <code>sklearn.cluster.KMeans</code>). See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+  </div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 2: Markdown ──────────────────────────────────────────────────── -->
+
+<!-- R version -->
+<div class="lang-r">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2 class="anchored">Work Through the Practical Markdown</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w3_md" onchange="markCheckDone(this)">
+    <label for="check_w3_md">
+      <a href="WEEK2/_02_correlation_clustering.Rmd" download="_02_correlation_clustering.Rmd">Week 3 – Correlation &amp; Clustering (R Markdown)</a>
+      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
+    </label>
+  </li>
+</ul>
+<blockquote style="margin-top:1rem;" class="blockquote">
+  <p><strong>Datasets:</strong> This sheet reuses the cleaned diabetes dataset from Week 2, and introduces a new gene expression dataset (TCGA breast cancer, 200 samples × 300 genes) for the clustering part. Both are loaded directly inside the R Markdown file — no separate download needed.</p>
+</blockquote>
+<p style="margin-top:1rem;"><strong>Bonus reference:</strong> a plenum recap covering Spearman vs. Pearson correlation and k-means in more depth. Quiz 5 below is based on this material.</p>
+<div class="d-flex gap-3 mb-3 flex-wrap">
+  <a href="WEEK2/_02_plenum.Rmd" download="_02_plenum.Rmd" class="btn btn-outline-danger btn-sm">Plenum Recap (R Markdown)</a>
+</div>
+</div>
+
+<!-- Python version -->
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2 class="anchored">Work Through the Practical Notebook</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Notebook — Coming Soon</p>
+  <p style="color:#555;margin-bottom:0;">A Python/pandas version of this week's exercise (correlation, missing data, k-means with <code>scikit-learn</code>) is in preparation. Use the R Markdown material for now — the underlying concepts transfer directly.</p>
+</div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 3: Quiz ───────────────────────────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">3</div>
+  <h2 class="anchored">Comprehension Quiz</h2>
+</div>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+
+<!-- R quizzes -->
+<div class="lang-r">
+
+<h3 class="anchored">Quiz 1: Correlation <span id="quiz-done-w3_q_correlation" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What is the main difference between Pearson and Spearman correlation?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cor1" id="cor1a"><label class="form-check-label" for="cor1a">They always return the exact same value</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cor1" id="cor1b"><label class="form-check-label" for="cor1b">Pearson measures the linear relationship using raw values; Spearman uses ranks to measure monotonic relationships</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="cor1" id="cor1c"><label class="form-check-label" for="cor1c">Pearson only works on categorical variables</label></div>
+    <div id="cor1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What does <code>cor(dat$stab.glu, dat$glyhb, method='pearson')</code> compute?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cor2" id="cor2a"><label class="form-check-label" for="cor2a">The Pearson correlation coefficient between the two variables</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cor2" id="cor2b"><label class="form-check-label" for="cor2b">The p-value of a t-test comparing the two variables</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="cor2" id="cor2c"><label class="form-check-label" for="cor2c">The mean difference between the two variables</label></div>
+    <div id="cor2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Why is Spearman correlation often more robust to outliers than Pearson?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cor3" id="cor3a"><label class="form-check-label" for="cor3a">It automatically removes missing values</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cor3" id="cor3b"><label class="form-check-label" for="cor3b">It is based on ranks rather than raw values, so extreme values shift the ranks only slightly</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="cor3" id="cor3c"><label class="form-check-label" for="cor3c">It only works with normally distributed data</label></div>
+    <div id="cor3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkCorrelationQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="correlation-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3 class="anchored">Quiz 2: Missing Data <span id="quiz-done-w3_q_missing" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> Given <code>rmv.rows &lt;- apply(dat, 1, function(x) sum(is.na(x)))</code>, what does <code>i.missing &lt;- which(rmv.rows &gt; 0)</code> contain?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="md1" id="md1a"><label class="form-check-label" for="md1a">The total number of missing values in the dataset</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="md1" id="md1b"><label class="form-check-label" for="md1b">The row indices of patients that have at least one missing value</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="md1" id="md1c"><label class="form-check-label" for="md1c">The column names that contain missing values</label></div>
+    <div id="md1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> Why do we usually handle missing values before computing correlations or running k-means?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="md2" id="md2a"><label class="form-check-label" for="md2a">R cannot store <code>NA</code> in a dataframe at all</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="md2" id="md2b"><label class="form-check-label" for="md2b">Functions like <code>cor()</code> or <code>kmeans()</code> cannot handle <code>NA</code>s and will fail or return <code>NA</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="md2" id="md2c"><label class="form-check-label" for="md2c">Missing values always mean the whole row was measured incorrectly</label></div>
+    <div id="md2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> What does <code>dat[-i.missing, ]</code> do?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="md3" id="md3a"><label class="form-check-label" for="md3a">Keeps only the rows with missing values</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="md3" id="md3b"><label class="form-check-label" for="md3b">Removes the rows with missing values, keeping everyone else</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="md3" id="md3c"><label class="form-check-label" for="md3c">Removes the columns with missing values</label></div>
+    <div id="md3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkMissingQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="missing-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3 class="anchored">Quiz 3: Introduction to Clustering <span id="quiz-done-w3_q_clustering" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What does "unsupervised" mean in unsupervised learning?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cl1" id="cl1a"><label class="form-check-label" for="cl1a">The analysis needs no data at all</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cl1" id="cl1b"><label class="form-check-label" for="cl1b">There are no known group labels — the method finds structure purely from the data itself</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="cl1" id="cl1c"><label class="form-check-label" for="cl1c">A human manually assigns every observation to a group first</label></div>
+    <div id="cl1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What is the general goal of clustering?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cl2" id="cl2a"><label class="form-check-label" for="cl2a">Predict a continuous outcome variable from other variables</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cl2" id="cl2b"><label class="form-check-label" for="cl2b">Group similar observations together while separating the dissimilar ones</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="cl2" id="cl2c"><label class="form-check-label" for="cl2c">Remove all missing values from a dataset</label></div>
+    <div id="cl2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> In the gene expression example (<code>brca.exp</code>, genes × samples), what are we clustering when we run <code>kmeans(x = t(brca.exp), ...)</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cl3" id="cl3a"><label class="form-check-label" for="cl3a">The genes (rows)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="cl3" id="cl3b"><label class="form-check-label" for="cl3b">The samples/patients (columns) — that's why the matrix is transposed with <code>t()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="cl3" id="cl3c"><label class="form-check-label" for="cl3c">The p-values of a statistical test</label></div>
+    <div id="cl3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkClusteringQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="clustering-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3 class="anchored">Quiz 4: K-means Clustering <span id="quiz-done-w3_q_kmeans" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> In <code>kmeans(x, centers = k, nstart = 10)</code>, what does <code>centers</code> control?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="km1" id="km1a"><label class="form-check-label" for="km1a">The number of clusters requested</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="km1" id="km1b"><label class="form-check-label" for="km1b">The number of random restarts</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="km1" id="km1c"><label class="form-check-label" for="km1c">The distance metric used</label></div>
+    <div id="km1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> What does the Within Sum of Squares (WSS, <code>km$tot.withinss</code>) measure?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="km2" id="km2a"><label class="form-check-label" for="km2a">How spread out the entire dataset is, regardless of clustering</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="km2" id="km2b"><label class="form-check-label" for="km2b">How compact each cluster is — lower WSS means tighter clusters</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="km2" id="km2c"><label class="form-check-label" for="km2c">The number of points assigned to each cluster</label></div>
+    <div id="km2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> Why does WSS always decrease as you increase the number of clusters <code>k</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="km3" id="km3a"><label class="form-check-label" for="km3a">Because <code>kmeans()</code> recalculates the data randomly each time</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="km3" id="km3b"><label class="form-check-label" for="km3b">Because with more clusters, points sit closer to their own centroid — down to zero once every point is its own cluster</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="km3" id="km3c"><label class="form-check-label" for="km3c">Because R ignores clusters beyond <code>k = 5</code></label></div>
+    <div id="km3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkKmeansQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="kmeans-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3 class="anchored">Quiz 5: Plenum Recap — Correlation &amp; Clustering Deep Dive <span id="quiz-done-w3_q_plenum" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> In the plenum, a single outlier point was added to a strong linear relationship and moved further and further away. What happened to the Pearson and Spearman correlations?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pl1" id="pl1a"><label class="form-check-label" for="pl1a">Both stayed exactly the same</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pl1" id="pl1b"><label class="form-check-label" for="pl1b">The Pearson correlation kept changing as the outlier moved further away, while the Spearman correlation stayed constant — because moving the point further doesn't change its rank</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pl1" id="pl1c"><label class="form-check-label" for="pl1c">The Spearman correlation kept changing while Pearson stayed constant</label></div>
+    <div id="pl1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> The plenum simulated points scattered randomly in a circle (no real cluster structure) and ran k-means with <code>centers = 2</code> 25 times with different random initializations. What did this demonstrate?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pl2" id="pl2a"><label class="form-check-label" for="pl2a">K-means always converges to the exact same clustering, regardless of the data</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pl2" id="pl2b"><label class="form-check-label" for="pl2b">When there is no real cluster structure in the data, the k-means result can differ a lot depending on the random initialization</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pl2" id="pl2c"><label class="form-check-label" for="pl2c">K-means cannot be run more than once on the same dataset</label></div>
+    <div id="pl2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> The plenum compared standard k-means (Euclidean distance) with a custom "k-medians" implementation using Manhattan distance on the same 6 points. What does this comparison illustrate?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pl3" id="pl3a"><label class="form-check-label" for="pl3a">Manhattan and Euclidean distance always produce identical clusters</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="pl3" id="pl3b"><label class="form-check-label" for="pl3b">The choice of distance metric (and center type: mean vs. median) can change which points end up in which cluster</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="pl3" id="pl3c"><label class="form-check-label" for="pl3c">Manhattan distance can only be used for time-series data</label></div>
+    <div id="pl3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkPlenumQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="plenum-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+</div><!-- end .lang-r -->
+
+<!-- Python placeholder quizzes -->
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Five Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;" class="anchored">Quiz 1: Correlation <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R cor())</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which pandas method computes pairwise correlations between all numeric columns?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.mean()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.corr()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.groupby()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 2: Missing Data <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R is.na/which)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> How do you drop rows containing missing values from a pandas DataFrame <code>dat</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.dropna()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.fillna()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.dropcol()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 3: Introduction to Clustering <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Unsupervised learning means the algorithm...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Uses labeled training data</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Finds structure without known group labels</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Cannot be applied to numeric data</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 4: K-means Clustering <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scikit-learn equivalent of R kmeans())</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which scikit-learn class performs k-means clustering?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sklearn.cluster.KMeans</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sklearn.linear_model.LinearRegression</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sklearn.preprocessing.StandardScaler</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;" class="anchored">Quiz 5: Plenum Recap <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Why does moving an outlier point further away change the Pearson correlation but not the Spearman correlation?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Because Spearman is based on ranks, which don't change as the point moves further in the same direction</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Because Spearman ignores outliers entirely</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Because Pearson is undefined for datasets with outliers</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+</div><!-- end .lang-python -->
+
+
+
+</main> <!-- /main -->
+<script>
+// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
+const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+
+const W3_CHECKS   = ['check_w3_slides','check_w3_vid1','check_w3_vid2','check_w3_vid3','check_w3_vid4','check_w3_md'];
+const W3_QUIZ_IDS = ['w3_q_correlation','w3_q_missing','w3_q_clustering','w3_q_kmeans','w3_q_plenum'];
+
+let sbClient;
+
+(function init() {
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  const savedSession = sessionStorage.getItem('sb-session');
+  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
+      if (window.location.hash.includes('access_token'))
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
+    await loadAndRenderProgress();
+  });
+
+  loadAndRenderProgress();
+})();
+
+async function loadAndRenderProgress() {
+  const pm = await loadProgressMap();
+  renderCheckboxes(pm);
+  renderQuizBadges(pm);
+  updateWeekBar(pm);
+}
+
+async function loadProgressMap() {
+  const pm = {};
+  const allKeys = [...W3_CHECKS, ...W3_QUIZ_IDS.map(id => 'quiz_r_w3_' + id)];
+  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) {
+      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
+      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
+    }
+  } catch(e) {}
+  return pm;
+}
+
+async function sbSaveProgress(key, value) {
+  localStorage.setItem(key, value);
+  try {
+    const savedSession = sessionStorage.getItem('sb-session');
+    const user = savedSession ? JSON.parse(savedSession).user : null;
+    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
+  } catch(e) { console.error('sbSaveProgress:', e); }
+}
+
+async function markCheckDone(el) {
+  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
+  const item = el.closest('.resource-item');
+  if (item) item.classList.toggle('is-checked', el.checked);
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+async function markQuizDone(quizId) {
+  const key = 'quiz_r_w3_' + quizId;
+  await sbSaveProgress(key, 'true');
+  const badge = document.getElementById('quiz-done-' + quizId);
+  if (badge) badge.style.display = 'inline';
+  const pm = await loadProgressMap();
+  updateWeekBar(pm);
+}
+
+function renderCheckboxes(pm) {
+  W3_CHECKS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!pm[id];
+    const item = el.closest('.resource-item');
+    if (item) item.classList.toggle('is-checked', !!pm[id]);
+  });
+}
+
+function renderQuizBadges(pm) {
+  W3_QUIZ_IDS.forEach(id => {
+    if (pm['quiz_r_w3_' + id]) {
+      const badge = document.getElementById('quiz-done-' + id);
+      if (badge) badge.style.display = 'inline';
+    }
+  });
+}
+
+function updateWeekBar(pm) {
+  const total = W3_CHECKS.length + W3_QUIZ_IDS.length;
+  let done = 0;
+  W3_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
+  W3_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w3_' + id]) done++; });
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('week3-progress-bar');
+  const txt = document.getElementById('week3-progress-text');
+  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
+}
+
+// ─── Quiz 1: Correlation ───────────────────────────────────────────────────
+function checkCorrelationQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="cor1"]:checked'), q1f = document.getElementById('cor1-feedback');
+  if (q1 && q1.id === 'cor1b') { q1f.innerHTML = '✅ Correct! Pearson uses raw values (linear relationship), Spearman uses ranks (monotonic relationship).'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Pearson = linear relationship on raw values. Spearman = monotonic relationship on ranks.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="cor2"]:checked'), q2f = document.getElementById('cor2-feedback');
+  if (q2 && q2.id === 'cor2a') { q2f.innerHTML = '✅ Correct! cor() returns the correlation coefficient itself.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ cor() returns the correlation coefficient, not a p-value or mean difference.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="cor3"]:checked'), q3f = document.getElementById('cor3-feedback');
+  if (q3 && q3.id === 'cor3b') { q3f.innerHTML = '✅ Exactly! Ranks compress the effect of extreme values.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ Spearman is rank-based — an extreme value only shifts a rank by one position, not by its raw magnitude.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('correlation-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_correlation'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 2: Missing Data ───────────────────────────────────────────────────
+function checkMissingQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="md1"]:checked'), q1f = document.getElementById('md1-feedback');
+  if (q1 && q1.id === 'md1b') { q1f.innerHTML = '✅ Correct! which() on a logical condition returns the row indices.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ rmv.rows > 0 is a logical vector per row; which() turns it into the indices of TRUE rows.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="md2"]:checked'), q2f = document.getElementById('md2-feedback');
+  if (q2 && q2.id === 'md2b') { q2f.innerHTML = '✅ Right! Functions like cor() or kmeans() propagate or reject NAs.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ R can store NA fine — the issue is that many statistical functions cannot compute with them.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="md3"]:checked'), q3f = document.getElementById('md3-feedback');
+  if (q3 && q3.id === 'md3b') { q3f.innerHTML = '✅ Correct! The minus sign excludes those row indices.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ dat[i.missing, ] would KEEP those rows. The minus sign removes them.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('missing-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_missing'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 3: Introduction to Clustering ─────────────────────────────────────
+function checkClusteringQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="cl1"]:checked'), q1f = document.getElementById('cl1-feedback');
+  if (q1 && q1.id === 'cl1b') { q1f.innerHTML = '✅ Correct! No labels — the structure is found purely from the data.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Unsupervised = no known group labels are used, the method discovers structure itself.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="cl2"]:checked'), q2f = document.getElementById('cl2-feedback');
+  if (q2 && q2.id === 'cl2b') { q2f.innerHTML = '✅ Exactly! Group similar observations, separate dissimilar ones.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ Clustering is about grouping similar observations — it is not a prediction method.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="cl3"]:checked'), q3f = document.getElementById('cl3-feedback');
+  if (q3 && q3.id === 'cl3b') { q3f.innerHTML = '✅ Correct! We transpose with t() so that samples become the rows being clustered.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ brca.exp has genes as rows and samples as columns — t() flips it so kmeans clusters the samples.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('clustering-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_clustering'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 4: K-means Clustering ──────────────────────────────────────────────
+function checkKmeansQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="km1"]:checked'), q1f = document.getElementById('km1-feedback');
+  if (q1 && q1.id === 'km1a') { q1f.innerHTML = '✅ Correct! centers = the number of clusters requested.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ centers sets k, the number of clusters. nstart controls the number of random restarts.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="km2"]:checked'), q2f = document.getElementById('km2-feedback');
+  if (q2 && q2.id === 'km2b') { q2f.innerHTML = '✅ Right! Lower WSS = tighter, more compact clusters.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ WSS measures compactness within each cluster, not overall spread or cluster size.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="km3"]:checked'), q3f = document.getElementById('km3-feedback');
+  if (q3 && q3.id === 'km3b') { q3f.innerHTML = '✅ Exactly! With more clusters, points get closer to their own centroid — that is why we look for an "elbow".'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ More clusters mean fewer points per cluster, so distances to centroids shrink — down to zero at k = n.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('kmeans-result');
+  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_kmeans'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+
+// ─── Quiz 5: Plenum Recap ────────────────────────────────────────────────────
+function checkPlenumQuiz() {
+  var score = 0, total = 3;
+  var q1 = document.querySelector('input[name="pl1"]:checked'), q1f = document.getElementById('pl1-feedback');
+  if (q1 && q1.id === 'pl1b') { q1f.innerHTML = '✅ Correct! Ranks stay the same however far the point moves, so Spearman is constant while Pearson keeps drifting.'; q1f.style.color = '#1a4d1a'; score++; }
+  else if (q1) { q1f.innerHTML = '❌ Pearson uses raw distances and keeps changing; Spearman only cares about rank order, which stays fixed.'; q1f.style.color = '#d9534f'; }
+  var q2 = document.querySelector('input[name="pl2"]:checked'), q2f = document.getElementById('pl2-feedback');
+  if (q2 && q2.id === 'pl2b') { q2f.innerHTML = '✅ Exactly! Without real structure, k-means results become unstable and depend heavily on the starting points.'; q2f.style.color = '#1a4d1a'; score++; }
+  else if (q2) { q2f.innerHTML = '❌ The 25 different-looking clusterings from the same data show that initialization matters a lot when there is no clear structure.'; q2f.style.color = '#d9534f'; }
+  var q3 = document.querySelector('input[name="pl3"]:checked'), q3f = document.getElementById('pl3-feedback');
+  if (q3 && q3.id === 'pl3b') { q3f.innerHTML = '✅ Correct! Different distance metrics (and mean vs. median centers) can assign points to different clusters.'; q3f.style.color = '#1a4d1a'; score++; }
+  else if (q3) { q3f.innerHTML = '❌ The point of the demo is that Euclidean/mean-based and Manhattan/median-based clustering can disagree on the same data.'; q3f.style.color = '#d9534f'; }
+  var res = document.getElementById('plenum-result');
+  if (score === total) { res.innerHTML = '🎉 Week 3 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w3_q_plenum'); }
+  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
+}
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lisaduttenhoefer\.github\.io\/data-analysis-course");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

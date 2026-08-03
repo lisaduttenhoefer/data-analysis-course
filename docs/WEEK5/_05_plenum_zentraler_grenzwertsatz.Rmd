@@ -1,0 +1,236 @@
+---
+title: "Central Limit Theorem"
+author: "MoBi Data Analysis - WS23-24"
+date: "Carl Herrmann, Maïwen Caudron-Herger"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(123)
+```
+
+
+Wir beobachten einen Prozess (z.B. Produktion einer Tafel Schokolade mit 100 g Gewicht). 
+Bei der Produktion gibt es mehrere unabhängige, identisch verteilte Fehlerquellen, die sich aufaddieren (z.B. beim wiegen der einzelnen Zutaten).
+Diese sind gleichverteilt, zwischen -1 g weniger als vorgeschrieben und +1 g mehr als vorgeschrieben.
+Wir betrachten 1000 Stichproben.
+
+
+### einzelne Fehlerquelle
+
+Wir betrachten eine erste Fehlerquelle, z.B. bei dem Wiegen des Kakaos. Dieser Fehler (x1) ist **gleichverteilt** auf dem Intervall [-1,1].
+
+```{r}
+fehler1 = runif(1000,min = -1,max = 1)
+#fehler1 = rnorm(1000,10, sd = 0.5)
+head(fehler1,n = 40)
+```
+
+Verteilung dieses Fehlers über die 1000 Messungen
+
+```{r}
+hist(fehler1)
+```
+
+Dieser Fehler ist also tatsächlich gleichverteilt!
+
+### zweite Fehlerquelle
+
+Jetzt kommt eine weitere Fehlerquelle hinzu (fehler2, z.B. Wiegen des Zuckers). Auch dieser Fehler ist  gleichverteilt auf [-1,1], unabhängig vom ersten Fehler.
+
+```{r}
+fehler2 = runif(1000,min=-1,max=1)
+#fehler2 = rnorm(1000, mean = 4, sd = 6)
+hist(fehler2)
+```
+
+Beide Fehlerquelle korreliere nicht miteinander
+
+```{r}
+plot(fehler1,fehler2,pch=19)
+```
+
+
+Die beiden Fehler addieren sich gegenseitig auf zu einem Gesamtfehler
+```{r}
+gesamtfehler = fehler1 + fehler2
+```
+
+Wie ist dieser Fehler verteilt?
+
+```{r}
+hist(gesamtfehler)
+```
+```{r}
+qqnorm(gesamtfehler)
+```
+
+
+*Die Summe der beiden Fehler ist jetzt KEINE Gleichverteilung mehr!*
+
+
+### viele Fehlerquellen
+
+Nehmen wir weitere Fehlerquellen hinzu:
+```{r}
+## 100 ubanhängige Fehlerquellen
+n = 100
+gesamtfehler = sapply(1:n,function(i) 
+  {
+  runif(1000,min=-1,max=1)
+  })
+gesamtfehler[1:5,1:5]
+```
+
+In dieser Tabelle ist jede Spalte eine Fehlerquelle, jede Zeile eine der 1000 Messungen (wir zeigen hier nur die ersten 5 Spalten und Zeilen!)
+
+Wir addieren den Effekt dieser ```n``` Fehlerquellen, die alle einzeln gleichverteilt sind:
+
+```{r}
+summe.fehler = apply(gesamtfehler,1,sum)
+hist(summe.fehler,breaks=20)
+```
+
+
+
+Handelt es sich hier um eine Normalverteilung? Das können wir mit einem QQ-Plot beantworten, und die Quantile dieser Verteilung mit den theoretischen Quantilen einer Normalverteilung vergleichen:
+
+```{r}
+qqnorm(summe.fehler);qqline(summe.fehler)
+```
+
+**JA!**
+
+### Mit verschiedenen Verteilungen
+
+#### Normal distribution
+Stichprobe mit N = 1
+```{r}
+N = 1
+x <- sapply(1:1000, function (x) {mean(rnorm(N, mean = 2.3, sd = 4))})
+hist(x, xlim= c(-7,12),
+     xlab = "Mean value",
+     main = paste("Distribution of the sample means for N = ",N))
+```
+
+Stichprobe mit N = 5
+```{r}
+N = 5
+x <- sapply(1:1000, function (x) {mean(rnorm(N, mean = 2.3, sd = 4))})
+hist(x, xlim=c(-7,12),
+     xlab = "Mean value",
+     main = paste("Distribution of the sample means for N = ",N))
+```
+
+Stichprobe mit N = 25
+```{r}
+N = 25
+x <- sapply(1:1000, function (x) {mean(rnorm(N, mean = 2.3, sd = 4))})
+hist(x, xlim=c(-7,12),
+     xlab = "Mean value",
+     main = paste("Distribution of the sample means for N = ",N))
+```
+
+#### Poisson distribution
+Stichprobe mit N = 1
+```{r}
+N = 1
+x <- sapply(1:1000, function (x) {mean(rpois(N, lambda = 2.3))})
+hist(x, xlim= c(0,10),
+     xlab = "Mean value",
+     main = paste("Distribution of the sample means for N = ",N))
+```
+
+Stichprobe mit N = 5
+```{r}
+N = 5
+x <- sapply(1:1000, function (x) {mean(rpois(N, lambda = 2.3))})
+hist(x, xlim=c(0,10),
+     xlab = "Mean value",
+     main = paste("Distribution of the sample means for N = ",N),probability = T)
+lines(seq(0,10,0.1),dnorm(seq(0,10,0.1),mean = 2.3,sd = sqrt(2.3)/sqrt(N)),lty=2, lwd = 2,col = "purple")
+```
+
+Stichprobe mit N = 25
+```{r}
+N = 25
+x <- sapply(1:1000, function (x) {mean(rpois(N, lambda = 2.3))})
+hist(x, xlim=c(0,10),
+     xlab = "Mean value",
+     main = paste("Distribution of the sample means for N = ",N),probability = T)
+lines(seq(0,10,0.1),dnorm(seq(0,10,0.1),mean = 2.3,sd = sqrt(2.3)/sqrt(N)),lty=2, lwd = 2,col = "purple")
+```
+
+
+##### Mean values with increasing size of the sample
+```{r}
+s_mean <- sapply(seq(1,1000,10), function(x) {
+  mean(rpois(x, lambda = 2.3))
+})
+plot(s_mean, ylim = c(0,5),pch = 19, col = "blue", ylab = "Sample mean")
+abline(h = 2.3, lty = 2, col="black", lwd=2)
+```
+##### Standard error with increasing size of the sample
+```{r}
+sd_mean <- sapply(seq(1,1000,10), function(x) {
+  sd(sapply(1:10, function(y) {
+    mean(rpois(x, lambda = 2.3))
+  })) 
+})
+plot(sd_mean, ylim = c(0,5),pch = 19, col = "darkgreen", ylab = "Standard error")
+lines(sqrt(2.3)/sqrt(seq(1,1000,10)), lty = 2, col="black", lwd=2)
+```
+
+
+#### t-distribution
+Stichprobe mit N = 2
+```{r}
+N = 2
+x <- sapply(1:1000, function (x) {mean(rt(N, df = N-1))})
+hist(x, xlim= c(-10,10),
+     xlab = "Mean value",
+     main = paste("Distribution of the sample means for N = ",N))
+```
+
+Stichprobe mit N = 5
+```{r}
+N = 5
+x <- sapply(1:1000, function (x) {mean(rt(N, df = N-1))})
+hist(x, xlim=c(-10,10),
+     xlab = "Mean value",
+     ylim = c(0,1.1),
+     main = paste("Distribution of the sample means for N = ",N),probability = T)
+lines(seq(-10,10,0.1),dnorm(seq(-10,10,0.1),mean = 0,sd = 1/sqrt(N)),lty=2, lwd = 2,col = "purple")
+```
+
+Stichprobe mit N = 25
+```{r}
+N = 25
+x <- sapply(1:1000, function (x) {mean(rt(N, df = N-1))})
+hist(x, xlim=c(-10,10),
+     xlab = "Mean value",
+     ylim = c(0,1.9),
+     main = paste("Distribution of the sample means for N = ",N),probability = T)
+lines(seq(-10,10,0.1),dnorm(seq(-10,10,0.1),,mean = 0,sd = 1/sqrt(N)),lty=2, lwd = 2,col = "purple")
+```
+
+
+##### Mean values with increasing size of the sample
+```{r}
+s_mean <- sapply(seq(2,1000,10), function(x) {
+  mean(rt(x, df = x-1))
+})
+plot(s_mean, ylim = c(-3,3),pch = 19, col = "blue", ylab = "Sample mean")
+abline(h = 0, lty = 2, col="black", lwd=2)
+```
+##### Standard error with increasing size of the sample
+```{r}
+sd_mean <- sapply(seq(2,1000,10), function(x) {
+  sd(sapply(1:10, function(y) {
+    mean(rt(x, df = x-1))
+  })) 
+})
+plot(sd_mean, ylim = c(0,5),pch = 19, col = "darkgreen", ylab = "Standard error")
+lines(1/sqrt(seq(2,1000,10)), lty = 2, col="black", lwd=2)
+```
+

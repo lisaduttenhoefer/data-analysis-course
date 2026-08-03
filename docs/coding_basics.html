@@ -145,60 +145,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
     applyFinalStyle();
   });
-
-  // Sub-page access lock check (reads course_schedule from Supabase)
-  (function() {
-    const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
-
-    function getPageWeekInfo() {
-      const path = window.location.pathname;
-      // Exercise pages: .../exercises/week{n}_exercises.html
-      const exMatch = path.match(/week(\d+)_exercises/);
-      if (exMatch) return { week: parseInt(exMatch[1]), type: 'exercises' };
-      // Content pages: .../{n}_something.html (n >= 1)
-      const contentMatch = path.match(/\/(\d+)_[^/]+\.html/);
-      if (contentMatch) {
-        const n = parseInt(contentMatch[1]);
-        if (n >= 1) return { week: n, type: 'content' };
-      }
-      return null;
-    }
-
-    function redirectToRoot() {
-      const pathParts = window.location.pathname.split('/');
-      const isExercise = window.location.pathname.includes('/exercises/');
-      const depth = isExercise ? 2 : 1;
-      const rootPath = pathParts.slice(0, pathParts.length - depth).join('/') + '/';
-      window.location.href = window.location.origin + rootPath;
-    }
-
-    function doCheck() {
-      if (typeof supabase === 'undefined') { setTimeout(doCheck, 100); return; }
-      const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      const pageInfo = getPageWeekInfo();
-      client.from('course_schedule')
-        .select('content_unlocked, exercises_unlocked')
-        .eq('week', pageInfo.week)
-        .single()
-        .then(({ data }) => {
-          if (!data) { redirectToRoot(); return; }
-          const unlocked = pageInfo.type === 'content'
-            ? data.content_unlocked
-            : data.exercises_unlocked;
-          if (!unlocked) redirectToRoot();
-        });
-    }
-
-    const pageInfo = getPageWeekInfo();
-    if (!pageInfo) return; // index, admin, getting-started — no locking
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', doCheck);
-    } else {
-      doCheck();
-    }
-  })();
 </script>
 <script src="coi-serviceworker.js"></script>
 
@@ -281,6 +227,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="./2_data_cleanup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Week 2: Data Cleanup</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_correlation_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 3: Correlation &amp; Clustering</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_unsupervised_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 4: Hierarchical Clustering &amp; PCA</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_probability_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 5: Probability Distributions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_clt_confidence_intervals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 6: CLT &amp; Confidence Intervals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_hypothesis_testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 7: Hypothesis Testing &amp; t-Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_nonparametric_proportion_tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 8: Non-Parametric &amp; Proportion Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9_regression_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 9: Regression Analysis</span></a>
   </div>
 </li>
     </ul>

@@ -1,0 +1,64 @@
+---
+title: "Comparing 90% and 95% Confidence Intervals"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+set.seed(123)
+```
+
+# Confidence Interval Comparison
+
+We simulate a sample from a normal distribution and compute both the **90%** and **95%** confidence intervals for the mean.
+Then we show them graphically.
+
+```{r}
+# Sample data
+x <- rnorm(50, mean = 10, sd = 2)
+
+# Estimate
+xbar <- mean(x)
+s <- sd(x)
+n <- length(x)
+
+# Confidence levels
+alpha90 <- 0.10
+alpha95 <- 0.05
+
+# Critical values (using t distribution)
+t90 <- qt(1 - alpha90/2, df = n-1)  # qt(0.95, n-1) 
+t95 <- qt(1 - alpha95/2, df = n-1)  # qt(0.975, n-1)
+
+# Confidence intervals
+ci90 <- c(xbar - t90*s/sqrt(n), xbar + t90*s/sqrt(n))
+ci95 <- c(xbar - t95*s/sqrt(n), xbar + t95*s/sqrt(n))
+
+ci90
+ci95
+```
+
+# **Graphic: 90% vs 95% Confidence Intervals**
+
+```{r}
+# Plot setup
+plot(1, xbar, pch = 19, xlim = c(0.5, 1.5), ylim = range(ci95),
+     xaxt = "n", xlab = "", ylab = "Value",
+     main = "Comparison of Confidence Interval Widths\n(Base R Graphics)")
+
+axis(1, at = 1, labels = FALSE)
+
+# Draw 95% CI (wider)
+segments(1, ci95[1], 1, ci95[2], lwd = 6, col = "skyblue")
+points(1, xbar, pch = 19, col = "blue")
+
+# Draw 90% CI (narrower), slightly shifted for visibility
+segments(1.05, ci90[1], 1.05, ci90[2], lwd = 6, col = "orange")
+points(1.05, xbar, pch = 19, col = "red")
+
+# Legend
+legend("topright",
+       legend = c("95% CI (wider)", "90% CI (narrower)"),
+       col = c("skyblue", "orange"),
+       lwd = 6,
+       bty = "n")
+```

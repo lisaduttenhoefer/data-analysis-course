@@ -1,0 +1,339 @@
+---
+title: "Week 7: Hypothesis Testing & t-Tests"
+format:
+  html:
+    include-in-header:
+      - language-switch.html
+    include-after-body:
+      - week7-script.html
+---
+
+```{=html}
+<style>
+  .step-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
+  }
+  .step-badge {
+    background: #1a4d1a; color: white; border-radius: 50%;
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .step-header h2 { margin: 0; font-size: 1.35rem; }
+
+  .resource-list { list-style: none; padding: 0; margin: 0; }
+  .resource-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: #f8f9fa; border: 2px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
+  .resource-item input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
+  }
+  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
+  .resource-item label a { color: #1a4d1a; font-weight: 600; }
+  .resource-item label a:hover { text-decoration: underline; }
+
+  .quiz-card {
+    background: #f8f9fa; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 1.5rem;
+    border-left: 4px solid #1a4d1a;
+  }
+  .quiz-done-badge {
+    display: none; background: #a8d5a2; color: #1a4d1a;
+    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
+    font-weight: 800; margin-left: 10px; vertical-align: middle;
+  }
+  .placeholder-card {
+    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
+  }
+  .lang-note {
+    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
+    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
+    border-left: 3px solid #ffc107; color: #555;
+  }
+</style>
+
+<!-- Progress bar -->
+<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div>
+      <strong style="font-size:1.1rem;">Week 7 Progress</strong>
+      <div id="week7-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
+    <div id="week7-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
+  </div>
+</div>
+```
+
+This week you learn how to **formulate hypotheses** and **test** them — focusing on tests of mean values with the **t-test**. Use the language toggle above to switch between R and Python.
+
+---
+
+```{=html}
+<!-- ─── STEP 1: Videos & Slides (shared) ─────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">1</div>
+  <h2>Watch the Lecture Videos &amp; Download the Slides</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Watch the short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
+
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w7_slides" onchange="markCheckDone(this)">
+    <label for="check_w7_slides">
+      <a href="WEEK6/week6_lecture_slides.pdf" download>Week 7 – Hypothesis Testing &amp; t-Tests (PDF slides)</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w7_vid1" onchange="markCheckDone(this)">
+    <label for="check_w7_vid1">
+      <a href="https://www.youtube.com/watch?v=wJm3-Ev5tRw" target="_blank" rel="noopener">Video 1/2 – 7.1 Hypothesis testing</a>
+    </label>
+  </li>
+  <li class="resource-item">
+    <input type="checkbox" id="check_w7_vid2" onchange="markCheckDone(this)">
+    <label for="check_w7_vid2">
+      <a href="https://www.youtube.com/watch?v=do6Sgq4ZmjU" target="_blank" rel="noopener">Video 2/2 – 7.2 t-Test</a>
+    </label>
+  </li>
+</ul>
+
+<!-- Python note -->
+<div class="lang-python">
+  <div class="lang-note">
+    <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — H0/H1, significance level, t-tests — apply equally to Python (e.g. <code>scipy.stats.ttest_1samp</code>, <code>ttest_ind</code>). See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
+  </div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 2: Markdown ──────────────────────────────────────────────────── -->
+
+<!-- R version -->
+<div class="lang-r">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Markdown</h2>
+</div>
+<p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
+<ul class="resource-list">
+  <li class="resource-item">
+    <input type="checkbox" id="check_w7_md" onchange="markCheckDone(this)">
+    <label for="check_w7_md">
+      <a href="WEEK6/_06_hypothesis_testing.Rmd" download="_06_hypothesis_testing.Rmd">Week 7 – Hypothesis Testing (R Markdown)</a>
+      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
+    </label>
+  </li>
+</ul>
+<blockquote style="margin-top:1rem;">
+  <p><strong>Dataset:</strong> This sheet reuses the diabetes dataset from earlier weeks, loaded directly inside the R Markdown file — no separate download needed.</p>
+</blockquote>
+<p style="margin-top:1rem;"><strong>Bonus reference:</strong> two companion scripts with more worked t-test examples, plus comprehension questions with solutions. Quizzes 2 &amp; 4 below draw on this material.</p>
+<div class="d-flex gap-3 mb-3 flex-wrap">
+  <a href="WEEK6/_06_t-tests.Rmd" download="_06_t-tests.Rmd" class="btn btn-outline-danger btn-sm">t-Tests Companion (R Markdown)</a>
+  <a href="WEEK6/_06_ttests.Rmd" download="_06_ttests.Rmd" class="btn btn-outline-danger btn-sm">t-Tests Companion 2 (R Markdown)</a>
+  <a href="WEEK6/Verständnisfragen_mit_sol.Rmd" download="Verstaendnisfragen_mit_sol.Rmd" class="btn btn-outline-danger btn-sm">Comprehension Questions + Solutions (R Markdown)</a>
+</div>
+</div>
+
+<!-- Python version -->
+<div class="lang-python">
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <h2>Work Through the Practical Notebook</h2>
+</div>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Notebook — Coming Soon</p>
+  <p style="color:#555;margin-bottom:0;">A Python version of this week's exercise (hypothesis testing and t-tests with <code>scipy.stats</code>) is in preparation. Use the R Markdown material for now — the underlying concepts transfer directly.</p>
+</div>
+</div>
+
+<hr>
+
+<!-- ─── STEP 3: Quiz ───────────────────────────────────────────────────────── -->
+<div class="step-header">
+  <div class="step-badge">3</div>
+  <h2>Comprehension Quiz</h2>
+</div>
+<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
+
+<!-- R quizzes -->
+<div class="lang-r">
+
+<h3>Quiz 1: Formulating Hypotheses <span id="quiz-done-w7_q_hypotheses" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> You want to test whether the mean weight of 10 sampled chocolate bars differs from the expected 100 g. Is this a one-sample or two-sample test, and one- or two-sided?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hy1" id="hy1a"><label class="form-check-label" for="hy1a">Two-sample, one-sided</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hy1" id="hy1b"><label class="form-check-label" for="hy1b">One-sample, two-sided — comparing one sample's mean to a fixed target value, in either direction</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="hy1" id="hy1c"><label class="form-check-label" for="hy1c">Two-sample, two-sided</label></div>
+    <div id="hy1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> To test whether males have a significantly <em>higher</em> mean weight than females, which <code>t.test()</code> alternative would you use?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hy2" id="hy2a"><label class="form-check-label" for="hy2a"><code>alternative = "two.sided"</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hy2" id="hy2b"><label class="form-check-label" for="hy2b"><code>alternative = "greater"</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="hy2" id="hy2c"><label class="form-check-label" for="hy2c"><code>alternative = "less"</code></label></div>
+    <div id="hy2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> What does the significance level α represent?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hy3" id="hy3a"><label class="form-check-label" for="hy3a">The probability that H1 is true</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="hy3" id="hy3b"><label class="form-check-label" for="hy3b">The false-positive rate: under H0, the proportion of tests that would (wrongly) detect a significant difference</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="hy3" id="hy3c"><label class="form-check-label" for="hy3c">The sample size needed for the test</label></div>
+    <div id="hy3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkHypothesesQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="hypotheses-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 2: Running &amp; Interpreting t-Tests <span id="quiz-done-w7_q_ttest" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> Why is the p-value of a one-tailed t-test always smaller than (or equal to) the p-value of the corresponding two-tailed test?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="tt1" id="tt1a"><label class="form-check-label" for="tt1a">The two-tailed p-value adds up the area in both tails of the t-distribution, so it is (about) twice the one-tailed p-value</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="tt1" id="tt1b"><label class="form-check-label" for="tt1b">One-tailed tests always use a different dataset</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="tt1" id="tt1c"><label class="form-check-label" for="tt1c">There is no relationship between the two p-values</label></div>
+    <div id="tt1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> In the chocolate bar example (p-value = 0.052), what changes if you use α = 0.1 instead of α = 0.05?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="tt2" id="tt2a"><label class="form-check-label" for="tt2a">Nothing — the conclusion is always the same regardless of α</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="tt2" id="tt2b"><label class="form-check-label" for="tt2b">With α = 0.1, H0 can now be rejected since the p-value is below 0.1, even though it wasn't below 0.05</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="tt2" id="tt2c"><label class="form-check-label" for="tt2c">The p-value itself changes when you change α</label></div>
+    <div id="tt2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> According to the exercise sheet, when should you choose your α value?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="tt3" id="tt3a"><label class="form-check-label" for="tt3a">After seeing the p-value, so you can pick whichever gives a significant result</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="tt3" id="tt3b"><label class="form-check-label" for="tt3b">Before running the test, together with formulating H0 and H1</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="tt3" id="tt3c"><label class="form-check-label" for="tt3c">α does not need to be decided in advance</label></div>
+    <div id="tt3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkTtestQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="ttest-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 3: Checking Normality <span id="quiz-done-w7_q_normality" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> What is a key requirement for a t-test to be valid?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nm1" id="nm1a"><label class="form-check-label" for="nm1a">The data should be approximately normally distributed</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nm1" id="nm1b"><label class="form-check-label" for="nm1b">The sample size must be exactly 10</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="nm1" id="nm1c"><label class="form-check-label" for="nm1c">There must be no missing values anywhere in the dataset</label></div>
+    <div id="nm1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> How do you interpret <code>shapiro.test(x)$p.value</code>?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nm2" id="nm2a"><label class="form-check-label" for="nm2a">p-value ≥ 0.05 → data looks normally distributed; p-value &lt; 0.05 → data is not normally distributed</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nm2" id="nm2b"><label class="form-check-label" for="nm2b">p-value ≥ 0.05 → data is NOT normal</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="nm2" id="nm2c"><label class="form-check-label" for="nm2c">The p-value has no meaning for the Shapiro-Wilk test</label></div>
+    <div id="nm2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> If the Shapiro-Wilk test shows a variable is NOT normally distributed, what should you do instead of a t-test?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nm3" id="nm3a"><label class="form-check-label" for="nm3a">Use a non-parametric test instead (e.g. the Wilcoxon test)</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nm3" id="nm3b"><label class="form-check-label" for="nm3b">Delete the dataset and collect new data</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="nm3" id="nm3c"><label class="form-check-label" for="nm3c">Run the t-test anyway, it makes no difference</label></div>
+    <div id="nm3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkNormalityQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="normality-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+<hr>
+
+<h3>Quiz 4: Understanding the Null Distribution <span id="quiz-done-w7_q_null" class="quiz-done-badge">✓ Done</span></h3>
+<div class="quiz-card">
+  <div class="mb-4">
+    <p><strong>Question 1:</strong> The exercise builds an empirical H0 distribution by repeatedly splitting the cohort into 2 <em>random</em> groups and computing the t-value each time. Why should there be no real difference between 2 random groups?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nd1" id="nd1a"><label class="form-check-label" for="nd1a">Because random groups are drawn from the same overall population, so on average they shouldn't systematically differ</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nd1" id="nd1b"><label class="form-check-label" for="nd1b">Because R always returns 0 for random samples</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="nd1" id="nd1c"><label class="form-check-label" for="nd1c">Because random groups are always exactly the same size</label></div>
+    <div id="nd1-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 2:</strong> The empirical H0 distribution of 10,000 random-split t-values closely matches which theoretical distribution?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nd2" id="nd2a"><label class="form-check-label" for="nd2a">A t-distribution with df = number of patients − 2</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nd2" id="nd2b"><label class="form-check-label" for="nd2b">A Poisson distribution</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="nd2" id="nd2c"><label class="form-check-label" for="nd2c">A uniform distribution</label></div>
+    <div id="nd2-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <div class="mb-4">
+    <p><strong>Question 3:</strong> A Verständnisfragen exercise samples two groups of 5 mice from the SAME population (true mean 100g) and runs both a 1-sample and 2-sample t-test. If H0 is rejected here, what kind of error occurred?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nd3" id="nd3a"><label class="form-check-label" for="nd3a">A false positive (Type I error) — H0 was actually true, since both samples came from the same population</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="nd3" id="nd3b"><label class="form-check-label" for="nd3b">A false negative (Type II error)</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="nd3" id="nd3c"><label class="form-check-label" for="nd3c">No error — rejecting H0 here is always correct</label></div>
+    <div id="nd3-feedback" class="mt-1 fw-bold"></div>
+  </div>
+  <button onclick="checkNullQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
+  <div id="null-result" class="mt-3 fw-bold text-center"></div>
+</div>
+
+</div><!-- end .lang-r -->
+
+<!-- Python placeholder quizzes -->
+<div class="lang-python">
+<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
+
+<h3 style="margin-top:0.5rem;">Quiz 1: Formulating Hypotheses <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Comparing the means of two independent groups (e.g. men vs. women) is an example of a...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">One-sample test</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Two-sample test</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">Paired test</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 2: Running &amp; Interpreting t-Tests <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scipy.stats.ttest_ind / ttest_1samp)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which scipy.stats function performs an independent two-sample t-test?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.ttest_ind()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.ttest_1samp()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.pearsonr()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 3: Checking Normality <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(scipy.stats.shapiro)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> Which scipy.stats function performs a Shapiro-Wilk normality test?</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.shapiro()</code></label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.normaltest_only()</code></label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>stats.ttest_ind()</code></label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+<h3 style="margin-top:1.5rem;">Quiz 4: Understanding the Null Distribution <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(concept, language-agnostic)</span></h3>
+<div class="placeholder-card">
+  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
+  <div style="opacity:0.65;">
+    <p><strong>Preview Question:</strong> If you repeatedly split a single population into two random groups and run a t-test each time, the resulting distribution of t-values approximates...</p>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The H0 (null) distribution of the test statistic</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">The H1 distribution</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;">A completely random, meaningless distribution</label></div>
+  </div>
+  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
+</div>
+
+</div><!-- end .lang-python -->
+```
