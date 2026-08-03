@@ -1,0 +1,253 @@
+---
+title: "Verständnisfragen_Woche6_2023"
+author: "Carl Herrmann, Maïwen Caudron-Herger"
+date: "2023-11-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Frage 1
+
+Es wird überprüft, ob eine Füllanlage Flaschen tatsächlich mit v = 1000 ml Saft füllt. Eine Stichprobe von n = 16 Flaschen wird untersucht; der Mittelwert der Füllmenge ergibt v̄ = 998.2875ml, mit einer Standardabweichung von s = 2.5 ml.
+1. Formulieren Sie die H0 Hypothese
+2. Wird hier ein einseitiger oder zweiseitiger Test durchgeführt ?
+3. Berechnen Sie die Teststatistik θ
+4. Untersuchen Sie anhand dieser Tabelle, ob die H0 Hypothese bei einem Signifikanzwert von α = 0.05
+verworfen werden kann. (https://de.wikipedia.org/wiki/Standardnormalverteilungstabelle)
+
+## Lösung
+
+1. Wir definieren eine Zufallsvariable V als Füllmenge. Die H0 Hypothese lautet dann:
+> der Erwartungswert von V ist v = 1000 ml.
+> Die Alternativ-hypothese H1 lautet dann “Der Erwartungswert von V ist kleiner oder größer als v = 1000ml.
+
+Man könnte die H0 Hypothese auch anders formulieren, z.B.
+> H0: der Unterschied zwischen dem Mittelwert und dem Sollwert kann durch statistische Fluktuationen erklärt werden.
+
+2. Wir untersuchen Abweichungen von der Sollmenge, entweder nach oben oder nach unten. Es wird also ein zweiseitiger Test durchgeführt.
+
+3. Die Teststatistik bei einem ein-Proben Test lautet:
+```{r}
+t = (998.2875 - 1000)/(2.5/sqrt(16))
+t
+```
+
+Wir können die H0 Verteilung erstellen; es handelt sich um eine t-Verteilung mit *16-1* Freiheitsgraden:
+```{r}
+t = (998.2875 - 1000)/(2.5/sqrt(16))
+t
+x = seq(-4,4,0.01)
+y = dt(x,df=15)
+y0 = dnorm(x)
+plot(x,y,type='l',col='red',lwd=2)
+abline(v=c(t,-t),lty=3,lwd=2)
+lines(x,y0,lty=3,col='red')
+```
+
+4. Aus dieser Tabelle kann abgelesen werden, dass für ein t-Wert von 2.74 die Fläche links von diesem Wert 0.99693 beträgt, der Wert rechts also
+```{r}
+1-0.99693
+```
+
+Der 2-seitige P-Wert ist das doppelte, also
+```{r}
+2*(1-0.99693)
+```
+
+Der test ist also signifikant mit α = 0.05.
+
+Wir haben hier angenommen, dass wir die H0 Verteilung als SNV approximieren können! Wir können aber
+den p-Wert anhand der t-Verteilung bestimmen:
+```{r}
+2*pt(t,df=15)
+```
+
+# Frage 2
+
+Sie kaufen einen neues VW-Auto, das laut Betriebsanleitung mit einer Tankfüllung (40l) im Schnitt 700 Kilometer fährt. Nach dem Diesel-Skandal sind Sie natürlich VW gegenüber etwas skeptisch geworden. . .
+
+1. Die 1. Tankfüllung ist nach 696 Kilometern verbraucht. Besteht Anlass zu glauben, dass die Angabe aus der Betriebsanleitung ein Fehler ist? Gehen Sie von einer zu erwartenden Streuung von σ = 3 (die auch in der Betriebsanleitung angegeben ist!) aus. Formulieren Sie vor Ihren Berechnungen eine
+Nullhypothese und eine Alternativhypothese. Der Signifikanzbereich liegt bei α = 0.05.
+
+2. Daraufhin führen Sie eine kontrollierte Studie mit 5 Durchgängen durch. Jede Tankfüllung fahren Sie bis auf den letzten Tropfen. Berechnen Sie anhand dieser Daten, ob Anlass besteht zu glauben, dass die Angabe aus der Anleitung ein Fehler ist. Gehen Sie dabei davon aus, dass die Streuung nicht bekannt ist und der Standardfehler aus den Daten geschätzt werden muss Formulieren Sie vor IhrenBerechnungen eine Nullhypothese und eine Alternativhypothese. Der Signifikanzbereich liegt auch hier bei α = 0.05.
+
+1. Fahrt: 685
+2. Fahrt: 699
+3. Fahrt: 681
+4. Fahrt: 689
+5. Fahrt: 691
+
+## Lösung
+
+1. Hier definieren wir die Zufallsvariable als S: “Strecke die mit einer Tankfüllung gefahren werden kann”. Die H0 Hypothese lautet hier: “Der Erwartungswert von S ist größer oder gleich 700 km”. Die Alternativhypothese H1 lautet also “der Erwartungswert von S ist kleiner als 700km”. Hier macht es mehr Sinn, einen einseitigen Test anzuwenden, da nur Abweichungen nach unten von Interesse sind. Es könnte aber auch ein zweiseitiger Test durchgeführt werden, jedoch wäre es dann schwieriger, ein signifikantes Ergebnis zu bekommen.
+
+Wir berechnen die Teststatistik: 
+wo n = 1 ist und die Standardabweichung mit σ = 3 angegeben wird
+(mit einer Stichprobe n = 1 kann mit bestem Willen keine Standardabweichung geschätzt werden. . . ) 
+```{r}
+t = (696-700)/(3/sqrt(1))
+t
+```
+
+Da die Stichprobe klein ist (n=1) müssten wir die kritischen Werte der t-Verteilung benutzen; allerdings gibt es keine t-Verteilung mit 1-1=0 Freiheitsgraden, daher nehmen wir eine t-Verteilung mit df=1:
+```{r}
+x = seq(-4,4,0.01)
+y = dt(x,df=1)
+y0 = dnorm(x)
+plot(x,y,type='l',col='red',lwd=2)
+abline(v=c(t),lty=3,lwd=2)
+lines(x,y0,lty=3,col='red')
+```
+
+```{r}
+pt(t,df=1)
+```
+
+Es kann also hier kein Betrug nachgewiesen werden, da eine einmalige Fahrt mit 696km nicht ausreicht...
+
+2. Nach den n = 5 Testfahrten können wir Mittelwert und Stichprobenvarianz berechnen.
+```{r}
+d = c(685,699,681,689,691)
+m = mean(d)
+s = sd(d)
+m;s
+```
+
+Daraus leiten wir ab
+```{r}
+t = (m-700)/(s/sqrt(5))
+t
+```
+
+Hier ist der Test eindeutig signifikant, auch wenn wir anstatt der SNV als H0 Verteilung die t-Verteilung mit 4 Freiheitsgraden annehmen. In diesem Fall ist der kritische Wert gegeben durch:
+```{r}
+t0 = qt(0.05,df=4)
+t0
+```
+
+und der beobachtete Wert der Teststatistik liegt im Signifikanzbereich. Also können wir H0 verwerfen, und es liegt tatsächlich eine Kundentäuschung vor.
+```{r}
+x = seq(-4,4,0.01)
+y = dt(x,df=4)
+plot(x,y,type='l',col='red',lwd=2)
+abline(v=c(t,t0),lty=3,lwd=2,col=c('black','red'))
+```
+
+# Frage 3
+
+Wir nehmen zwei Stichproben von jeweils 5 Mäusen aus einer EINHEITLICHEN Population von Mäusen deren Gewicht einen Erwartungswert E(X) = 100g hat. Für alle Fragen nehmen wir einen Signifikanzwert von α = 0.05 an.
+
+Die erste Stichprobe ergibt folgende Werte:
+A : 100.85609, 99.94953, 101.34268, 100.46655, 100.67133
+
+Die zweite Stichprobe ergibt:
+B : 100.07080, 99.25386, 99.45042, 99.62351, 99.84373
+
+1. Was wäre die H0 Hypothese für den 1-Proben T-test? Berechnen Sie für beide Stichproben die entsprechende Teststatistik.
+2. Was bedeutet die Angabe . . . aus einer einheitlichen Population für die H0-Hypothese?
+3. Bestimmen Sie den P-Wert anhand folgender Tabelle (https://de.wikipedia.org/wiki/Studentsche_t-Verteilung).
+4. Was wäre die H0 Hypothese für den 2-Proben T-test? Berechnen Sie die entsprechende Teststatistik
+für den ungepaarten T-test, und bestimmen Sie den P-Wert.
+5. Berechnen Sie die Teststatistik für den gepaarten T-test, und bestimmen Sie den P-Wert.
+
+## Lösung
+```{r}
+A = c(100.85609,  99.94953, 101.34268, 100.46655, 100.67133)
+B= c(100.07080,  99.25386,  99.45042,  99.62351,  99.84373)
+```
+
+1. In diesem Fall wäre die H0 Hypothese: “Die Mäuse stammen aus einer Population mit Erwartungswert μ = 100 g”
+oder
+“Es gibt keine signifikante Abweichung des Stichprobenmittelwerts zu 100 g”.
+
+Wir berechnen die Teststatistik wie folgt
+Wir setzen ein:
+```{r}
+mu = 100
+mA = mean(A)
+sA = sd(A)
+tA = (mA-mu)/(sA/sqrt(length(A)))
+tA
+```
+
+```{r}
+mB = mean(B)
+sB = sd(B)
+tB = (mB-mu)/(sB/sqrt(length(B)))
+tB
+```
+
+2. P-Werte
+
+Anhand der t-Werte können jetzt die P-Werte bestimmt werden, mithilfe der Tabelle.
+Achtung : hier handelt sich um einen beidseitigen Test da wir nicht wissen, ob evt. Abweichungen nach oben oder unten gehen !
+```{r}
+t.test(A,mu=100)
+```
+
+```{r}
+t.test(B,mu=100)
+```
+
+Im ersten Fall ist der P-Wert unter dem Signifikanzlevel, also würde H0 hier verworfen, im zweiten Fall nicht.
+
+Wir können das anhand der Tabelle überprüfen: wir haben n = 5, d.h. df = n − 1 = 4.
+https://de.wikipedia.org/wiki/Studentsche_t-Verteilung
+Aus der Tabelle sehen wir, dass der kritische Wert für den *beidseitigen* Test und df=4 *t = 2,776* ist (Zeile df=4, *Spalte 0.95*).
+Daher muss die Teststatistik entweder größer als 2.776 oder kleiner als -2.7776 sein, um bei α = 0.05 signifikant zu sein. Das ist nur bei der A-Probe der Fall!
+
+3. 2-Proben Test:
+Hier wäre die H0 Hypothese:
+“Beide Stichproben entstammen aus Populationen mit identischen Erwartungswerten”
+oder auch
+“Es gibt keinen Signifikanten Unterschied zwischen den Mittelwerten der beiden Stichproben”.
+Beide Formulierungen sind äquivalent!
+```{r}
+nA=length(A)
+nB=length(B)
+sAB = sqrt(((nA-1)*sA^2+(nB-1)*sB^2)/(nA+nB-2))
+t = (mA-mB)/sqrt(1/nA+1/nB)/sAB
+t
+```
+
+Pwerte:
+```{r}
+t.test(A,B,var.equal=TRUE)
+```
+
+Hier ist der T-test wieder signifikant, also wird die H0 Hypothese verworfen.
+Wir können das wieder aus der Tabelle herauslesen:
+https://de.wikipedia.org/wiki/Studentsche_t-Verteilung
+df: 5+5-2 = 8
+
+Die letzte Spalte in der Tabelle (Zeile df=8) ist für 0.995 (also α = 0.01 bei einem beidseitigen Test!).
+Sie zeigt den Wert 3.355 an. Da unsere Statistik größer als dieser Wert ist können wir sagen, dass *die Signifikanz kleiner als 0.01 ist*!
+
+4. Gepaarter T-test
+```{r}
+AB = A-B
+mAB=mean(AB)
+sAB=sd(AB)
+t = (mAB-0)/(sAB/sqrt(nA))
+t
+```
+
+P-Wert:
+```{r}
+t.test(A,B,paired=TRUE)
+```
+
+Der *Test ist Signifikant*, also wird die H0 Hypothese hier verworfen!
+
+*Zusammenfassung*:
+In den meisten der Fälle wird die H0 Hypothese hier verworfen, bei einem Signifikanzwert von 0.05.
+
+Da beide Stichproben aus einer *gemeinsamen einheitlichen Population* stammen *stimmt in allen Fälle die H0 Hypothese*!
+Sie wird also *zu unrecht* verworfen: wir haben es also mit *falsch-positiven* Ergebnissen zu tun!
+
+
+
+

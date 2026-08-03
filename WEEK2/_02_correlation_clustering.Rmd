@@ -1,0 +1,282 @@
+---
+title: "Data Analysis - Exercise Sheet 2"
+author: "Carl Herrmann, Maiwen Caudron-Herger"
+output: html_document
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="120")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=120)
+
+```
+
+We use again the diabetes dataset, and perform again the data cleaning:
+
+```{r, echo=FALSE, eval = TRUE}
+dat = read.delim('https://tinyurl.com/y4fark9g')
+
+# set the row names using the column id
+rownames(dat) = dat$id
+
+# now we remove some columns: first, we determine which column index corresponds to the column names id, bp.2s, bp.2d, time.ppn
+i.remove = which(colnames(dat) %in% c("id","bp.2s", "bp.2d", "time.ppn"))
+i.remove
+
+# now remove these columns, using the - sign:
+dat = dat[, -i.remove]
+
+# we reorder the remaining columns, in order to put the categorical columns first, and numerical columns after
+dat = dat[,c(8,6,11,9,10,14,15,2,5,1,3,4,12,13)]
+
+# Go through each row and sum up all missing values
+rmv.rows = apply(dat,1,function(x){sum(is.na(x))}) 
+
+# see the number of missing values of the first rows:
+head(rmv.rows)
+
+# determine the row index of rows with 1 or more missing values
+i.missing = which(rmv.rows >0)
+head(i.missing)
+
+# remove the rows which have more than one missing value
+dat = dat[-i.missing,] 
+
+# this will save the cleaned data into a file, which you can load the next time with readRDS(...)
+saveRDS(dat, file = "dat_cleaned.Rds")
+```
+
+
+# Correlation - Clustering
+
+## 1. Objectives
+
+In this sheet we will keep looking at our dataset to explore the statistical properties of each variable (like its distribution, mean value etc) and question relations between variables (like is blood glucose level correlated with obesity?). We will also start using unsupervised learning on a new dataset (more on this later) with k-means clustering.
+
+## 2. Measuring the centrality in data
+
+We have already seen that the `summary` and `quantile` functions in R can compute the mean, median and quantiles of any given data. Let now use functions in R that explicitly measure these values.
+
+### Mean
+
+```{r}
+mean(dat$stab.glu)
+```
+
+### Median
+
+```{r}
+median(dat$stab.glu)
+```
+
+> Calculate the mean and median of other continuous numeric data in the diabetes dataset and measure the difference between them. (a) Why is there a difference between the mean and median? (b) Why do you think there are larger differences for some and almost no difference for others?
+
+You should still be familiar with the `quantile` function since you needed it for the last exercise in the last exercise of the past sheet.
+
+### Quantiles
+
+```{r}
+quantile(dat$stab.glu) 
+```
+
+> Did you remember how it works? And how you can pick any specific quantile you need?
+
+
+## 3. Association between variables
+
+Often a common step during any data analysis project is to find associations between variables present in the dataset. Such associations helps us to decipher the underlying structure in the data. For instance, in our diabetes dataset we would expect a high correlation between free blood glucose levels and glycosylated blood levels or between waist and hip sizes. One of the most common ways of measuring associations is *correlations*:
+
+### Correlations
+
+Let us start by producing a **scatter plot** between some pairs of variables:
+
+```{r, eval = TRUE}
+plot(dat$stab.glu,dat$glyhb,
+     pch=20,
+     xlab='Stabilized glucose',
+     ylab='Glycosylated hemoglobin'
+     )
+```
+
+> Do you suspect that the two variables have a relationship? Do the scatter plot for other pairs of numerical variables!
+
+We now can compute the correlation of the two variables; remember that we can compute the **Pearson correlation** or the **Spearman correlation**:
+
+```{r}
+## compute the Pearson correlation
+cor(dat$stab.glu,dat$glyhb,method='pearson')
+##
+## compute the Spearman correlation
+cor(dat$stab.glu,dat$glyhb,method='spearman')
+```
+
+> Comment on the differences between these 2 measures!
+> Redo the analysis for the variables `hip` and `waist`
+
+
+### Pairwise scatter plot
+
+> The numerical columns start at column index 4 and end at column index 14. Can you create a new dataframe called `dat.num` containing only the numerical columns?
+
+Lets calculate and visualize the correlations among all our variables in the diabetes dataset
+
+```{r, fig.width=12, fig.height=10}
+pairs(dat.num, pch=20, cex=0.5, col="grey")
+```
+
+> Which correlations did you expect to see and what were novel? Can you explain the relation you observe between `hdl, chol and ratio`. Remember that `ratio = chol/hdl` [see here](https://biostat.app.vumc.org/wiki/pub/Main/DataSets/Cdiabetes.html)
+
+> Associations are among the simplest forms of structure in the data! It is important to remember that *Association does not imply correlation* and *Correlation does not imply causation*. Take a look at this page to view few common logical fallacies. [see here](https://en.wikipedia.org/wiki/Fallacy)
+
+## 4. Unsupervised learning - clustering
+
+**Unsupervised clustering** is one of the most basic data analysis techniques. It allows to identify groups (or clusters) or observations (here: patients) or variables. *Unsupervised* means that you are not using any prior knowledge about groups of variables or associations. **K-means clustering** is a good example of unsupervised learning because the method categorizes sample based uniquely on the data.
+
+In this part, we will use a dataset of gene expression data from the TCGA (The Cancer Genome Atlas) project. This project has sequenced several thousand samples from cancer patients of more thatn 30 cancer types. We will use a subset of this data, containing 200 samples (=patients, as columns) , for which the expression of 300 genes (= rows) has been measured.
+
+### 4.1 Lets get started - Load data
+
+#### Load the required data into Rstudio and explore it
+
+We will start by reading the gene expression data. The columns are the samples and the rows are the genes.
+
+```{r}
+brca.exp = readRDS(url('https://www.dropbox.com/scl/fi/xlkfv97po3yq2qg9ekftd/brca.rds?rlkey=3c8d0lktsrfs4989rpaenm1qq&dl=1'))
+dim(brca.exp)
+brca.exp[1:10,1:10]
+```
+
+**WARNING**: If you have problem loading the data, please download [this file](https://www.dropbox.com/s/qububmfvtv443mq/brca.exp.rds?dl=1), store it on your disk, and open it with the following command:
+
+```{r}
+#brca.exp = readRDS("xxxx") # xxxx should be replaced with the path to the downloaded file!
+```
+
+
+Next we will load the clinical annotation file for this gene expression data and explore it
+
+```{r}
+brca.anno = readRDS(url('https://www.dropbox.com/s/9xlivejqkj77llc/brca.anno.rds?dl=1'))
+head(brca.anno)
+```
+
+Same here: if you have issues running the previous `readRDS` command, download [this file](https://www.dropbox.com/s/z6bzwzgzdhky1qz/brca.anno.rds?dl=1), save it on your disk and load it with
+
+```{r}
+### brca.anno = readRDS(xxx)
+```
+
+You can check the number of samples for each tumor type using the `table` function, applied to a specific column (here, there is only one column...)
+
+```{r}
+table(brca.anno$HER2_status)
+```
+
+
+## 4.2 k-means clustering
+
+Another widely used method for grouping observations is k-means clustering. Now we will cluster our dataset using kmeans and explore the underlying structure of the data.
+
+### performing k-means
+
+We use the function `kmeans` in R. You can check the options and usage in the help panel on the right. The parameter `centers` indicates how many clusters are requested.
+
+```{r}
+km = kmeans(x=t(brca.exp), 
+            centers = 2, 
+            nstart = 10)
+
+```
+
+> Just type `km` in your console and check all results generated. Play around with the `centers` parameter. See cluster assignments by typing `table(km$cluster)`
+
+### Quality of the clustering
+
+We can judge the quality of the clustering by computing the **intra**-cluster distances, i.e. the sum (squared) of all distances between pairs of objects belonging to the same cluster. This is called the **within sum of squares (WSS)**. The better the clustering, the smaller WSS should be. However, it also automatically decreases with increasing k
+
+> What would be WSS if we request a number of clusters equal to the number of data points? You can check what the WSS is for a particular clustering by typing
+
+```{r}
+km$tot.withinss
+```
+
+> run k-means for k=2 to k=7 clusters, and for each k check the WSS value. How does WSS evolve with increasing k?
+
+We can also run a little loop to do this:
+
+```{r}
+wss = sapply(2:7,function(k) { 
+  kmeans(x=t(brca.exp), centers =k)$tot.withinss
+})
+plot(2:7,wss,type='b',pch=19,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+```
+
+> do you see an obvious "elbow" or "kink" in the curve?? Another criteria for the quality of the clustering is the **silhouette** method (check the slides of the lecture!).
+
+To run the silhouette method, we need to compute the pairwise distances between all objects (i.e. patients) in the data matrix. This is done with the `dist` function, which can take different metrics (euclidean, ...)
+
+```{r}
+## compute the patient-patient distance matrix (this is why we transpose)
+D = dist(t(brca.exp))
+```
+
+We now compute the silhouette for a specific kmeans clustering:
+
+```{r}
+library(cluster)
+km = kmeans(x=t(brca.exp), centers = 3, nstart = 10)
+s = silhouette(km$cluster,D)
+plot(s)
+```
+
+> Check the average silhouette values at the bottom; repeat this for other values of k
+
+### EXERCISES
+
+#### Exercise 1
+
+1.  Compute the mean value of the cholesterol variable and store it in the variable `m`.
+2.  Compute the 1%, 10%, 25%, 50% (=median), 75%, 90%, 99% quantiles using the `quantile` function, and using the argument `probs=c(0.01,0.1,0.25,0.5,0.75,0.9,0.99)`. Store these value in a new vector variable called `q`
+3.  Plot the values of cholesterol as a histogram using the `hist` function
+4.  Use the `abline(v=…)` function to plot vertical lines on top of the histogram at the values corresponding to the quantiles you have just computed.
+5.  Repeat this with the blood pressure!
+
+#### Exercise 2
+
+1.  Do the scatter plot for `hip` and `waist` and compute the correlation. 
+2.  Use the numerical dataframe `dat.num` you created in exercise 0, and apply the function `cor` **directly** on this data frame: `cor(dat.num)` . What happens? What is the output? Store the result of this command in a variable named `all.cor`
+3.  Find the highest and lowest Pearson correlation value. To which pair of variables do they correspond? Plot the corresponding scatter plots!
+
+#### Exercise 3
+
+Let's use this new dataset as an opportunity to apply the skills we learned in the previous exercise sheet. It's crucial that you keep exercising and repeating, otherwise you will easily forget your coding skills.
+
+1.  Calculate the min, max and median expression level for each sample. *Use the `apply(...)` function for this (you can check [this tutorial](https://www.datacamp.com/community/tutorials/r-tutorial-apply-family))*
+2.  Repeat the same for each gene.
+3.  Plot a histogram/density plot for the median expression values from all samples and genes
+4.  Calculate how many genes have a lower standard deviation of expression than the average standard deviation. Print out their amount.
+
+
+#### Going further...
+
+You have used a dataset with a reduced number of genes (= rows). They have been pre-selected, according to certain criteria. Here is a larger dataset, with more genes for the same samples
+
+```{r}
+brca.large = readRDS(url('https://www.dropbox.com/s/m6nfxul95borupz/brca.exp_large.rds?dl=1'))
+```
+
+Follow the next steps:
+
+1.  use the `apply` function on all rows to compute the standard deviation of the genes using the `sd()` function
+2.  use the `order(...,decreasing=TRUE)` function to determine the row index of the top 200 most variant genes
+3.  redo the heatmap with these genes

@@ -1,0 +1,378 @@
+---
+title: "Biological Data Analysis - WiSe 25/26"
+author: "Plenum 30.10.2025 - Carl Herrmann / Maiwen Caudron-Herger"
+output: html_document
+---
+
+## Spearman vs Pearson correlation
+
+Read in the diabetes dataset
+
+```{r}
+dat = read.delim('https://tinyurl.com/y4fark9g', stringsAsFactors = TRUE)
+colnames(dat)
+```
+
+Is there a correlation between weight and xxx?
+
+```{r}
+#var='hip'
+var='chol'
+var='height'
+cor(dat$weight,dat[,var],method='spearman',use='complete.obs')
+```
+
+```{r}
+plot(dat$weight,dat[,var],pch=19)
+```
+
+### What exactly is Spearman correlation?
+
+```{r}
+set.seed(123)
+x = rnorm(15)
+y = x + rnorm(15,sd=1)
+
+## add an outlier
+x = c(x,-10)
+y= c(y,-10)
+
+##
+plot(x,y,pch=19)
+```
+
+```{r}
+cor.p = cor(x,y,method='pearson')
+cor.s = cor(x,y,method='spearman')
+##
+cor.p;cor.s
+```
+
+```{r}
+# select omly the points at the top right of the screen
+xx = x[x > -4]
+yy = y[y > -4]
+```
+
+```{r}
+plot(xx,yy,pch=19,col='blue')
+```
+
+```{r}
+cor(xx,yy)
+cor(xx,yy,method='spearman')
+
+```
+
+Now compute the ranks in x and y:
+
+```{r}
+rx = rank(x)
+data.frame(values=x,ranks=rx)
+```
+
+```{r}
+ry = rank(y)
+y;ry
+```
+
+Now compute the **Pearson correlation** on the **ranks**:
+
+```{r}
+cor(rx,ry)
+```
+
+```{r}
+plot(rx,ry,pch=19,col='red',main='Ranks of the x and y values')
+```
+
+This is exactly the value of the Spearman correlation!
+
+### Is one correlation always bigger than the other?
+
+What is the relation between Spearman and Pearson correlation? To answer this question, we will generate 1000 pairs of vectors, compute both correlations and check
+
+```{r}
+X = lapply(1:1000,function(i) {
+  x = runif(20)
+  y = runif(20)
+  cp = cor(x,y)
+  cs = cor(x,y,method='spearman')
+  list(correlations = c(cp,cs),vector=list(x,y))
+})
+correlations = do.call('rbind',sapply(X,'[',1))
+```
+
+
+```{r}
+par(mfrow = c(1, 2))
+hist(correlations[,1],main='Pearson correlations')
+hist(correlations[,2],main='Spearman correlations')
+
+```
+
+
+Now plot these values:
+
+```{r}
+plot(correlations[,1],correlations[,2],xlab='Pearson',ylab='Spearman',pch=20);abline(0,1);abline(v=0,h=0,lty=3)
+```
+
+### Can both have opposite signs?
+
+Yes, see the plot!!
+
+
+```{r}
+plot(correlations[,1],correlations[,2],xlab='Pearson',ylab='Spearman',pch=20,col=as.factor(correlations[,1]*correlations[,2]<0));abline(0,1);abline(v=0,h=0,lty=3)
+
+```
+
+
+### Can Pearson change, but Spearman be identical?
+
+Because Spearman correlation is based on ranks, some information is lost when computing the correlation. Hence, we can imagine pairs of vectors for which the Spearman correlation is constant, but the Pearson correlation changes:
+
+```{r}
+set.seed(123)
+x = rnorm(20)
+y = x + rnorm(20)
+cs = cor(x,y,method='spearman')
+cp = cor(x,y)
+cs;cp
+```
+
+```{r}
+plot(x,y,pch=19)
+```
+
+Now add a outlier point
+
+```{r}
+x1 = c(x,4)
+y1 = c(y,4)
+cs1 = cor(x1,y1,method='spearman')
+cp1 = cor(x1,y1)
+cs1;cp1
+```
+
+```{r}
+col = rep('black',length(x1)-1)
+col = c(col,'red')
+plot(x1,y1,pch=19,col=col)
+```
+
+Let's move this point much further away
+
+```{r}
+x2 = x1
+x2[length(x2)] = 10
+y2 = y1
+y2[length(y2)] = 10
+
+plot(x2,y2,pch=19,col=col)
+
+
+```
+
+```{r}
+cs2 = cor(x2,y2,method='spearman')
+cp2 = cor(x2,y2)
+cs2;cp2
+```
+
+Hence this is an example for which the Spearman correlation is constant, but the Pearson correlation changes, because the **values** have changed such that the **ranks** remain constant!
+
+## Kmeans clustering
+
+### Question 5
+
+For k=2, imagine a distribution of points in 2d for which k-means would give very diﬀerent
+clusterings depending on the initialization…
+
+```{r,fig.width=6,fig.height=6}
+set.seed(123)
+r = runif(2000,0,2)
+theta = runif(2000,0,2*pi)
+x = r*cos(theta)
+y = r*sin(theta)
+
+plot(x,y,pch=20)
+```
+There is no clear cluster structure here! Every k-means will likely lead to a different clustering result... 
+
+```{r,fig.width=6,fig.height=6}
+par(mfrow=c(5,5),mar=c(1,1,1,1))
+for (i in 1:25) {
+X = data.frame(x=x,y=y)
+km = kmeans(X,centers=2,nstart = 1)
+plot(x,y,pch=20,col=as.factor(km$cluster))
+}
+```
+In the following example, we always get the same clustering result (colors are arbitrary!)
+
+```{r,fig.height=6,fig.width=6}
+x1 = x 
+y1 = y +2
+
+par(mfrow=c(5,5),mar=c(1,1,1,1))
+for (i in 1:25) {
+X = data.frame(x=c(x,x1),y=c(y,y1))
+km = kmeans(X,centers=2,nstart = 1)
+plot(X$x,X$y,pch=20,col=as.factor(km$cluster))
+}
+```
+
+
+
+We have seen in the simulation the application of kmeans to a dataset of points in 2d; let's see how it works in any dimension (as for example with gene expression data!)
+
+
+## More clusters = better clustering?
+
+we will review hierarchical and k-means clustering
+
+```{r kmeans}
+## generate a dataset with 3 clusters
+set.seed(123)
+s = 0.2
+data <- rbind(
+  matrix(rnorm(100, sd = s), ncol = 2),
+  matrix(rnorm(100, mean = 1, sd = s), ncol = 2),
+  matrix(c(rnorm(50,sd=s),rnorm(50,mean=1,sd=s)),ncol=2)
+)
+colnames(data) = c('x','y')
+```
+
+We have created a dataset of 150 points:
+
+```{r}
+plot(data,pch=19)
+```
+
+```{r}
+head(data)
+```
+
+We now plot the points in the 2d space
+
+```{r}
+library(RColorBrewer)
+##
+col = brewer.pal(9,'Set1')
+##
+par(mfrow=c(2,3),mar=c(2,1,2,1))
+for (k in 1:6) {
+  cl = kmeans(data,centers  = k)
+  plot(data,col=col[cl$cluster],pch=19,main=paste0('k = ',k)); points(cl$centers,col=col[1:k],pch=8,cex=2)
+}
+```
+
+We now plot the silhouette and WSS plot:
+
+```{r}
+library(factoextra)
+
+#  Compute k-means
+set.seed(123)
+lapply(2:5,function(k) {
+km.res <- kmeans(data, k, nstart = 25)
+
+})
+##
+
+# Silhouette and WSS plot
+fviz_nbclust(data, kmeans, method = "silhouette")
+fviz_nbclust(data, kmeans, method = "wss")
+
+```
+
+Plot the silhouette plot:
+
+```{r clustering_silhouette}
+library(cluster)
+D = sapply(1:nrow(data),function(i) {
+  sapply(1:nrow(data),function(j) {dist(data[c(i,j),])})
+  })
+k = 3
+km.res <- kmeans(data, k, nstart = 25)
+s = silhouette(km.res$cluster,D)
+plot(s,col=col[sortSilhouette(s)[,1]])
+```
+
+
+### Can a different metric lead to different clusters with k-means?
+
+```{r}
+# Define 6 points
+points <- data.frame(
+  x = c(0, 2, 0, 5, 1, 3),
+  y = c(0, 0, 2, 1, 5, 3)
+)
+rownames(points) <- paste0("P", 1:6)
+
+# Standard k-means with Euclidean distance
+set.seed(123)
+kmeans_euclidean <- kmeans(points, centers = 2, nstart = 10)
+
+cat("K-means with Euclidean distance:\n")
+print(kmeans_euclidean$cluster)
+cat("\nCentroids:\n")
+print(kmeans_euclidean$centers)
+```
+
+```{r}
+# K-medians with Manhattan distance (custom implementation)
+k_medians_manhattan <- function(data, k, max_iter = 100) {
+  # Random initialization
+  set.seed(123)
+  centers <- data[sample(nrow(data), k), ]
+  
+  for (iter in 1:max_iter) {
+    # Assign points to nearest center (Manhattan distance)
+    clusters <- apply(data, 1, function(point) {
+      distances <- apply(centers, 1, function(center) {
+        sum(abs(point - center))  # Manhattan distance
+      })
+      which.min(distances)
+    })
+    
+    # Update centers (use median instead of mean)
+    new_centers <- data.frame(
+      x = tapply(data$x, clusters, median),
+      y = tapply(data$y, clusters, median)
+    )
+    
+    # Check convergence
+    if (identical(centers, new_centers)) break
+    centers <- new_centers
+  }
+  
+  list(cluster = clusters, centers = centers)
+}
+
+kmedians_manhattan <- k_medians_manhattan(points, k = 2)
+
+cat("\n\nK-medians with Manhattan distance:\n")
+print(kmedians_manhattan$cluster)
+cat("\nCenters (medians):\n")
+kmedians_manhattan$centers
+```
+
+```{r}
+# Visualization
+par(mfrow = c(1, 2))
+
+# Plot Euclidean
+plot(points$x, points$y, col = kmeans_euclidean$cluster + 1, pch = 19, cex = 2,
+     main = "K-means (Euclidean)", xlab = "x", ylab = "y", xlim = c(-1, 6), ylim = c(-1, 6))
+points(kmeans_euclidean$centers, col = 2:3, pch = 4, cex = 3, lwd = 3)
+text(points$x, points$y, labels = rownames(points), pos = 3)
+
+# Plot Manhattan
+plot(points$x, points$y, col = kmedians_manhattan$cluster + 1, pch = 19, cex = 2,
+     main = "K-medians (Manhattan)", xlab = "x", ylab = "y", xlim = c(-1, 6), ylim = c(-1, 6))
+points(kmedians_manhattan$centers, col = 2:3, pch = 4, cex = 3, lwd = 3)
+text(points$x, points$y, labels = rownames(points), pos = 3)
+
+```

@@ -1,0 +1,73 @@
+---
+title: "Biological Data Analysis - WiSe 25/26"
+author: "Verständnisfragen - Woche 5 : Inferenz / Zentraler Grenzwertsatz"
+date: "20.11.2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Frage 1 : Anwendung des zentralen Grenzwertsatzes
+
+Wir betrachten eine **unbekannte** Zufallsvariable $X$ (d.h. wir kennen ihre genaue Verteilung nicht!), dessen Erwartungswert $\mu=80$ und Standardabweichung $\sigma = 12$ ist.
+
+Wir betrachten Stichproben $x$ von jeweils $n=95$ Werten aus dieser Zufallsvariablen.
+
+1.  Wir betrachten die Mittelwerte der einzelnen Stichproben $\bar{x}$; Was ist die Verteilung der Mittelwerte?
+
+```{r}
+x <- seq(70,90,by=0.01)
+y <- dnorm(x, 80, 12/sqrt(95))
+plot(x, y, type = "l", col = "red")
+abline(v=80.52)
+```
+
+2.  Was ist die Wahrscheinlichkeit, dass $\bar{x}$ kleiner als 80.52 ist (dazu kann eine R-Funktion benutzt werden...)?
+
+```{r}
+pnorm(80.52,mean=80,sd=12/sqrt(95))
+```
+
+## Frage 2: Konfidenzintervall
+
+Eine Kaffeemaschine soll Tassen mit $v=100\, ml$ füllen. Eine Stichprobe von $n=9$ Tassen ergibt folgende Werte: 104, 103, 107, 105, 102, 109, 105, 104, 106.
+
+Liegt der Sollwert im 95% Konfidenzintervall ?
+
+Der Sollwert ist v = 100; wir berechnen das Konfidenzintervall:
+
+```{r}
+x = c(104, 103, 107, 105,   102, 109, 105, 104, 106)
+m = mean(x)
+s = sd(x)
+n = length(x)
+m;s;n
+```
+
+Kritischer Wert: da n = 9 klein ist, benutzen wir den kritischen Wert der t-Verteilung mit 8 Freiheitsgraden!
+
+```{r}
+t_95 = qt(0.975,df=n-1)
+t_95
+```
+
+Konfidenzintervall:
+
+```{r}
+low <- m - t_95*s/sqrt(n)
+low
+high <- m + t_95*s/sqrt(n)
+high
+```
+
+Graphik:
+
+```{r}
+exp <- 100
+col = ifelse(exp < low | exp > high, "red", "darkgreen")
+# 
+plot(exp, 1, pch = 19, ylab = "")
+segments(low, 1, high, 1, lwd = 2, col = col)
+```

@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ba8577c035dc07b953209c43deaab74b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
 <script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/load-shinylive-sw.js" type="module"></script>
 <script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/run-python-blocks.js" type="module"></script>
@@ -75,78 +75,48 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     function applyFinalStyle() {
       // Wir suchen alle Links in der Navbar
       const links = document.querySelectorAll('.navbar-nav .nav-link');
       let pyBtn, rBtn;
-  
+
       links.forEach(link => {
         if (link.textContent.trim() === 'PYTHON') pyBtn = link;
         if (link.textContent.trim() === 'R') rBtn = link;
       });
-  
+
       if (!pyBtn || !rBtn) {
         setTimeout(applyFinalStyle, 200);
         return;
       }
-  
+
       const darkGreen = "#1a4d1a";
-  
+
       function updateView(lang) {
         document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
         document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
-        
+
         // Style Python
         pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
-        
+
         // Style R
         rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
-        
+
         localStorage.setItem('da_course_lang', lang);
       }
-  
+
       pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
       rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
-  
+
       updateView(localStorage.getItem('da_course_lang') || 'python');
     }
     applyFinalStyle();
   });
-
-  // Funktion zum Markieren einer Aufgabe als erledigt
-  function markTaskDone(taskId) {
-      localStorage.setItem('task_' + taskId, 'true');
-      updateGlobalProgress();
-  }
-
-  // Berechnet den Gesamtfortschritt und aktualisiert den Balken
-  function updateGlobalProgress() {
-      const totalWeeks = 12; // Deine Anzahl an Wochen
-      let doneCount = 0;
-      
-      for (let i = 1; i <= totalWeeks; i++) {
-          if (localStorage.getItem('task_woche' + i) === 'true') {
-              doneCount++;
-          }
-      }
-      
-      const percent = Math.round((doneCount / totalWeeks) * 100);
-      const bar = document.getElementById('course-progress-bar');
-      const text = document.getElementById('progress-text');
-      
-      if (bar && text) {
-          bar.style.width = percent + '%';
-          bar.innerText = percent + '%';
-          text.innerText = doneCount + ' von ' + totalWeeks + ' Wochen bearbeitet';
-      }
-  }
-
-  // Beim Laden der Seite den Balken initialisieren
-  document.addEventListener('DOMContentLoaded', updateGlobalProgress);
-  </script>
-
+</script>
+<script src="coi-serviceworker.js"></script>
 
 
 </head>
@@ -187,7 +157,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./0_markdown.html">Getting started</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">Getting started</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -205,29 +175,72 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">WELCOME</span></a>
   </div>
 </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">COURSE-CONTENTS</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./0_markdown.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Getting started</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">WEEK 1: Datatypes</span></a>
+  <a href="./coding_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics in Coding</span></a>
   </div>
 </li>
-      </ul>
-  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 1: Datatypes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_data_cleanup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 2: Data Cleanup</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_correlation_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 3: Correlation &amp; Clustering</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_unsupervised_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 4: Hierarchical Clustering &amp; PCA</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_probability_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 5: Probability Distributions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_clt_confidence_intervals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 6: CLT &amp; Confidence Intervals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_hypothesis_testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 7: Hypothesis Testing &amp; t-Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_nonparametric_proportion_tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 8: Non-Parametric &amp; Proportion Tests</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9_regression_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 9: Regression Analysis</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -237,7 +250,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0_markdown.html">COURSE-CONTENTS</a></li><li class="breadcrumb-item"><a href="./0_markdown.html">Getting started</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Orientation in This Course</h1>
 </div>
@@ -259,9 +272,10 @@ ul.task-list li input[type="checkbox"] {
 <section id="structure-course-materials" class="level2">
 <h2 class="anchored" data-anchor-id="structure-course-materials">Structure &amp; Course Materials</h2>
 <p>Welcome! This course is divided into twelve thematic sections that will gradually introduce you to the world of data analysis with R or Python.</p>
-<p>On this platform you will find everything in one place: clear explanations, directly executable code examples for experimentation, and short knowledge tests after each chapter to consolidate what you have learned.</p>
-<p>You have full freedom of choice: using the <strong>button in the top right corner</strong>, you can switch between the programming languages <strong>R</strong> and <strong>Python</strong> at any time. The subject matter is identical — you decide which tool you want to work with.</p>
-<p>In addition, all lecture slides and Markdown files with the same content are linked so that you can also work through the materials independently offline.</p>
+<p>On this platform you will find everything in one place: lecture videos and slide decks, practical markdown files to work through in RStudio or VS Code, and short comprehension quizzes to consolidate what you have learned.</p>
+<p>Each week page guides you through three steps: <strong>watch the videos &amp; download the slides</strong> → <strong>work through the practical markdown</strong> → <strong>complete the comprehension quiz</strong>. Your progress is tracked automatically.</p>
+<p>While the lecture videos and slides are only available for R, for the quizzes and markdown files you have full freedom of choice! Using the <strong>button in the top right corner</strong>, you can switch between the programming languages <strong>R</strong> and <strong>Python</strong> at any time.</p>
+<p>The <a href="coding_basics.html">Basics in Coding</a> page provides a quick-reference for syntax in both R and Python, keep it open while working through the markdowns.</p>
 <hr>
 </section>
 <section id="programming-languages-and-their-working-environments" class="level2">
@@ -304,7 +318,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>To work on the exercises on this website, <strong>no installed RStudio or VS Code is required</strong>. Our interactive windows already have everything “on board”. However, we recommend that you familiarize yourself with these programs during the course, as they will be your daily companions in later practice!</p>
+<p>To watch videos, follow the course and take quizzes, <strong>no installation is required</strong>. However, to work through the practical markdown files, you will need <strong>RStudio</strong> (for R) or <strong>VS Code</strong> (for Python) installed on your computer. We recommend setting this up early — these tools will be your daily companions throughout the course.</p>
 </div>
 </div>
 <hr>

@@ -1,0 +1,153 @@
+---
+title: "T-tests"
+author: "Carl Herrmann"
+date: "12/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Comparing cholesterol
+
+
+```{r}
+dat = read.delim('https://tinyurl.com/y4fark9g', stringsAsFactors = FALSE)
+```
+
+```{r}
+chol.m = dat$chol[dat$gender=='male']
+chol.f = dat$chol[dat$gender=='female']
+```
+
+```{r}
+boxplot(chol.m,chol.f)
+```
+
+### Question: Do men have a higher cholesterol level compared to women?
+
+* H0: men have a cholesterol level **lower or equal** than women
+* H1: men have a cholesterol level **higher** than women
+
+```{r}
+tt = t.test(chol.m,chol.f,alternative = 'greater',var.equal = TRUE)
+tt
+```
+
+Let us look at the null distribution
+
+```{r}
+df = 400
+x = seq(-5,5,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=tt$statistic,lwd=2,col='blue',lty=3)
+```
+
+
+### Question: Do men have a lower cholesterol level compared to women?
+
+* H0: men have a cholesterol level **higher or equal** than women
+* H1: men have a cholesterol level **lower** than women
+
+```{r}
+tt = t.test(chol.m,chol.f,alternative = 'less',var.equal = TRUE)
+tt
+```
+
+Let us look at the null distribution
+
+```{r}
+df = 400
+x = seq(-5,5,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=tt$statistic,lwd=2,col='blue',lty=3)
+```
+
+
+### Question: Do men have a different cholesterol level compared to women?
+
+* H0: men have a cholesterol level **equal** to that of women
+* H1: men have a cholesterol level **different** than that women
+
+```{r}
+tt = t.test(chol.m,chol.f,alternative = 'two.sided',var.equal = TRUE)
+tt
+```
+
+Let us look at the null distribution
+
+```{r}
+df = 400
+x = seq(-5,5,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=c(-abs(tt$statistic),abs(tt$statistic)),lwd=2,col='blue',lty=3)
+```
+
+
+## Comparing height
+
+```{r}
+height.m = dat$height[dat$gender=='male']
+height.f = dat$height[dat$gender=='female']
+```
+
+
+### Question: Do men have a higher height compared to women?
+
+* H0: men have a height  **lower or equal** than women
+* H1: men have a height  **higher** than women
+
+```{r}
+tt = t.test(height.m,height.f,alternative = 'greater',var.equal = TRUE)
+tt
+```
+
+Let us look at the null distribution
+
+```{r}
+df = 396
+x = seq(-20,20,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=tt$statistic,lwd=2,col='blue',lty=3)
+```
+
+
+### Question: Do men have a lower height  compared to women?
+
+* H0: men have a height  **higher or equal** than women
+* H1: men have a height  **lower** than women
+
+```{r}
+tt = t.test(height.m,height.f,alternative = 'less',var.equal = TRUE)
+tt
+```
+
+Let us look at the null distribution
+
+```{r}
+df = 396
+x = seq(-20,20,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=tt$statistic,lwd=2,col='blue',lty=3)
+```
+
+
+### Question: Do men have a different height  compared to women?
+
+* H0: men have a height  **equal** to that of women
+* H1: men have a height  **different** than that women
+
+```{r}
+tt = t.test(height.m,height.f,alternative = 'two.sided',var.equal = TRUE)
+tt
+```
+
+Let us look at the null distribution
+
+```{r}
+df = 400
+x = seq(-20,20,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=c(-abs(tt$statistic),abs(tt$statistic)),lwd=2,col='blue',lty=3)
+```
