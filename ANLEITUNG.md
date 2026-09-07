@@ -1,12 +1,11 @@
 # Anleitung: Aufbau & Wartung der Kurs-Website
 
 Diese Datei erklärt, wie die Website technisch aufgebaut ist, wie sie mit GitHub zusammenhängt,
-und wie man die häufigsten Änderungen macht — gedacht für dich selbst und für eine Nachfolge, die
-die Seite ohne Quarto/R/Python-Kenntnisse pflegen soll.
+und wie man die häufigsten Änderungen macht.
 
 ---
 
-## 1. Das Wichtigste zuerst: wie die Seite lebt
+## 1. Das Wichtigste zuerst: wie die Seite funktioniert
 
 Es gibt **kein Backend mehr** (Supabase wurde entfernt, das Projekt existiert nicht mehr). Alles
 läuft über zwei Dinge:
@@ -25,8 +24,7 @@ läuft über zwei Dinge:
   ausliefert (`https://lisaduttenhoefer.github.io/data-analysis-course`).
 
 **Ein `git push` auf `main` allein aktualisiert die Live-Seite NICHT!** Es gibt keine automatische
-GitHub Action, die das übernimmt. Genau das war heute das Problem: die Live-Seite war 103 Commits
-alt (von April) und zeigte noch die kaputte Supabase-Version. Um die Seite live zu aktualisieren,
+GitHub Action, die das übernimmt. Um die Seite live zu aktualisieren,
 brauchst du **immer** diesen Befehl im Terminal, im Projektordner:
 
 ```
@@ -36,7 +34,7 @@ quarto publish gh-pages --no-prompt --no-browser
 Das rendert die Seite neu und pusht sie automatisch auf den `gh-pages`-Branch. Nach ein paar
 Minuten ist die Änderung live (GitHub cached teils kurz — ggf. Browser-Reload mit Cache leeren).
 
-**Faustregel:** Änderung gemacht → lokal testen → committen & pushen nach `main` (Backup /
+**Immer:** Änderung gemacht → lokal testen → committen & pushen nach `main` (Backup /
 Versionierung) → **zusätzlich** `quarto publish gh-pages` ausführen, damit es live sichtbar wird.
 
 ---
@@ -70,7 +68,7 @@ data-analysis-course/
 
 Die Roh-Materialordner heißen `WEEK0`, `WEEK1`, ... `WEEK8` — aber die Website zeigt **„Week 1“ bis
 „Week 9“**. Der Grund: „Week 0“ auf der Website ist die Einführungsseite (`0_markdown.qmd`), die
-kein eigenes `WEEKN`-Material hat. Deshalb gilt durchgängig:
+kein eigenes `WEEKN`-Material hat. So matched es auch mit den ursprünglichen Inhalten der Moodle Seite. Deshalb gilt durchgängig:
 
 > **Roh-Ordner `WEEK{N}` entspricht Website „Week {N+1}“.**
 
@@ -109,7 +107,7 @@ Sie enthält **keinen** eigenen Inhalt. Stattdessen:
 3. Daraus baut es die komplette Seite: Fortschrittsbalken, Schritt 1 (Videos/Folien), Schritt 2
    (R-Markdown/Python-Notebook Download), Schritt 3 (Quiz).
 
-**Das bedeutet:** Um den Inhalt einer Woche zu ändern, bearbeitest du **fast nie** die `.qmd`-Datei
+**WICHTIG: Das bedeutet:** Um den Inhalt einer Woche zu ändern, bearbeitest du **fast nie** die `.qmd`-Datei
 selbst — sondern `content/weekN/manifest.txt` bzw. `content/weekN/quiz.md`. Das kann man auch
 direkt im GitHub-Webeditor tun (Datei im Browser auf github.com öffnen → Stift-Symbol „Edit“), ganz
 ohne Quarto/R/Python zu installieren.
@@ -196,7 +194,7 @@ id: correlation
 
 Regeln:
 
-- `# Quiz: <Titel>` startet eine neue Quiz-Karte (eine Wochenseite hat meist mehrere).
+- `# Quiz: <Titel>` startet eine neue Quiz-Karte (eine Wochenseite hat mehrere).
 - `id: <slug>` **direkt danach** ist die eindeutige ID dieser Karte — wichtig für den gespeicherten
   Fortschritt! Wird `id:` geändert oder entfernt, **verlieren Studierende ihren gespeicherten
   Haken** für dieses Quiz (die ID ist Teil des `localStorage`-Schlüssels). Bei neuen Quizzen kann
@@ -316,15 +314,4 @@ eine bewusste Design-Entscheidung (kein Login-System mehr, seit Supabase entfern
 Vermutlich wurde eine `id:`-Zeile in `quiz.md` geändert oder eine `markdown_r`/`markdown_python`-
 Zeile hinzugefügt/entfernt (verschiebt die automatisch generierten Checkbox-IDs). Siehe Abschnitt 5.
 
----
 
-## 9. Was es nicht mehr gibt (und warum)
-
-- **Supabase / Login über GitHub:** das Backend-Projekt existiert nicht mehr (DNS tot). Die Seite
-  läuft komplett ohne Login, ohne Server, nur mit `localStorage`.
-- **`admin.qmd`:** war die Verwaltungsoberfläche für Supabase, ergibt ohne Backend keinen Sinn mehr,
-  wurde entfernt.
-- **`weekN-script.html`-Dateien (eine pro Woche):** früher enthielt jede Woche eigenen,
-  handgeschriebenen HTML/JS-Code. Das wurde durch das gemeinsame `week-loader.html` +
-  `content/weekN/manifest.txt`+`quiz.md`-System ersetzt (siehe Abschnitt 3) — genau damit man
-  Inhalte ändern kann, ohne Code zu schreiben.
