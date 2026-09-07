@@ -115,3 +115,84 @@ id: dataframes
       Exactly! Default all=FALSE = Inner Join. Only rows present in both are kept.
 - [ ] The dataframes are stacked on top of each other
       merge() default = Inner Join (only matching rows). Use all=TRUE to keep everything.
+
+# Quiz: Introduction to Bioinformatics
+id: intro-bioinfo
+
+## Q: According to Pauline Hogeweg (1978), what is the definition of bioinformatics?
+- [ ] The hardware architecture designed to process high-throughput genomic data
+      Hogeweg defined bioinformatics in 1978 from an information-processing perspective.
+- [x] The study of informatic processes in biotic systems
+      Correct! Hogeweg defined it in 1978 as the "study of informatic processes in biotic systems".
+- [ ] The exclusive statistical analysis of clinical trials in human populations
+      Bioinformatics spans broader biotic systems and biological information processing.
+
+## Q: What is the main goal of a Genome-Wide Association Study (GWAS)?
+- [ ] To assemble de novo sequencing reads without a reference genome
+      GWAS is focused on phenotypes, specifically finding links between variants and traits.
+- [x] To link specific DNA variants with traits or diseases across cohorts
+      Correct! GWAS identifies statistical associations between genomic variants and phenotypes or diseases.
+- [ ] To visualize high-dimensional single-cell data using UMAP
+      UMAP is a dimensionality reduction method, not the core goal of GWAS.
+
+## Q: What trend describes the historical development of sequencing costs since 2001?
+- [ ] Sequencing costs decreased at the exact same rate as Moore's Law
+      Moore's Law halves roughly every 18 months, but NGS outpaced it significantly.
+- [x] Sequencing costs dropped significantly faster than Moore's Law (especially after ~2007)
+      Correct! With high-throughput Next-Generation Sequencing, costs dropped much faster than Moore's Law predicted.
+- [ ] Sequencing costs have remained constant per human genome since 2001
+      Sequencing costs fell drastically from around $100M to under $1,000 per human genome.
+
+# Quiz: Data Analysis Workflow
+id: data-analysis-steps
+
+## Q: Which step belongs to descriptive data analysis rather than predictive data analysis?
+- [ ] Fitting a linear regression model to predict clinical outcome
+      Predicting values via regression is part of predictive modeling.
+- [ ] Training a machine learning classifier on multi-omics data
+      Training predictive classifiers is part of predictive data analysis.
+- [x] Cleaning data and visualizing distributions using boxplots or histograms
+      Correct! Cleaning data, exploring distributions, and visual summaries belong to descriptive data analysis.
+
+## Q: Why is data cleaning (e.g. gene identifier mapping) a crucial first step in biology?
+- [ ] Because R code only runs if all gene IDs are numeric integers
+      Gene IDs can be characters, but ambiguous naming causes mismatches during integration.
+- [x] Because genes often have multiple aliases and databases use different naming standards
+      Correct! Genes often have many historical aliases (e.g. MECOM, EVI1, PRDM3), requiring standardization.
+- [ ] Because missing values are automatically filled with random genes by R
+      R marks missing values with NA; it does not automatically impute them.
+
+## Q: What is the primary purpose of Principal Component Analysis (PCA) during data exploration?
+- [ ] To replace missing expression values with median values
+      PCA is a dimensionality reduction and ordination technique, not an imputation tool.
+- [x] To reduce dimensionality and capture major sources of variation across samples
+      Correct! PCA reduces high-dimensional data (e.g. 25,000 genes) to a few dimensions while capturing major variance.
+- [ ] To determine whether gene lengths are normally distributed
+      Normality of univariate distributions is tested using tests like Shapiro-Wilk, not PCA.
+
+# Quiz: R and R Markdown
+id: rmarkdown
+
+## Q: What is a key advantage of writing an R Markdown (`.Rmd`) document over working solely in the R console?
+- [ ] R Markdown makes code execute 10 times faster than the R console
+      R Markdown uses the same R engine; speed is not the primary difference.
+- [x] It allows dynamic, reproducible reports combining narrative text, executable code, and plots
+      Correct! R Markdown combines documentation, code execution, and resulting figures into reproducible reports.
+- [ ] Code typed directly in the console is permanently saved to disk automatically
+      Console commands are ephemeral and lost after closing RStudio unless scripted.
+
+## Q: Which tool is used under the hood to compile `.Rmd` files into markdown (`.md`) before Pandoc creates the final document?
+- [ ] `devtools`
+      devtools is used for package development in R.
+- [x] `knitr`
+      Correct! knitr executes the embedded R code chunks and converts `.Rmd` into `.md`, which Pandoc then renders.
+- [ ] `CRAN`
+      CRAN is the package repository network, not a document converter.
+
+## Q: What is the purpose of the code chunk header `{r setup, include = FALSE}` in R Markdown?
+- [ ] It hides the entire HTML output from the viewer
+      It only applies settings and hides output for that specific chunk.
+- [x] It executes initial configuration/libraries without printing the code or output in the report
+      Correct! `include = FALSE` runs the chunk (e.g. setting knitr options or loading libraries) but hides code and output.
+- [ ] It permanently disables R execution for all subsequent chunks
+      Subsequent chunks execute normally unless explicitly set otherwise.
