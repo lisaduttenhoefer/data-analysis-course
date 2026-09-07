@@ -1,0 +1,572 @@
+<script>
+(function () {
+  'use strict';
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Text helpers
+  // ═══════════════════════════════════════════════════════════════════════
+  function normalizeText(text) {
+    return text.replace(/^﻿/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  }
+
+  function slugify(text) {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // Escapes HTML, then turns `code` spans into <code>, **bold** into <strong>,
+  // and [text](url) into a link.
+  function formatInline(text) {
+    var escaped = escapeHtml(text);
+    escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+    escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    escaped = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    return escaped;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // manifest.txt parser
+  // Returns { title, description, tip, topics, slides, slidesLabel,
+  //           videos:[{title,url}], markdownR:[{path,label,note}],
+  //           markdownPython:[{path,label,note}], markdownPythonNote,
+  //           datasetNote, bonusNote, bonus:[{path,label}], reference:[{path,label}] }
+  // markdown_r / markdown_python are REPEATABLE (a week can have more than one
+  // practical file per language, e.g. Week 1's two R Markdowns / two notebooks).
+  // ═══════════════════════════════════════════════════════════════════════
+  function parseManifest(raw) {
+    var lines = normalizeText(raw).split('\n');
+    var result = {
+      title: '', description: '', tip: '', topics: '', slides: '', slidesLabel: '',
+      videos: [], markdownR: [], markdownPython: [], markdownPythonNote: '',
+      datasetNote: '', datasetCodeR: '', datasetNotePython: '', datasetCodePython: '',
+      warningNote: '', bonusNote: '', bonus: [], reference: []
+    };
+    var pendingVideo = null;
+    // Multi-line code fields (dataset_code_r / dataset_code_python) continue
+    // on subsequent INDENTED lines, like quiz.md's answer-feedback lines —
+    // a blank line or the next key: line ends the block.
+    var pendingCodeField = null;
+
+    // 4th (optional) segment overrides the saved/downloaded filename — used when
+    // the source path has characters best avoided in a downloaded file (accents,
+    // colons, etc.).
+    function parsePathLabelNote(value) {
+      var parts = value.split('|').map(function (s) { return s.trim(); });
+      return { path: parts[0] || '', label: parts[1] || '', note: parts[2] || '', filenameOverride: parts[3] || '' };
+    }
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+
+      if (!line.trim()) { pendingCodeField = null; continue; }
+
+      if (pendingCodeField && /^[ \t]/.test(line)) {
+        result[pendingCodeField] += (result[pendingCodeField] ? '\n' : '') + line.trim();
+        continue;
+      }
+      pendingCodeField = null;
+
+      var colonIdx = line.indexOf(':');
+      if (colonIdx === -1) { console.warn('manifest: skipping unrecognized line ' + (i + 1) + ': ' + line); continue; }
+      var key = line.slice(0, colonIdx).trim();
+      var value = line.slice(colonIdx + 1).trim();
+
+      switch (key) {
+        case 'title': result.title = value; break;
+        case 'description': result.description = value; break;
+        case 'tip': result.tip = value; break;
+        case 'topics': result.topics = value; break;
+        case 'slides': result.slides = value; break;
+        case 'slides_label': result.slidesLabel = value; break;
+        case 'dataset_note': result.datasetNote = value; break;
+        case 'dataset_note_python': result.datasetNotePython = value; break;
+        case 'warning_note': result.warningNote = value; break;
+        case 'dataset_code_r': result.datasetCodeR = value; pendingCodeField = 'datasetCodeR'; break;
+        case 'dataset_code_python': result.datasetCodePython = value; pendingCodeField = 'datasetCodePython'; break;
+        case 'bonus_note': result.bonusNote = value; break;
+        case 'markdown_python_note': result.markdownPythonNote = value; break;
+        case 'video':
+          if (pendingVideo) console.warn('manifest: video "' + pendingVideo.title + '" had no url: line');
+          pendingVideo = { title: value, url: null };
+          break;
+        case 'url':
+          if (!pendingVideo) { console.warn('manifest: url: line with no preceding video: line'); break; }
+          pendingVideo.url = value;
+          result.videos.push(pendingVideo);
+          pendingVideo = null;
+          break;
+        case 'markdown_r':
+          if (value) result.markdownR.push(parsePathLabelNote(value));
+          break;
+        case 'markdown_python':
+          if (value) result.markdownPython.push(parsePathLabelNote(value));
+          break;
+        case 'bonus':
+          result.bonus.push(parsePathLabelNote(value));
+          break;
+        case 'reference':
+          result.reference.push(parsePathLabelNote(value));
+          break;
+        default:
+          console.warn('manifest: unknown key "' + key + '" on line ' + (i + 1));
+      }
+    }
+    if (pendingVideo) console.warn('manifest: trailing video "' + pendingVideo.title + '" had no url: line');
+    return result;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // quiz.md parser
+  // Returns [{ title, id, questions: [{ text, answers: [{text, correct, feedback}] }] }]
+  // ═══════════════════════════════════════════════════════════════════════
+  function parseQuiz(raw) {
+    var lines = normalizeText(raw).split('\n');
+    var cards = [];
+    var currentCard = null;
+    var currentQuestion = null;
+    var currentAnswer = null;
+
+    var reCard = /^#\s+Quiz:\s*(.+)$/;
+    var reId = /^id:\s*(.+)$/;
+    var reQuestion = /^##\s+Q:\s*(.+)$/;
+    var reAnswer = /^-\s*\[( |x|X)\]\s*(.+)$/;
+
+    for (var i = 0; i < lines.length; i++) {
+      var rawLine = lines[i];
+      if (!rawLine.trim()) continue;
+
+      var mCard = rawLine.match(reCard);
+      if (mCard) {
+        currentCard = { title: mCard[1].trim(), id: null, questions: [] };
+        cards.push(currentCard);
+        currentQuestion = null;
+        currentAnswer = null;
+        continue;
+      }
+
+      var mId = rawLine.match(reId);
+      if (mId && currentCard && currentCard.questions.length === 0) {
+        currentCard.id = mId[1].trim();
+        continue;
+      }
+
+      var mQuestion = rawLine.match(reQuestion);
+      if (mQuestion) {
+        if (!currentCard) { console.warn('quiz: "## Q:" outside of a "# Quiz:" card on line ' + (i + 1)); continue; }
+        currentQuestion = { text: mQuestion[1].trim(), answers: [] };
+        currentCard.questions.push(currentQuestion);
+        currentAnswer = null;
+        continue;
+      }
+
+      var mAnswer = rawLine.match(reAnswer);
+      if (mAnswer) {
+        if (!currentQuestion) { console.warn('quiz: answer line outside of a question on line ' + (i + 1)); continue; }
+        currentAnswer = { text: mAnswer[2].trim(), correct: mAnswer[1].toLowerCase() === 'x', feedback: '' };
+        currentQuestion.answers.push(currentAnswer);
+        continue;
+      }
+
+      if (/^[ \t]/.test(rawLine)) {
+        if (!currentAnswer) { console.warn('quiz: feedback line with no preceding answer on line ' + (i + 1)); continue; }
+        currentAnswer.feedback = (currentAnswer.feedback ? currentAnswer.feedback + ' ' : '') + rawLine.trim();
+        continue;
+      }
+
+      console.warn('quiz: unrecognized line ' + (i + 1) + ': ' + rawLine);
+    }
+
+    cards.forEach(function (c) { if (!c.id) c.id = slugify(c.title); });
+    return cards;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Progress storage (pure localStorage — no Supabase)
+  // ═══════════════════════════════════════════════════════════════════════
+  function localGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function localSet(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+
+  function quizFullId(weekNum, quizId) { return 'w' + weekNum + '_q_' + quizId; }
+  function quizStorageKey(weekNum, quizId) { return 'quiz_r_w' + weekNum + '_' + quizFullId(weekNum, quizId); }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // DOM helpers
+  // ═══════════════════════════════════════════════════════════════════════
+  function h(html) {
+    var wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    return wrap.firstElementChild;
+  }
+
+  function encodePath(path) {
+    return path.split('/').map(encodeURIComponent).join('/');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Renderers
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderProgressBar(weekNum, title) {
+    return h(
+      '<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">' +
+        '<div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">' +
+          '<div>' +
+            '<strong style="font-size:1.1rem;">' + escapeHtml(title) + ' Progress</strong>' +
+            '<div id="week' + weekNum + '-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>' +
+          '</div>' +
+          '<a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>' +
+        '</div>' +
+        '<div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">' +
+          '<div id="week' + weekNum + '-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderStep1(weekNum, manifest) {
+    var n = manifest.videos.length;
+    var items = '<li class="resource-item">' +
+      '<input type="checkbox" id="check_w' + weekNum + '_slides">' +
+      '<label for="check_w' + weekNum + '_slides"><a href="' + encodePath(manifest.slides) + '" download>' + escapeHtml(manifest.slidesLabel || (manifest.title + ' (PDF slides)')) + '</a></label>' +
+      '</li>';
+    manifest.videos.forEach(function (v, i) {
+      var id = 'check_w' + weekNum + '_vid' + (i + 1);
+      items += '<li class="resource-item">' +
+        '<input type="checkbox" id="' + id + '">' +
+        '<label for="' + id + '"><a href="' + escapeHtml(v.url) + '" target="_blank" rel="noopener">Video ' + (i + 1) + '/' + n + ' – ' + escapeHtml(v.title) + '</a></label>' +
+        '</li>';
+    });
+
+    var section = h(
+      '<div>' +
+        '<div class="step-header"><div class="step-badge">1</div><h2>Watch the Lecture Videos &amp; Download the Slides</h2></div>' +
+        '<p style="color:#555;margin-bottom:1rem;">Watch the lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>' +
+        '<ul class="resource-list">' + items + '</ul>' +
+        '<div class="lang-python"><div class="lang-note"><strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The underlying concepts apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.</div></div>' +
+      '</div>'
+    );
+    return section;
+  }
+
+  // Builds checkbox ids for a list of markdown/notebook items belonging to one
+  // language. `suffix` is '_r' / '_python' when the OTHER language also has
+  // items (keeps ids distinct — this is the fix for the legacy duplicate-id
+  // bug where both languages reused e.g. check_w1_md1); '' when this is the
+  // only language with content for this week (keeps ids unchanged from legacy).
+  function markdownCheckIds(weekNum, count, suffix) {
+    var ids = [];
+    for (var i = 0; i < count; i++) {
+      ids.push('check_w' + weekNum + '_md' + (count > 1 ? (i + 1) : '') + suffix);
+    }
+    return ids;
+  }
+
+  function markdownBlock(entry, checkboxId, kind) {
+    var label = entry.label || entry.path.split('/').pop();
+    var filename = entry.filenameOverride || entry.path.split('/').pop();
+    var openWith = kind === 'python' ? 'open in VS Code with the Jupyter extension' : 'open in RStudio';
+    var note = entry.note ? '<span style="color:#888;font-size:0.85rem;margin-left:8px;">' + formatInline(entry.note) + '</span>' : '';
+    return '<li class="resource-item">' +
+      '<input type="checkbox" id="' + checkboxId + '">' +
+      '<label for="' + checkboxId + '"><a href="' + encodePath(entry.path) + '" download="' + escapeHtml(filename) + '">' + escapeHtml(label) + '</a>' +
+      '<span style="color:#888;font-size:0.85rem;margin-left:8px;">' + openWith + '</span>' + note + '</label>' +
+      '</li>';
+  }
+
+  function renderStep2(weekNum, manifest) {
+    var suffix = (manifest.markdownR.length && manifest.markdownPython.length) ? true : false;
+    var rIds = markdownCheckIds(weekNum, manifest.markdownR.length, suffix ? '_r' : '');
+    var pyIds = markdownCheckIds(weekNum, manifest.markdownPython.length, suffix ? '_python' : '');
+
+    var rPlural = manifest.markdownR.length > 1;
+    var rIntro = rPlural
+      ? 'Download ' + (manifest.markdownR.length === 2 ? 'both' : 'all ' + manifest.markdownR.length) + ' R Markdown files and work through them in RStudio. Check each off when done.'
+      : 'Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.';
+    var rInner = '<div class="step-header"><div class="step-badge">2</div><h2>Work Through the Practical ' + (rPlural ? 'Markdowns' : 'Markdown') + '</h2></div>' +
+      '<p style="color:#555;margin-bottom:1rem;">' + rIntro + '</p>';
+    if (manifest.markdownR.length) {
+      rInner += '<ul class="resource-list">' + manifest.markdownR.map(function (entry, i) { return markdownBlock(entry, rIds[i], 'r'); }).join('') + '</ul>';
+    }
+    if (manifest.warningNote) {
+      rInner += '<div class="warning-note"><strong>Note:</strong> ' + formatInline(manifest.warningNote) + '</div>';
+    }
+    if (manifest.datasetNote) {
+      rInner += '<blockquote style="margin-top:1rem;"><p>' + formatInline(manifest.datasetNote) + '</p></blockquote>';
+    }
+    if (manifest.datasetCodeR) {
+      rInner += '<pre><code>' + escapeHtml(manifest.datasetCodeR) + '</code></pre>';
+    }
+    if (manifest.reference.length) {
+      rInner += '<p style="margin-top:1rem;"><strong>Useful reference PDFs</strong> (open in browser, no download needed):</p><div class="d-flex gap-3 mb-3 flex-wrap">';
+      manifest.reference.forEach(function (ref) {
+        var filename = ref.path.split('/').pop();
+        rInner += '<a href="' + encodePath(ref.path) + '" target="_blank" class="btn btn-outline-danger btn-sm">' + escapeHtml(ref.label || filename) + '</a>';
+      });
+      rInner += '</div>';
+    }
+    if (manifest.bonus.length) {
+      if (manifest.bonusNote) rInner += '<p style="margin-top:1rem;">' + formatInline(manifest.bonusNote) + '</p>';
+      rInner += '<div class="d-flex gap-3 mb-3 flex-wrap">';
+      manifest.bonus.forEach(function (b) {
+        var filename = b.path.split('/').pop();
+        // PDFs open in a new tab (view in browser); everything else downloads —
+        // matches how these buttons were originally authored per file type.
+        // The optional 3rd field (note) overrides the saved filename, e.g. to
+        // avoid accented characters in a downloaded filename.
+        var isPdf = /\.pdf$/i.test(b.path);
+        var attrs = isPdf ? 'target="_blank"' : ('download="' + escapeHtml(b.filenameOverride || filename) + '"');
+        rInner += '<a href="' + encodePath(b.path) + '" ' + attrs + ' class="btn btn-outline-danger btn-sm">' + escapeHtml(b.label || filename) + '</a>';
+      });
+      rInner += '</div>';
+    }
+    var rBlock = h('<div class="lang-r">' + rInner + '</div>');
+
+    var pyInner;
+    if (manifest.markdownPython.length) {
+      var pyPlural = manifest.markdownPython.length > 1;
+      var pyIntro = pyPlural
+        ? 'Download ' + (manifest.markdownPython.length === 2 ? 'both' : 'all ' + manifest.markdownPython.length) + ' Jupyter notebooks and work through them in VS Code. Open with the Jupyter extension — run each cell with <strong>Shift+Enter</strong>. Check each off when done.'
+        : 'Download the Jupyter notebook and open it in VS Code. Work through all sections, then check it off below.';
+      pyInner = '<div class="step-header"><div class="step-badge">2</div><h2>Work Through the Practical ' + (pyPlural ? 'Notebooks' : 'Notebook') + '</h2></div>' +
+        '<p style="color:#555;margin-bottom:1rem;">' + pyIntro + '</p>' +
+        '<ul class="resource-list">' + manifest.markdownPython.map(function (entry, i) { return markdownBlock(entry, pyIds[i], 'python'); }).join('') + '</ul>';
+      if (manifest.datasetNotePython) pyInner += '<blockquote style="margin-top:1rem;"><p>' + formatInline(manifest.datasetNotePython) + '</p></blockquote>';
+      if (manifest.datasetCodePython) pyInner += '<pre><code>' + escapeHtml(manifest.datasetCodePython) + '</code></pre>';
+      if (manifest.markdownPythonNote) pyInner += '<p style="margin-top:1rem;">' + formatInline(manifest.markdownPythonNote) + '</p>';
+    } else {
+      pyInner = '<div class="step-header"><div class="step-badge">2</div><h2>Work Through the Practical Notebook</h2></div>' +
+        '<div class="placeholder-card">' +
+          '<p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Notebook — Coming Soon</p>' +
+          '<p style="color:#555;margin-bottom:0;">A Python version of this week\'s exercise is in preparation. Use the R Markdown material for now — the underlying concepts transfer directly.</p>' +
+        '</div>';
+    }
+    var pyBlock = h('<div class="lang-python">' + pyInner + '</div>');
+
+    var wrap = document.createElement('div');
+    wrap.appendChild(rBlock);
+    wrap.appendChild(pyBlock);
+    return wrap;
+  }
+
+  function renderStep3(weekNum, quizCards) {
+    var wrap = document.createElement('div');
+    wrap.appendChild(h('<div class="step-header"><div class="step-badge">3</div><h2>Comprehension Quiz</h2></div>'));
+    wrap.appendChild(h('<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>'));
+
+    var rWrap = document.createElement('div');
+    rWrap.className = 'lang-r';
+
+    quizCards.forEach(function (card, cardIdx) {
+      if (cardIdx > 0) rWrap.appendChild(h('<hr>'));
+      var fullId = quizFullId(weekNum, card.id);
+      var cardHtml = '<h3>Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
+        ' <span id="quiz-done-' + fullId + '" class="quiz-done-badge">✓ Done</span></h3>' +
+        '<div class="quiz-card" id="quizcard-' + fullId + '">';
+      card.questions.forEach(function (q, qIdx) {
+        var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx;
+        cardHtml += '<div class="mb-4"><p><strong>Question ' + (qIdx + 1) + ':</strong> ' + formatInline(q.text) + '</p>';
+        q.answers.forEach(function (a, aIdx) {
+          var radioId = radioName + '_' + aIdx;
+          cardHtml += '<div class="form-check"><input class="form-check-input" type="radio" name="' + radioName + '" id="' + radioId + '">' +
+            '<label class="form-check-label" for="' + radioId + '">' + formatInline(a.text) + '</label></div>';
+        });
+        cardHtml += '<div id="' + radioName + '-feedback" class="mt-1 fw-bold"></div></div>';
+      });
+      cardHtml += '<button class="btn btn-primary w-100 check-quiz-btn" data-quiz-full-id="' + fullId + '" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>' +
+        '<div id="' + fullId + '-result" class="mt-3 fw-bold text-center"></div></div>';
+      rWrap.appendChild(h('<div>' + cardHtml + '</div>'));
+    });
+    wrap.appendChild(rWrap);
+
+    var pyWrap = document.createElement('div');
+    pyWrap.className = 'lang-python';
+    var pyHtml = '<p style="color:#555;margin-bottom:1.5rem;">Python quizzes are in preparation — one per topic.</p>';
+    quizCards.forEach(function (card, cardIdx) {
+      pyHtml += '<h3 style="margin-top:' + (cardIdx === 0 ? '0.5rem' : '1.5rem') + ';">Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
+        ' <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Coming Soon)</span></h3>' +
+        '<div class="placeholder-card"><p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Quiz — Coming Soon</p>' +
+        '<p style="color:#555;margin-bottom:0;">A Python version of this quiz is in preparation.</p></div>';
+    });
+    pyWrap.innerHTML = pyHtml;
+    wrap.appendChild(pyWrap);
+
+    return wrap;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Progress wiring
+  // ═══════════════════════════════════════════════════════════════════════
+  function collectCheckIds(weekNum, manifest) {
+    var ids = ['check_w' + weekNum + '_slides'];
+    manifest.videos.forEach(function (v, i) { ids.push('check_w' + weekNum + '_vid' + (i + 1)); });
+    var bothLangs = manifest.markdownR.length && manifest.markdownPython.length;
+    ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownR.length, bothLangs ? '_r' : ''));
+    ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownPython.length, bothLangs ? '_python' : ''));
+    return ids;
+  }
+
+  // Checkboxes that count toward progress for a given language: slides + videos
+  // are shared (same for both tracks), markdown/notebook items are per-language.
+  function checkIdsForLang(weekNum, manifest, lang) {
+    var ids = ['check_w' + weekNum + '_slides'];
+    manifest.videos.forEach(function (v, i) { ids.push('check_w' + weekNum + '_vid' + (i + 1)); });
+    var bothLangs = manifest.markdownR.length && manifest.markdownPython.length;
+    if (lang === 'python') {
+      ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownPython.length, bothLangs ? '_python' : ''));
+    } else {
+      ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownR.length, bothLangs ? '_r' : ''));
+    }
+    return ids;
+  }
+
+  // Quizzes are R-only for now (no quiz_python.md format yet — Python quiz
+  // cards are "Coming Soon" placeholders with nothing to actually complete).
+  function quizCardsForLang(quizCards, lang) {
+    return lang === 'python' ? [] : quizCards;
+  }
+
+  function updateWeekBar(weekNum, manifest, quizCards, langOverride) {
+    var lang = langOverride || (window.getCurrentLang ? window.getCurrentLang() : 'r');
+    var checkIds = checkIdsForLang(weekNum, manifest, lang);
+    var relevantQuizzes = quizCardsForLang(quizCards, lang);
+    var total = checkIds.length + relevantQuizzes.length;
+    var done = 0;
+    checkIds.forEach(function (id) { if (localGet(id) === 'true') done++; });
+    relevantQuizzes.forEach(function (card) { if (localGet(quizStorageKey(weekNum, card.id)) === 'true') done++; });
+    var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    var bar = document.getElementById('week' + weekNum + '-progress-bar');
+    var txt = document.getElementById('week' + weekNum + '-progress-text');
+    if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+    if (txt) txt.innerText = done + ' of ' + total + ' items completed';
+  }
+
+  function wireCheckboxes(weekNum, manifest, checkIds, quizCards) {
+    checkIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.checked = localGet(id) === 'true';
+      var item = el.closest('.resource-item');
+      if (item) item.classList.toggle('is-checked', el.checked);
+      el.addEventListener('change', function () {
+        localSet(id, el.checked ? 'true' : 'false');
+        var it = el.closest('.resource-item');
+        if (it) it.classList.toggle('is-checked', el.checked);
+        updateWeekBar(weekNum, manifest, quizCards);
+      });
+    });
+  }
+
+  function wireQuizzes(weekNum, manifest, quizCards) {
+    quizCards.forEach(function (card) {
+      var fullId = quizFullId(weekNum, card.id);
+      if (localGet(quizStorageKey(weekNum, card.id)) === 'true') {
+        var badge = document.getElementById('quiz-done-' + fullId);
+        if (badge) badge.style.display = 'inline';
+      }
+      var btn = document.querySelector('.check-quiz-btn[data-quiz-full-id="' + fullId + '"]');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var score = 0;
+        var total = card.questions.length;
+        card.questions.forEach(function (q, qIdx) {
+          var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx;
+          var checked = document.querySelector('input[name="' + radioName + '"]:checked');
+          var fb = document.getElementById(radioName + '-feedback');
+          if (!checked) { if (fb) fb.innerHTML = ''; return; }
+          var aIdx = parseInt(checked.id.slice((radioName + '_').length), 10);
+          var answer = q.answers[aIdx];
+          if (answer && answer.correct) {
+            score++;
+            if (fb) { fb.innerHTML = '✅ ' + formatInline(answer.feedback || 'Correct!'); fb.style.color = '#1a4d1a'; }
+          } else if (fb) {
+            fb.innerHTML = '❌ ' + formatInline((answer && answer.feedback) || 'Not quite — try again.');
+            fb.style.color = '#d9534f';
+          }
+        });
+        var result = document.getElementById(fullId + '-result');
+        if (score === total) {
+          if (result) { result.innerHTML = '🎉 All correct!'; result.style.color = '#1a4d1a'; }
+          localSet(quizStorageKey(weekNum, card.id), 'true');
+          var badge2 = document.getElementById('quiz-done-' + fullId);
+          if (badge2) badge2.style.display = 'inline';
+        } else if (result) {
+          result.innerHTML = score + ' of ' + total + ' correct. Try again!';
+          result.style.color = '#d9534f';
+        }
+        updateWeekBar(weekNum, manifest, quizCards);
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Bootstrap
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderError(container, weekNum, err) {
+    container.innerHTML = '<div class="placeholder-card" style="border-left-color:#d9534f;">' +
+      '<p style="color:#d9534f;font-weight:700;">⚠️ Could not load this week\'s content.</p>' +
+      '<p style="color:#555;">content/week' + weekNum + '/manifest.txt or quiz.md failed to load or failed to parse. ' +
+      'Check the browser console for details, and verify both files exist and are correctly formatted.</p></div>';
+    console.error('week-loader error for week ' + weekNum + ':', err);
+  }
+
+  function init() {
+    var container = document.getElementById('week-app');
+    if (!container) return;
+    var weekNum = container.getAttribute('data-week');
+
+    Promise.all([
+      fetch('content/week' + weekNum + '/manifest.txt').then(function (r) {
+        if (!r.ok) throw new Error('manifest.txt HTTP ' + r.status);
+        return r.text();
+      }),
+      fetch('content/week' + weekNum + '/quiz.md').then(function (r) {
+        if (!r.ok) throw new Error('quiz.md HTTP ' + r.status);
+        return r.text();
+      })
+    ]).then(function (results) {
+      var manifest = parseManifest(results[0]);
+      var quizCards = parseQuiz(results[1]);
+
+      container.innerHTML = '';
+      container.appendChild(renderProgressBar(weekNum, manifest.title));
+      if (manifest.description) {
+        container.appendChild(h('<p>' + formatInline(manifest.description) + '</p>'));
+      }
+      if (manifest.tip) {
+        container.appendChild(h('<blockquote><p>' + formatInline(manifest.tip) + '</p></blockquote>'));
+      }
+      container.appendChild(h('<hr style="opacity:0;margin:1rem 0;">'));
+      container.appendChild(renderStep1(weekNum, manifest));
+      container.appendChild(h('<hr>'));
+      container.appendChild(renderStep2(weekNum, manifest));
+      container.appendChild(h('<hr>'));
+      container.appendChild(renderStep3(weekNum, quizCards));
+
+      var checkIds = collectCheckIds(weekNum, manifest);
+      wireCheckboxes(weekNum, manifest, checkIds, quizCards);
+      wireQuizzes(weekNum, manifest, quizCards);
+      updateWeekBar(weekNum, manifest, quizCards);
+
+      // Re-run the progress bar whenever the R/Python toggle changes, since
+      // which items count (markdown/notebook + quiz) depends on the language.
+      document.addEventListener('langchange', function (ev) { updateWeekBar(weekNum, manifest, quizCards, ev.detail && ev.detail.lang); });
+
+      if (window.applyLangVisibility) window.applyLangVisibility(window.getCurrentLang ? window.getCurrentLang() : 'python');
+    }).catch(function (err) {
+      renderError(container, weekNum, err);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>

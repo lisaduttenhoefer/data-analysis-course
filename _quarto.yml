@@ -11,6 +11,7 @@ project:
     - "WEEK6/**"
     - "WEEK7/**"
     - "WEEK8/**"
+    - "content/**"
     - ".nojekyll"
   render:
     - "*.qmd"

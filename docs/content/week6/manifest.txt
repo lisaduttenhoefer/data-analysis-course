@@ -1,0 +1,19 @@
+title: Week 6: Central Limit Theorem & Confidence Intervals
+description: This week completes your training in distributions with the **Central Limit Theorem** and learns how to construct **confidence intervals**. Use the language toggle above to switch between R and Python.
+topics: Central Limit Theorem · Standard Error · Confidence Intervals
+slides: WEEK5/week5_lecture_slides.pdf
+slides_label: Week 6 – CLT & Confidence Intervals (PDF slides)
+
+video: 6.1 Statistical inference
+url: https://www.youtube.com/watch?v=1etp-SpDIhQ
+video: 6.2 Confidence intervals
+url: https://www.youtube.com/watch?v=3kKXZRjjLIE
+
+markdown_r: WEEK5/_05_Distributions_CLT.Rmd | Week 6 – Distributions, CLT & Confidence Intervals (R Markdown)
+markdown_python: WEEK5/_05_Distributions_CLT_python.ipynb | Week 6 – Distributions, CLT & Confidence Intervals (Python Notebook)
+bonus_note: **Bonus reference:** a companion script comparing 90%/95% confidence intervals, plenum recaps (dice-sum & chocolate-weight simulations of the CLT), and comprehension questions with worked solutions. Quizzes 3 & 4 below draw on this material.
+bonus: WEEK5/_05_confidence_intervals.Rmd | CI Comparison (R Markdown)
+bonus: WEEK5/_05_plenum_augensumme.Rmd | Plenum: Dice Sum (R Markdown)
+bonus: WEEK5/_05_plenum_zentraler_grenzwertsatz.Rmd | Plenum: CLT Demo (R Markdown)
+bonus: WEEK5/_05_Verständnisfragen.Rmd | Comprehension Questions (R Markdown) | | _05_Verstaendnisfragen.Rmd
+bonus: WEEK5/_05_folien_plenum.pdf | Plenum Slides (PDF)

@@ -1,0 +1,21 @@
+title: Week 3: Correlation & Clustering
+description: This week you will measure **associations between variables** with correlation, handle **missing data points**, and take your first steps into **unsupervised learning** with clustering. Use the language toggle above to switch between R and Python.
+topics: Pearson vs Spearman · Missing Data · Intro to Clustering · K-means
+slides: WEEK2/week2_lecture_slides.pdf
+slides_label: Week 3 – Correlation & Clustering (PDF slides)
+
+video: 2.3 Correlations
+url: https://youtu.be/l4spkWoXclw
+video: 3. Dealing with missing data points
+url: https://youtu.be/zJmp2SYoMts
+video: 4.1 Introduction to clustering
+url: https://youtu.be/5J5k26YfKig
+video: 4.2 K-means clustering
+url: https://youtu.be/FHaIoNhHcKY
+
+markdown_r: WEEK2/_02_correlation_clustering.Rmd | Week 3 – Correlation & Clustering (R Markdown)
+markdown_python: WEEK2/_02_correlation_clustering_python.ipynb | Week 3 – Correlation & Clustering (Python Notebook)
+
+dataset_note: **Datasets:** This sheet reuses the cleaned diabetes dataset from Week 2, and introduces a new gene expression dataset (TCGA breast cancer, 200 samples × 300 genes) for the clustering part. Both are loaded directly inside the R Markdown file — no separate download needed.
+bonus_note: **Bonus reference:** a plenum recap covering Spearman vs. Pearson correlation and k-means in more depth. Quiz 5 below is based on this material.
+bonus: WEEK2/_02_plenum.Rmd | Plenum Recap (R Markdown)

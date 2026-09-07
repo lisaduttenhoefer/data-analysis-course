@@ -1,0 +1,18 @@
+title: Week 7: Hypothesis Testing & t-Tests
+description: This week you learn how to **formulate hypotheses** and **test** them — focusing on tests of mean values with the **t-test**. Use the language toggle above to switch between R and Python.
+topics: H0/H1 · One- vs Two-Sided · t-Test · Normality
+slides: WEEK6/week6_lecture_slides.pdf
+slides_label: Week 7 – Hypothesis Testing & t-Tests (PDF slides)
+
+video: 7.1 Hypothesis testing
+url: https://www.youtube.com/watch?v=wJm3-Ev5tRw
+video: 7.2 t-Test
+url: https://www.youtube.com/watch?v=do6Sgq4ZmjU
+
+markdown_r: WEEK6/_06_hypothesis_testing.Rmd | Week 7 – Hypothesis Testing (R Markdown)
+markdown_python: WEEK6/_06_hypothesis_testing_python.ipynb | Week 7 – Hypothesis Testing (Python Notebook)
+dataset_note: **Dataset:** This sheet reuses the diabetes dataset from earlier weeks, loaded directly inside the R Markdown file — no separate download needed.
+bonus_note: **Bonus reference:** two companion scripts with more worked t-test examples, plus comprehension questions with solutions. Quizzes 2 & 4 below draw on this material.
+bonus: WEEK6/_06_t-tests.Rmd | t-Tests Companion (R Markdown)
+bonus: WEEK6/_06_ttests.Rmd | t-Tests Companion 2 (R Markdown)
+bonus: WEEK6/Verständnisfragen_mit_sol.Rmd | Comprehension Questions + Solutions (R Markdown) | | Verstaendnisfragen_mit_sol.Rmd

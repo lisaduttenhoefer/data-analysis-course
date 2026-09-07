@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-23be78434246ea8017d72d8785af5da3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,6 +72,21 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // Shared, reusable: toggles .lang-r / .lang-python visibility for whatever
+  // matching elements currently exist in the DOM. Safe to call at any time,
+  // including after content injected asynchronously by week-loader.html —
+  // that's the whole reason this is a standalone global function rather than
+  // inline in the DOMContentLoaded handler below.
+  window.applyLangVisibility = function(lang) {
+    document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+    document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+    document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: lang } }));
+  };
+
+  window.getCurrentLang = function() {
+    try { return localStorage.getItem('da_course_lang') || 'python'; } catch (e) { return 'python'; }
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
     function applyFinalStyle() {
       // Wir suchen alle Links in der Navbar
@@ -91,22 +106,25 @@ ul.task-list li input[type="checkbox"] {
       const darkGreen = "#1a4d1a";
 
       function updateView(lang) {
-        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
-        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+        // IMPORTANT: persist the new language BEFORE dispatching visibility/langchange —
+        // listeners (e.g. week-loader.html's progress bar) read the current language
+        // back out of localStorage when they react to the event, so it must already
+        // reflect the new value by the time applyLangVisibility() fires it.
+        localStorage.setItem('da_course_lang', lang);
+
+        window.applyLangVisibility(lang);
 
         // Style Python
         pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
 
         // Style R
         rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
-
-        localStorage.setItem('da_course_lang', lang);
       }
 
       pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
       rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
 
-      updateView(localStorage.getItem('da_course_lang') || 'python');
+      updateView(window.getCurrentLang());
     }
     applyFinalStyle();
   });
@@ -264,555 +282,586 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<style>
-  .step-header {
-    display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem;
-  }
-  .step-badge {
-    background: #1a4d1a; color: white; border-radius: 50%;
-    width: 38px; height: 38px; display: flex; align-items: center;
-    justify-content: center; font-weight: 900; font-size: 1.1rem;
-    flex-shrink: 0;
-  }
-  .step-header h2 { margin: 0; font-size: 1.35rem; }
-
-  .resource-list { list-style: none; padding: 0; margin: 0; }
-  .resource-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
-    background: #f8f9fa; border: 2px solid transparent;
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .resource-item.is-checked { background: #f0fff0; border-color: #a8d5a2; }
-  .resource-item input[type="checkbox"] {
-    width: 20px; height: 20px; cursor: pointer; accent-color: #1a4d1a; flex-shrink: 0;
-  }
-  .resource-item label { margin: 0; cursor: pointer; flex: 1; font-size: 0.97rem; }
-  .resource-item label a { color: #1a4d1a; font-weight: 600; }
-  .resource-item label a:hover { text-decoration: underline; }
-
-  .quiz-card {
-    background: #f8f9fa; border-radius: 12px;
-    padding: 20px 24px; margin-bottom: 1.5rem;
-    border-left: 4px solid #1a4d1a;
-  }
-  .quiz-done-badge {
-    display: none; background: #a8d5a2; color: #1a4d1a;
-    border-radius: 50px; padding: 2px 12px; font-size: 0.8rem;
-    font-weight: 800; margin-left: 10px; vertical-align: middle;
-  }
-  .placeholder-card {
-    background: #eef2ff; border-radius: 12px; padding: 20px 24px;
-    margin-bottom: 1.5rem; border-left: 4px solid #7c9cef;
-  }
-  .lang-note {
-    background: #fff8e1; border-radius: 8px; padding: 10px 14px;
-    margin-top: 0.8rem; margin-bottom: 0; font-size: 0.9rem;
-    border-left: 3px solid #ffc107; color: #555;
-  }
-</style>
-
-<!-- Progress bar -->
-<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">
-  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-    <div>
-      <strong style="font-size:1.1rem;">Week 2 Progress</strong>
-      <div id="week2-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>
-    </div>
-    <a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>
-  </div>
-  <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">
-    <div id="week2-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>
-  </div>
+<!-- Content for this page is loaded at runtime from content/week2/manifest.txt and
+     content/week2/quiz.md by week-loader.html — edit those files, not this one. -->
+<div id="week-app" data-week="2">
+Loading…
 </div>
-<p>In this week you will work with a real diabetes dataset and learn how to <strong>prepare raw data for analysis</strong> and <strong>visualise distributions</strong>. Use the language toggle above to switch between R and Python.</p>
-<hr>
-<!-- ─── STEP 1: Videos & Slides (shared) ─────────────────────────────────── -->
-<div class="step-header">
-  <div class="step-badge">1</div>
-  <h2 class="anchored">Watch the Lecture Videos &amp; Download the Slides</h2>
-</div>
-<p style="color:#555;margin-bottom:1rem;">Watch the four short lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>
-
-<ul class="resource-list">
-  <li class="resource-item">
-    <input type="checkbox" id="check_w2_slides" onchange="markCheckDone(this)">
-    <label for="check_w2_slides">
-      <a href="WEEK1/week1_lecture_slides.pdf" download="">Week 2 – Describing &amp; Visualizing data (PDF slides)</a>
-    </label>
-  </li>
-  <li class="resource-item">
-    <input type="checkbox" id="check_w2_vid1" onchange="markCheckDone(this)">
-    <label for="check_w2_vid1">
-      <a href="https://youtu.be/itBBBH1gEGc" target="_blank" rel="noopener">Video 1/4 – Which data?</a>
-    </label>
-  </li>
-  <li class="resource-item">
-    <input type="checkbox" id="check_w2_vid2" onchange="markCheckDone(this)">
-    <label for="check_w2_vid2">
-      <a href="https://youtu.be/JMoE2lpBsPg" target="_blank" rel="noopener">Video 2/4 – Visualization of data</a>
-    </label>
-  </li>
-  <li class="resource-item">
-    <input type="checkbox" id="check_w2_vid3" onchange="markCheckDone(this)">
-    <label for="check_w2_vid3">
-      <a href="https://youtu.be/DU3IEnVr2kA" target="_blank" rel="noopener">Video 3/4 – Describing data 1</a>
-    </label>
-  </li>
-  <li class="resource-item">
-    <input type="checkbox" id="check_w2_vid4" onchange="markCheckDone(this)">
-    <label for="check_w2_vid4">
-      <a href="https://youtu.be/jFt72U7xiHk" target="_blank" rel="noopener">Video 4/4 – Describing data 2</a>
-    </label>
-  </li>
-</ul>
-
-<!-- Python note -->
-<div class="lang-python">
-  <div class="lang-note">
-    <strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The concepts — data loading, cleanup, and visualisation — apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.
-  </div>
-</div>
-
-<hr>
-
-<!-- ─── STEP 2: Markdown ──────────────────────────────────────────────────── -->
-
-<!-- R version -->
-<div class="lang-r">
-<div class="step-header">
-  <div class="step-badge">2</div>
-  <h2 class="anchored">Work Through the Practical Markdown</h2>
-</div>
-<p style="color:#555;margin-bottom:1rem;">Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.</p>
-<ul class="resource-list">
-  <li class="resource-item">
-    <input type="checkbox" id="check_w2_markdown" onchange="markCheckDone(this)">
-    <label for="check_w2_markdown">
-      <a href="WEEK1/_01_data_cleanup.Rmd" download="_01_data_cleanup.Rmd">Week 2 – Data Cleanup (R Markdown)</a>
-      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in RStudio</span>
-    </label>
-  </li>
-</ul>
-<blockquote style="margin-top:1rem;" class="blockquote">
-  <p><strong>Course dataset:</strong> Load the diabetes data in RStudio with:</p>
-  <pre><code>dat &lt;- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1')</code></pre>
-</blockquote>
-</div>
-
-<!-- Python version -->
-<div class="lang-python">
-<div class="step-header">
-  <div class="step-badge">2</div>
-  <h2 class="anchored">Work Through the Practical Notebook</h2>
-</div>
-<p style="color:#555;margin-bottom:1rem;">Download the Jupyter notebook and open it in VS Code. Work through all sections, then check it off below.</p>
-<ul class="resource-list">
-  <li class="resource-item">
-    <input type="checkbox" id="check_w2_markdown" onchange="markCheckDone(this)">
-    <label for="check_w2_markdown">
-      <a href="WEEK1/_01_data_cleanup_python.ipynb" download="_01_data_cleanup_python.ipynb">Week 2 – Data Cleanup (Python Notebook)</a>
-      <span style="color:#888;font-size:0.85rem;margin-left:8px;">open in VS Code with Jupyter extension</span>
-    </label>
-  </li>
-</ul>
-<blockquote class="blockquote">
-  <p><strong>Course dataset:</strong> Load the diabetes data in Python with:</p>
-  <pre><code>import pandas as pd
-dat = pd.read_csv('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&amp;dl=1', sep='\t')</code></pre>
-</blockquote>
-</div>
-
-<hr>
-
-<!-- ─── STEP 3: Quiz ───────────────────────────────────────────────────────── -->
-<div class="step-header">
-  <div class="step-badge">3</div>
-  <h2 class="anchored">Comprehension Quiz</h2>
-</div>
-<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>
-
-<!-- R quizzes -->
-<div class="lang-r">
-
-<h3 class="anchored">Quiz 1: Loading and Exploring <span id="quiz-done-w2_q_loading" class="quiz-done-badge">✓ Done</span></h3>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> What does <code>dim(dat)</code> return for a dataframe with 400 rows and 17 columns?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1a"><label class="form-check-label" for="l1a"><code>c(17, 400)</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1b"><label class="form-check-label" for="l1b"><code>c(400, 17)</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l1" id="l1c"><label class="form-check-label" for="l1c"><code>400</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l1" id="l1d"><label class="form-check-label" for="l1d"><code>6800</code></label></div>
-    <div id="l1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> What does <code>head(dat)</code> show by default?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2a"><label class="form-check-label" for="l2a">The last 6 rows</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2b"><label class="form-check-label" for="l2b">The first 6 rows</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l2" id="l2c"><label class="form-check-label" for="l2c">A summary of all columns</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l2" id="l2d"><label class="form-check-label" for="l2d">The first row only</label></div>
-    <div id="l2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> How do you access the column <code>age</code> from a dataframe <code>dat</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3a"><label class="form-check-label" for="l3a"><code>dat[age]</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3b"><label class="form-check-label" for="l3b"><code>dat$age</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="l3" id="l3c"><label class="form-check-label" for="l3c"><code>dat["age", ]</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="l3" id="l3d"><label class="form-check-label" for="l3d"><code>get(dat, "age")</code></label></div>
-    <div id="l3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkLoadingQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="loading-result" class="mt-3 fw-bold text-center"></div>
-</div>
-
-<hr>
-
-<h3 class="anchored">Quiz 2: Data Cleanup <span id="quiz-done-w2_q_cleanup" class="quiz-done-badge">✓ Done</span></h3>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> <code>which(x &gt; 5)</code> for <code>x &lt;- c(2, 8, 3, 7, 1)</code> returns…</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1a"><label class="form-check-label" for="c1a"><code>c(8, 7)</code> — the values greater than 5</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1b"><label class="form-check-label" for="c1b"><code>c(2, 4)</code> — the indices (positions) where the condition is TRUE</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c1" id="c1c"><label class="form-check-label" for="c1c"><code>c(FALSE, TRUE, FALSE, TRUE, FALSE)</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c1" id="c1d"><label class="form-check-label" for="c1d">An error</label></div>
-    <div id="c1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> How do you remove columns 3 and 7 from dataframe <code>dat</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2a"><label class="form-check-label" for="c2a"><code>dat[-c(3,7)]</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2b"><label class="form-check-label" for="c2b"><code>dat[, -c(3,7)]</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c2" id="c2c"><label class="form-check-label" for="c2c"><code>dat[c(3,7), ]</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c2" id="c2d"><label class="form-check-label" for="c2d"><code>dat - c(3,7)</code></label></div>
-    <div id="c2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> <code>apply(dat, 1, function(x) sum(is.na(x)))</code> counts the NAs…</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3a"><label class="form-check-label" for="c3a">Per column (one value per variable)</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3b"><label class="form-check-label" for="c3b">Per row (one value per patient)</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="c3" id="c3c"><label class="form-check-label" for="c3c">In the entire dataframe (one total)</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="c3" id="c3d"><label class="form-check-label" for="c3d">Per cell (one value per element)</label></div>
-    <div id="c3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkCleanupQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="cleanup-result" class="mt-3 fw-bold text-center"></div>
-</div>
-
-<hr>
-
-<h3 class="anchored">Quiz 3: Visualisation <span id="quiz-done-w2_q_viz" class="quiz-done-badge">✓ Done</span></h3>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> What does the <code>breaks</code> parameter in <code>hist()</code> control?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1a"><label class="form-check-label" for="v1a">The colour of the bars</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1b"><label class="form-check-label" for="v1b">The number of bins</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v1" id="v1c"><label class="form-check-label" for="v1c">The y-axis range</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v1" id="v1d"><label class="form-check-label" for="v1d">The x-axis title</label></div>
-    <div id="v1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> In a boxplot, the central line inside the box represents…</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2a"><label class="form-check-label" for="v2a">The mean</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2b"><label class="form-check-label" for="v2b">The median (50th percentile)</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v2" id="v2c"><label class="form-check-label" for="v2c">The standard deviation</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v2" id="v2d"><label class="form-check-label" for="v2d">The minimum value</label></div>
-    <div id="v2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> What does a Q-Q plot tell you?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3a"><label class="form-check-label" for="v3a">The correlation between two variables</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3b"><label class="form-check-label" for="v3b">How many outliers the data has</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="v3" id="v3c"><label class="form-check-label" for="v3c">How closely the data follows a theoretical distribution (e.g. normal)</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="v3" id="v3d"><label class="form-check-label" for="v3d">The distribution of each group separately</label></div>
-    <div id="v3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkVizQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="viz-result" class="mt-3 fw-bold text-center"></div>
-</div>
-
-<hr>
-
-<h3 class="anchored">Quiz 4: Putting it all together <span id="quiz-done-w2_q_exercises" class="quiz-done-badge">✓ Done</span></h3>
-<div class="quiz-card">
-  <div class="mb-4">
-    <p><strong>Question 1:</strong> Which function creates a smooth probability density curve (not a histogram)?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1a"><label class="form-check-label" for="e1a"><code>hist()</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1b"><label class="form-check-label" for="e1b"><code>density()</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e1" id="e1c"><label class="form-check-label" for="e1c"><code>curve()</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e1" id="e1d"><label class="form-check-label" for="e1d"><code>smooth()</code></label></div>
-    <div id="e1-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 2:</strong> You identified rows with NAs: <code>i.missing &lt;- which(nb_NA &gt; 0)</code>. How do you remove them?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2a"><label class="form-check-label" for="e2a"><code>dat[i.missing, ]</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2b"><label class="form-check-label" for="e2b"><code>dat[-i.missing, ]</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e2" id="e2c"><label class="form-check-label" for="e2c"><code>dat[, -i.missing]</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e2" id="e2d"><label class="form-check-label" for="e2d"><code>na.omit(i.missing)</code></label></div>
-    <div id="e2-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <div class="mb-4">
-    <p><strong>Question 3:</strong> The operator <code>%in%</code> is used to…</p>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3a"><label class="form-check-label" for="e3a">Calculate percentages</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3b"><label class="form-check-label" for="e3b">Test if elements of one vector appear in another</label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" name="e3" id="e3c"><label class="form-check-label" for="e3c">Apply a function to each element</label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" name="e3" id="e3d"><label class="form-check-label" for="e3d">Check exact equality of two vectors</label></div>
-    <div id="e3-feedback" class="mt-1 fw-bold"></div>
-  </div>
-  <button onclick="checkExerciseQuiz()" class="btn btn-primary w-100" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>
-  <div id="exercise-result" class="mt-3 fw-bold text-center"></div>
-</div>
-
-</div><!-- end .lang-r -->
-
-<!-- Python placeholder quizzes -->
-<div class="lang-python">
-<p style="color:#555;margin-bottom:1.5rem;">Four Python quizzes are in preparation — one per topic. Preview questions below show how the quizzes will be structured.</p>
-
-<h3 style="margin-top:0.5rem;" class="anchored">Quiz 1: Loading &amp; Exploring <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R read.delim + head/dim)</span></h3>
-<div class="placeholder-card">
-  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
-  <div style="opacity:0.65;">
-    <p><strong>Preview Question:</strong> What does <code>dat.shape</code> return for a DataFrame with 400 rows and 17 columns?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(17, 400)</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>(400, 17)</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>6800</code></label></div>
-  </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
-</div>
-
-<h3 style="margin-top:1.5rem;" class="anchored">Quiz 2: Data Cleanup <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(pandas equivalent of R which/apply/is.na)</span></h3>
-<div class="placeholder-card">
-  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
-  <div style="opacity:0.65;">
-    <p><strong>Preview Question:</strong> How do you count missing values per column in a pandas DataFrame <code>dat</code>?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>sum(is.na(dat))</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.isna().sum()</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.count()</code></label></div>
-  </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
-</div>
-
-<h3 style="margin-top:1.5rem;" class="anchored">Quiz 3: Visualisation <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(matplotlib equivalent of R hist/boxplot/qqnorm)</span></h3>
-<div class="placeholder-card">
-  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
-  <div style="opacity:0.65;">
-    <p><strong>Preview Question:</strong> Which matplotlib function creates a histogram?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.bar()</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.hist()</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>plt.plot()</code></label></div>
-  </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
-</div>
-
-<h3 style="margin-top:1.5rem;" class="anchored">Quiz 4: Putting it all together <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Python full pipeline)</span></h3>
-<div class="placeholder-card">
-  <p style="color:#7c9cef;font-weight:700;margin-bottom:1rem;">🐍 Python Quiz — Coming Soon</p>
-  <div style="opacity:0.65;">
-    <p><strong>Preview Question:</strong> How do you remove rows with missing values from a pandas DataFrame?</p>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.drop_na()</code></label></div>
-    <div class="form-check"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.dropna()</code></label></div>
-    <div class="form-check mb-2"><input class="form-check-input" type="radio" disabled=""><label class="form-check-label" style="color:#888;"><code>dat.remove_na()</code></label></div>
-  </div>
-  <button class="btn btn-secondary w-100 mt-2" disabled="" style="font-weight:700;">COMING SOON</button>
-</div>
-
-</div><!-- end .lang-python -->
 
 
 
 </main> <!-- /main -->
 <script>
-// ─── Supabase setup (CDN already loaded by language-switch.html in <head>) ───
-const SUPABASE_URL = 'https://hpyezixseggwnrpepbhx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweWV6aXhzZWdnd25ycGVwYmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MTUzMDgsImV4cCI6MjA5MjM5MTMwOH0.HGcrv7-I07yFES2qBRhXf1j3UCbfMb8PwlWkQjY6NYs';
+(function () {
+  'use strict';
 
-// All trackable items for Week 2
-const W2_CHECKS   = ['check_w2_slides','check_w2_vid1','check_w2_vid2','check_w2_vid3','check_w2_vid4','check_w2_markdown'];
-const W2_QUIZ_IDS = ['w2_q_loading','w2_q_cleanup','w2_q_viz','w2_q_exercises'];
+  // ═══════════════════════════════════════════════════════════════════════
+  // Text helpers
+  // ═══════════════════════════════════════════════════════════════════════
+  function normalizeText(text) {
+    return text.replace(/^﻿/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  }
 
-// ── HOW TO ADD A NEW QUIZ QUESTION ──────────────────────────────────────────
-// 1. In 2_data_cleanup.qmd, add to the relevant quiz's {=html} block:
-//      <div class="mb-4">
-//        <p><strong>Question N:</strong> Your question text?</p>
-//        <div class="form-check"><input class="form-check-input" type="radio" name="xy1" id="xy1a"><label class="form-check-label" for="xy1a">Wrong answer</label></div>
-//        <div class="form-check"><input class="form-check-input" type="radio" name="xy1" id="xy1b"><label class="form-check-label" for="xy1b">Correct answer</label></div>
-//        <div id="xy1-feedback" class="mt-1 fw-bold"></div>
-//      </div>
-// 2. In the quiz's check function below, add (and increment `total`):
-//      var xy1 = document.querySelector('input[name="xy1"]:checked'), xy1f = document.getElementById('xy1-feedback');
-//      if (xy1 && xy1.id === 'xy1b') { xy1f.innerHTML = '✅ Correct!'; xy1f.style.color = '#1a4d1a'; score++; }
-//      else if (xy1) { xy1f.innerHTML = '❌ Hint text.'; xy1f.style.color = '#d9534f'; }
-// ─────────────────────────────────────────────────────────────────────────────
+  function slugify(text) {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  }
 
-let sbClient;
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
-(function init() {
-  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
-  });
+  // Escapes HTML, then turns `code` spans into <code>, **bold** into <strong>,
+  // and [text](url) into a link.
+  function formatInline(text) {
+    var escaped = escapeHtml(text);
+    escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+    escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    escaped = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    return escaped;
+  }
 
-  const savedSession = sessionStorage.getItem('sb-session');
-  if (savedSession) sbClient.auth.setSession(JSON.parse(savedSession));
+  // ═══════════════════════════════════════════════════════════════════════
+  // manifest.txt parser
+  // Returns { title, description, tip, topics, slides, slidesLabel,
+  //           videos:[{title,url}], markdownR:[{path,label,note}],
+  //           markdownPython:[{path,label,note}], markdownPythonNote,
+  //           datasetNote, bonusNote, bonus:[{path,label}], reference:[{path,label}] }
+  // markdown_r / markdown_python are REPEATABLE (a week can have more than one
+  // practical file per language, e.g. Week 1's two R Markdowns / two notebooks).
+  // ═══════════════════════════════════════════════════════════════════════
+  function parseManifest(raw) {
+    var lines = normalizeText(raw).split('\n');
+    var result = {
+      title: '', description: '', tip: '', topics: '', slides: '', slidesLabel: '',
+      videos: [], markdownR: [], markdownPython: [], markdownPythonNote: '',
+      datasetNote: '', datasetCodeR: '', datasetNotePython: '', datasetCodePython: '',
+      warningNote: '', bonusNote: '', bonus: [], reference: []
+    };
+    var pendingVideo = null;
+    // Multi-line code fields (dataset_code_r / dataset_code_python) continue
+    // on subsequent INDENTED lines, like quiz.md's answer-feedback lines —
+    // a blank line or the next key: line ends the block.
+    var pendingCodeField = null;
 
-  sbClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-      if (session) sessionStorage.setItem('sb-session', JSON.stringify(session));
-      if (window.location.hash.includes('access_token'))
-        window.history.replaceState({}, document.title, window.location.pathname);
+    // 4th (optional) segment overrides the saved/downloaded filename — used when
+    // the source path has characters best avoided in a downloaded file (accents,
+    // colons, etc.).
+    function parsePathLabelNote(value) {
+      var parts = value.split('|').map(function (s) { return s.trim(); });
+      return { path: parts[0] || '', label: parts[1] || '', note: parts[2] || '', filenameOverride: parts[3] || '' };
     }
-    if (event === 'SIGNED_OUT') sessionStorage.removeItem('sb-session');
-    await loadAndRenderProgress();
-  });
 
-  loadAndRenderProgress();
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+
+      if (!line.trim()) { pendingCodeField = null; continue; }
+
+      if (pendingCodeField && /^[ \t]/.test(line)) {
+        result[pendingCodeField] += (result[pendingCodeField] ? '\n' : '') + line.trim();
+        continue;
+      }
+      pendingCodeField = null;
+
+      var colonIdx = line.indexOf(':');
+      if (colonIdx === -1) { console.warn('manifest: skipping unrecognized line ' + (i + 1) + ': ' + line); continue; }
+      var key = line.slice(0, colonIdx).trim();
+      var value = line.slice(colonIdx + 1).trim();
+
+      switch (key) {
+        case 'title': result.title = value; break;
+        case 'description': result.description = value; break;
+        case 'tip': result.tip = value; break;
+        case 'topics': result.topics = value; break;
+        case 'slides': result.slides = value; break;
+        case 'slides_label': result.slidesLabel = value; break;
+        case 'dataset_note': result.datasetNote = value; break;
+        case 'dataset_note_python': result.datasetNotePython = value; break;
+        case 'warning_note': result.warningNote = value; break;
+        case 'dataset_code_r': result.datasetCodeR = value; pendingCodeField = 'datasetCodeR'; break;
+        case 'dataset_code_python': result.datasetCodePython = value; pendingCodeField = 'datasetCodePython'; break;
+        case 'bonus_note': result.bonusNote = value; break;
+        case 'markdown_python_note': result.markdownPythonNote = value; break;
+        case 'video':
+          if (pendingVideo) console.warn('manifest: video "' + pendingVideo.title + '" had no url: line');
+          pendingVideo = { title: value, url: null };
+          break;
+        case 'url':
+          if (!pendingVideo) { console.warn('manifest: url: line with no preceding video: line'); break; }
+          pendingVideo.url = value;
+          result.videos.push(pendingVideo);
+          pendingVideo = null;
+          break;
+        case 'markdown_r':
+          if (value) result.markdownR.push(parsePathLabelNote(value));
+          break;
+        case 'markdown_python':
+          if (value) result.markdownPython.push(parsePathLabelNote(value));
+          break;
+        case 'bonus':
+          result.bonus.push(parsePathLabelNote(value));
+          break;
+        case 'reference':
+          result.reference.push(parsePathLabelNote(value));
+          break;
+        default:
+          console.warn('manifest: unknown key "' + key + '" on line ' + (i + 1));
+      }
+    }
+    if (pendingVideo) console.warn('manifest: trailing video "' + pendingVideo.title + '" had no url: line');
+    return result;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // quiz.md parser
+  // Returns [{ title, id, questions: [{ text, answers: [{text, correct, feedback}] }] }]
+  // ═══════════════════════════════════════════════════════════════════════
+  function parseQuiz(raw) {
+    var lines = normalizeText(raw).split('\n');
+    var cards = [];
+    var currentCard = null;
+    var currentQuestion = null;
+    var currentAnswer = null;
+
+    var reCard = /^#\s+Quiz:\s*(.+)$/;
+    var reId = /^id:\s*(.+)$/;
+    var reQuestion = /^##\s+Q:\s*(.+)$/;
+    var reAnswer = /^-\s*\[( |x|X)\]\s*(.+)$/;
+
+    for (var i = 0; i < lines.length; i++) {
+      var rawLine = lines[i];
+      if (!rawLine.trim()) continue;
+
+      var mCard = rawLine.match(reCard);
+      if (mCard) {
+        currentCard = { title: mCard[1].trim(), id: null, questions: [] };
+        cards.push(currentCard);
+        currentQuestion = null;
+        currentAnswer = null;
+        continue;
+      }
+
+      var mId = rawLine.match(reId);
+      if (mId && currentCard && currentCard.questions.length === 0) {
+        currentCard.id = mId[1].trim();
+        continue;
+      }
+
+      var mQuestion = rawLine.match(reQuestion);
+      if (mQuestion) {
+        if (!currentCard) { console.warn('quiz: "## Q:" outside of a "# Quiz:" card on line ' + (i + 1)); continue; }
+        currentQuestion = { text: mQuestion[1].trim(), answers: [] };
+        currentCard.questions.push(currentQuestion);
+        currentAnswer = null;
+        continue;
+      }
+
+      var mAnswer = rawLine.match(reAnswer);
+      if (mAnswer) {
+        if (!currentQuestion) { console.warn('quiz: answer line outside of a question on line ' + (i + 1)); continue; }
+        currentAnswer = { text: mAnswer[2].trim(), correct: mAnswer[1].toLowerCase() === 'x', feedback: '' };
+        currentQuestion.answers.push(currentAnswer);
+        continue;
+      }
+
+      if (/^[ \t]/.test(rawLine)) {
+        if (!currentAnswer) { console.warn('quiz: feedback line with no preceding answer on line ' + (i + 1)); continue; }
+        currentAnswer.feedback = (currentAnswer.feedback ? currentAnswer.feedback + ' ' : '') + rawLine.trim();
+        continue;
+      }
+
+      console.warn('quiz: unrecognized line ' + (i + 1) + ': ' + rawLine);
+    }
+
+    cards.forEach(function (c) { if (!c.id) c.id = slugify(c.title); });
+    return cards;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Progress storage (pure localStorage — no Supabase)
+  // ═══════════════════════════════════════════════════════════════════════
+  function localGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function localSet(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+
+  function quizFullId(weekNum, quizId) { return 'w' + weekNum + '_q_' + quizId; }
+  function quizStorageKey(weekNum, quizId) { return 'quiz_r_w' + weekNum + '_' + quizFullId(weekNum, quizId); }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // DOM helpers
+  // ═══════════════════════════════════════════════════════════════════════
+  function h(html) {
+    var wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    return wrap.firstElementChild;
+  }
+
+  function encodePath(path) {
+    return path.split('/').map(encodeURIComponent).join('/');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Renderers
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderProgressBar(weekNum, title) {
+    return h(
+      '<div style="background:linear-gradient(135deg,#1a4d1a 0%,#2d7a2d 100%);border-radius:14px;padding:20px 28px;color:white;margin-bottom:2rem;box-shadow:0 4px 18px rgba(26,77,26,0.15);">' +
+        '<div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">' +
+          '<div>' +
+            '<strong style="font-size:1.1rem;">' + escapeHtml(title) + ' Progress</strong>' +
+            '<div id="week' + weekNum + '-progress-text" style="font-size:0.85rem;opacity:0.85;">Loading…</div>' +
+          '</div>' +
+          '<a href="index.html" style="color:rgba(255,255,255,0.8);font-size:0.85rem;text-decoration:none;">← Dashboard</a>' +
+        '</div>' +
+        '<div style="background:rgba(255,255,255,0.2);border-radius:50px;height:16px;overflow:hidden;">' +
+          '<div id="week' + weekNum + '-progress-bar" style="height:16px;background:#a8d5a2;color:#1a4d1a;font-weight:900;font-size:0.75rem;line-height:16px;text-align:center;border-radius:50px;width:0%;transition:width 0.6s ease;"></div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderStep1(weekNum, manifest) {
+    var n = manifest.videos.length;
+    var items = '<li class="resource-item">' +
+      '<input type="checkbox" id="check_w' + weekNum + '_slides">' +
+      '<label for="check_w' + weekNum + '_slides"><a href="' + encodePath(manifest.slides) + '" download>' + escapeHtml(manifest.slidesLabel || (manifest.title + ' (PDF slides)')) + '</a></label>' +
+      '</li>';
+    manifest.videos.forEach(function (v, i) {
+      var id = 'check_w' + weekNum + '_vid' + (i + 1);
+      items += '<li class="resource-item">' +
+        '<input type="checkbox" id="' + id + '">' +
+        '<label for="' + id + '"><a href="' + escapeHtml(v.url) + '" target="_blank" rel="noopener">Video ' + (i + 1) + '/' + n + ' – ' + escapeHtml(v.title) + '</a></label>' +
+        '</li>';
+    });
+
+    var section = h(
+      '<div>' +
+        '<div class="step-header"><div class="step-badge">1</div><h2>Watch the Lecture Videos &amp; Download the Slides</h2></div>' +
+        '<p style="color:#555;margin-bottom:1rem;">Watch the lecture videos and download the slide deck. Check each item off as you go — your progress is saved automatically.</p>' +
+        '<ul class="resource-list">' + items + '</ul>' +
+        '<div class="lang-python"><div class="lang-note"><strong>Note for Python learners:</strong> These lecture videos and slides were recorded using R. The underlying concepts apply equally to Python. See the <a href="coding_basics.html">Basics in Coding</a> reference page for Python syntax equivalents.</div></div>' +
+      '</div>'
+    );
+    return section;
+  }
+
+  // Builds checkbox ids for a list of markdown/notebook items belonging to one
+  // language. `suffix` is '_r' / '_python' when the OTHER language also has
+  // items (keeps ids distinct — this is the fix for the legacy duplicate-id
+  // bug where both languages reused e.g. check_w1_md1); '' when this is the
+  // only language with content for this week (keeps ids unchanged from legacy).
+  function markdownCheckIds(weekNum, count, suffix) {
+    var ids = [];
+    for (var i = 0; i < count; i++) {
+      ids.push('check_w' + weekNum + '_md' + (count > 1 ? (i + 1) : '') + suffix);
+    }
+    return ids;
+  }
+
+  function markdownBlock(entry, checkboxId, kind) {
+    var label = entry.label || entry.path.split('/').pop();
+    var filename = entry.filenameOverride || entry.path.split('/').pop();
+    var openWith = kind === 'python' ? 'open in VS Code with the Jupyter extension' : 'open in RStudio';
+    var note = entry.note ? '<span style="color:#888;font-size:0.85rem;margin-left:8px;">' + formatInline(entry.note) + '</span>' : '';
+    return '<li class="resource-item">' +
+      '<input type="checkbox" id="' + checkboxId + '">' +
+      '<label for="' + checkboxId + '"><a href="' + encodePath(entry.path) + '" download="' + escapeHtml(filename) + '">' + escapeHtml(label) + '</a>' +
+      '<span style="color:#888;font-size:0.85rem;margin-left:8px;">' + openWith + '</span>' + note + '</label>' +
+      '</li>';
+  }
+
+  function renderStep2(weekNum, manifest) {
+    var suffix = (manifest.markdownR.length && manifest.markdownPython.length) ? true : false;
+    var rIds = markdownCheckIds(weekNum, manifest.markdownR.length, suffix ? '_r' : '');
+    var pyIds = markdownCheckIds(weekNum, manifest.markdownPython.length, suffix ? '_python' : '');
+
+    var rPlural = manifest.markdownR.length > 1;
+    var rIntro = rPlural
+      ? 'Download ' + (manifest.markdownR.length === 2 ? 'both' : 'all ' + manifest.markdownR.length) + ' R Markdown files and work through them in RStudio. Check each off when done.'
+      : 'Download the R Markdown file and open it in RStudio. Work through all sections, then check it off below.';
+    var rInner = '<div class="step-header"><div class="step-badge">2</div><h2>Work Through the Practical ' + (rPlural ? 'Markdowns' : 'Markdown') + '</h2></div>' +
+      '<p style="color:#555;margin-bottom:1rem;">' + rIntro + '</p>';
+    if (manifest.markdownR.length) {
+      rInner += '<ul class="resource-list">' + manifest.markdownR.map(function (entry, i) { return markdownBlock(entry, rIds[i], 'r'); }).join('') + '</ul>';
+    }
+    if (manifest.warningNote) {
+      rInner += '<div class="warning-note"><strong>Note:</strong> ' + formatInline(manifest.warningNote) + '</div>';
+    }
+    if (manifest.datasetNote) {
+      rInner += '<blockquote style="margin-top:1rem;"><p>' + formatInline(manifest.datasetNote) + '</p></blockquote>';
+    }
+    if (manifest.datasetCodeR) {
+      rInner += '<pre><code>' + escapeHtml(manifest.datasetCodeR) + '</code></pre>';
+    }
+    if (manifest.reference.length) {
+      rInner += '<p style="margin-top:1rem;"><strong>Useful reference PDFs</strong> (open in browser, no download needed):</p><div class="d-flex gap-3 mb-3 flex-wrap">';
+      manifest.reference.forEach(function (ref) {
+        var filename = ref.path.split('/').pop();
+        rInner += '<a href="' + encodePath(ref.path) + '" target="_blank" class="btn btn-outline-danger btn-sm">' + escapeHtml(ref.label || filename) + '</a>';
+      });
+      rInner += '</div>';
+    }
+    if (manifest.bonus.length) {
+      if (manifest.bonusNote) rInner += '<p style="margin-top:1rem;">' + formatInline(manifest.bonusNote) + '</p>';
+      rInner += '<div class="d-flex gap-3 mb-3 flex-wrap">';
+      manifest.bonus.forEach(function (b) {
+        var filename = b.path.split('/').pop();
+        // PDFs open in a new tab (view in browser); everything else downloads —
+        // matches how these buttons were originally authored per file type.
+        // The optional 3rd field (note) overrides the saved filename, e.g. to
+        // avoid accented characters in a downloaded filename.
+        var isPdf = /\.pdf$/i.test(b.path);
+        var attrs = isPdf ? 'target="_blank"' : ('download="' + escapeHtml(b.filenameOverride || filename) + '"');
+        rInner += '<a href="' + encodePath(b.path) + '" ' + attrs + ' class="btn btn-outline-danger btn-sm">' + escapeHtml(b.label || filename) + '</a>';
+      });
+      rInner += '</div>';
+    }
+    var rBlock = h('<div class="lang-r">' + rInner + '</div>');
+
+    var pyInner;
+    if (manifest.markdownPython.length) {
+      var pyPlural = manifest.markdownPython.length > 1;
+      var pyIntro = pyPlural
+        ? 'Download ' + (manifest.markdownPython.length === 2 ? 'both' : 'all ' + manifest.markdownPython.length) + ' Jupyter notebooks and work through them in VS Code. Open with the Jupyter extension — run each cell with <strong>Shift+Enter</strong>. Check each off when done.'
+        : 'Download the Jupyter notebook and open it in VS Code. Work through all sections, then check it off below.';
+      pyInner = '<div class="step-header"><div class="step-badge">2</div><h2>Work Through the Practical ' + (pyPlural ? 'Notebooks' : 'Notebook') + '</h2></div>' +
+        '<p style="color:#555;margin-bottom:1rem;">' + pyIntro + '</p>' +
+        '<ul class="resource-list">' + manifest.markdownPython.map(function (entry, i) { return markdownBlock(entry, pyIds[i], 'python'); }).join('') + '</ul>';
+      if (manifest.datasetNotePython) pyInner += '<blockquote style="margin-top:1rem;"><p>' + formatInline(manifest.datasetNotePython) + '</p></blockquote>';
+      if (manifest.datasetCodePython) pyInner += '<pre><code>' + escapeHtml(manifest.datasetCodePython) + '</code></pre>';
+      if (manifest.markdownPythonNote) pyInner += '<p style="margin-top:1rem;">' + formatInline(manifest.markdownPythonNote) + '</p>';
+    } else {
+      pyInner = '<div class="step-header"><div class="step-badge">2</div><h2>Work Through the Practical Notebook</h2></div>' +
+        '<div class="placeholder-card">' +
+          '<p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Notebook — Coming Soon</p>' +
+          '<p style="color:#555;margin-bottom:0;">A Python version of this week\'s exercise is in preparation. Use the R Markdown material for now — the underlying concepts transfer directly.</p>' +
+        '</div>';
+    }
+    var pyBlock = h('<div class="lang-python">' + pyInner + '</div>');
+
+    var wrap = document.createElement('div');
+    wrap.appendChild(rBlock);
+    wrap.appendChild(pyBlock);
+    return wrap;
+  }
+
+  function renderStep3(weekNum, quizCards) {
+    var wrap = document.createElement('div');
+    wrap.appendChild(h('<div class="step-header"><div class="step-badge">3</div><h2>Comprehension Quiz</h2></div>'));
+    wrap.appendChild(h('<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>'));
+
+    var rWrap = document.createElement('div');
+    rWrap.className = 'lang-r';
+
+    quizCards.forEach(function (card, cardIdx) {
+      if (cardIdx > 0) rWrap.appendChild(h('<hr>'));
+      var fullId = quizFullId(weekNum, card.id);
+      var cardHtml = '<h3>Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
+        ' <span id="quiz-done-' + fullId + '" class="quiz-done-badge">✓ Done</span></h3>' +
+        '<div class="quiz-card" id="quizcard-' + fullId + '">';
+      card.questions.forEach(function (q, qIdx) {
+        var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx;
+        cardHtml += '<div class="mb-4"><p><strong>Question ' + (qIdx + 1) + ':</strong> ' + formatInline(q.text) + '</p>';
+        q.answers.forEach(function (a, aIdx) {
+          var radioId = radioName + '_' + aIdx;
+          cardHtml += '<div class="form-check"><input class="form-check-input" type="radio" name="' + radioName + '" id="' + radioId + '">' +
+            '<label class="form-check-label" for="' + radioId + '">' + formatInline(a.text) + '</label></div>';
+        });
+        cardHtml += '<div id="' + radioName + '-feedback" class="mt-1 fw-bold"></div></div>';
+      });
+      cardHtml += '<button class="btn btn-primary w-100 check-quiz-btn" data-quiz-full-id="' + fullId + '" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>' +
+        '<div id="' + fullId + '-result" class="mt-3 fw-bold text-center"></div></div>';
+      rWrap.appendChild(h('<div>' + cardHtml + '</div>'));
+    });
+    wrap.appendChild(rWrap);
+
+    var pyWrap = document.createElement('div');
+    pyWrap.className = 'lang-python';
+    var pyHtml = '<p style="color:#555;margin-bottom:1.5rem;">Python quizzes are in preparation — one per topic.</p>';
+    quizCards.forEach(function (card, cardIdx) {
+      pyHtml += '<h3 style="margin-top:' + (cardIdx === 0 ? '0.5rem' : '1.5rem') + ';">Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
+        ' <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Coming Soon)</span></h3>' +
+        '<div class="placeholder-card"><p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Quiz — Coming Soon</p>' +
+        '<p style="color:#555;margin-bottom:0;">A Python version of this quiz is in preparation.</p></div>';
+    });
+    pyWrap.innerHTML = pyHtml;
+    wrap.appendChild(pyWrap);
+
+    return wrap;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Progress wiring
+  // ═══════════════════════════════════════════════════════════════════════
+  function collectCheckIds(weekNum, manifest) {
+    var ids = ['check_w' + weekNum + '_slides'];
+    manifest.videos.forEach(function (v, i) { ids.push('check_w' + weekNum + '_vid' + (i + 1)); });
+    var bothLangs = manifest.markdownR.length && manifest.markdownPython.length;
+    ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownR.length, bothLangs ? '_r' : ''));
+    ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownPython.length, bothLangs ? '_python' : ''));
+    return ids;
+  }
+
+  // Checkboxes that count toward progress for a given language: slides + videos
+  // are shared (same for both tracks), markdown/notebook items are per-language.
+  function checkIdsForLang(weekNum, manifest, lang) {
+    var ids = ['check_w' + weekNum + '_slides'];
+    manifest.videos.forEach(function (v, i) { ids.push('check_w' + weekNum + '_vid' + (i + 1)); });
+    var bothLangs = manifest.markdownR.length && manifest.markdownPython.length;
+    if (lang === 'python') {
+      ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownPython.length, bothLangs ? '_python' : ''));
+    } else {
+      ids = ids.concat(markdownCheckIds(weekNum, manifest.markdownR.length, bothLangs ? '_r' : ''));
+    }
+    return ids;
+  }
+
+  // Quizzes are R-only for now (no quiz_python.md format yet — Python quiz
+  // cards are "Coming Soon" placeholders with nothing to actually complete).
+  function quizCardsForLang(quizCards, lang) {
+    return lang === 'python' ? [] : quizCards;
+  }
+
+  function updateWeekBar(weekNum, manifest, quizCards, langOverride) {
+    var lang = langOverride || (window.getCurrentLang ? window.getCurrentLang() : 'r');
+    var checkIds = checkIdsForLang(weekNum, manifest, lang);
+    var relevantQuizzes = quizCardsForLang(quizCards, lang);
+    var total = checkIds.length + relevantQuizzes.length;
+    var done = 0;
+    checkIds.forEach(function (id) { if (localGet(id) === 'true') done++; });
+    relevantQuizzes.forEach(function (card) { if (localGet(quizStorageKey(weekNum, card.id)) === 'true') done++; });
+    var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    var bar = document.getElementById('week' + weekNum + '-progress-bar');
+    var txt = document.getElementById('week' + weekNum + '-progress-text');
+    if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
+    if (txt) txt.innerText = done + ' of ' + total + ' items completed';
+  }
+
+  function wireCheckboxes(weekNum, manifest, checkIds, quizCards) {
+    checkIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.checked = localGet(id) === 'true';
+      var item = el.closest('.resource-item');
+      if (item) item.classList.toggle('is-checked', el.checked);
+      el.addEventListener('change', function () {
+        localSet(id, el.checked ? 'true' : 'false');
+        var it = el.closest('.resource-item');
+        if (it) it.classList.toggle('is-checked', el.checked);
+        updateWeekBar(weekNum, manifest, quizCards);
+      });
+    });
+  }
+
+  function wireQuizzes(weekNum, manifest, quizCards) {
+    quizCards.forEach(function (card) {
+      var fullId = quizFullId(weekNum, card.id);
+      if (localGet(quizStorageKey(weekNum, card.id)) === 'true') {
+        var badge = document.getElementById('quiz-done-' + fullId);
+        if (badge) badge.style.display = 'inline';
+      }
+      var btn = document.querySelector('.check-quiz-btn[data-quiz-full-id="' + fullId + '"]');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var score = 0;
+        var total = card.questions.length;
+        card.questions.forEach(function (q, qIdx) {
+          var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx;
+          var checked = document.querySelector('input[name="' + radioName + '"]:checked');
+          var fb = document.getElementById(radioName + '-feedback');
+          if (!checked) { if (fb) fb.innerHTML = ''; return; }
+          var aIdx = parseInt(checked.id.slice((radioName + '_').length), 10);
+          var answer = q.answers[aIdx];
+          if (answer && answer.correct) {
+            score++;
+            if (fb) { fb.innerHTML = '✅ ' + formatInline(answer.feedback || 'Correct!'); fb.style.color = '#1a4d1a'; }
+          } else if (fb) {
+            fb.innerHTML = '❌ ' + formatInline((answer && answer.feedback) || 'Not quite — try again.');
+            fb.style.color = '#d9534f';
+          }
+        });
+        var result = document.getElementById(fullId + '-result');
+        if (score === total) {
+          if (result) { result.innerHTML = '🎉 All correct!'; result.style.color = '#1a4d1a'; }
+          localSet(quizStorageKey(weekNum, card.id), 'true');
+          var badge2 = document.getElementById('quiz-done-' + fullId);
+          if (badge2) badge2.style.display = 'inline';
+        } else if (result) {
+          result.innerHTML = score + ' of ' + total + ' correct. Try again!';
+          result.style.color = '#d9534f';
+        }
+        updateWeekBar(weekNum, manifest, quizCards);
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Bootstrap
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderError(container, weekNum, err) {
+    container.innerHTML = '<div class="placeholder-card" style="border-left-color:#d9534f;">' +
+      '<p style="color:#d9534f;font-weight:700;">⚠️ Could not load this week\'s content.</p>' +
+      '<p style="color:#555;">content/week' + weekNum + '/manifest.txt or quiz.md failed to load or failed to parse. ' +
+      'Check the browser console for details, and verify both files exist and are correctly formatted.</p></div>';
+    console.error('week-loader error for week ' + weekNum + ':', err);
+  }
+
+  function init() {
+    var container = document.getElementById('week-app');
+    if (!container) return;
+    var weekNum = container.getAttribute('data-week');
+
+    Promise.all([
+      fetch('content/week' + weekNum + '/manifest.txt').then(function (r) {
+        if (!r.ok) throw new Error('manifest.txt HTTP ' + r.status);
+        return r.text();
+      }),
+      fetch('content/week' + weekNum + '/quiz.md').then(function (r) {
+        if (!r.ok) throw new Error('quiz.md HTTP ' + r.status);
+        return r.text();
+      })
+    ]).then(function (results) {
+      var manifest = parseManifest(results[0]);
+      var quizCards = parseQuiz(results[1]);
+
+      container.innerHTML = '';
+      container.appendChild(renderProgressBar(weekNum, manifest.title));
+      if (manifest.description) {
+        container.appendChild(h('<p>' + formatInline(manifest.description) + '</p>'));
+      }
+      if (manifest.tip) {
+        container.appendChild(h('<blockquote><p>' + formatInline(manifest.tip) + '</p></blockquote>'));
+      }
+      container.appendChild(h('<hr style="opacity:0;margin:1rem 0;">'));
+      container.appendChild(renderStep1(weekNum, manifest));
+      container.appendChild(h('<hr>'));
+      container.appendChild(renderStep2(weekNum, manifest));
+      container.appendChild(h('<hr>'));
+      container.appendChild(renderStep3(weekNum, quizCards));
+
+      var checkIds = collectCheckIds(weekNum, manifest);
+      wireCheckboxes(weekNum, manifest, checkIds, quizCards);
+      wireQuizzes(weekNum, manifest, quizCards);
+      updateWeekBar(weekNum, manifest, quizCards);
+
+      // Re-run the progress bar whenever the R/Python toggle changes, since
+      // which items count (markdown/notebook + quiz) depends on the language.
+      document.addEventListener('langchange', function (ev) { updateWeekBar(weekNum, manifest, quizCards, ev.detail && ev.detail.lang); });
+
+      if (window.applyLangVisibility) window.applyLangVisibility(window.getCurrentLang ? window.getCurrentLang() : 'python');
+    }).catch(function (err) {
+      renderError(container, weekNum, err);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
-
-async function loadAndRenderProgress() {
-  const pm = await loadProgressMap();
-  renderCheckboxes(pm);
-  renderQuizBadges(pm);
-  updateWeekBar(pm);
-}
-
-async function loadProgressMap() {
-  const pm = {};
-  const allKeys = [...W2_CHECKS, ...W2_QUIZ_IDS.map(id => 'quiz_r_w2_' + id)];
-  allKeys.forEach(k => { if (localStorage.getItem(k) === 'true') pm[k] = true; });
-  try {
-    const savedSession = sessionStorage.getItem('sb-session');
-    const user = savedSession ? JSON.parse(savedSession).user : null;
-    if (user && sbClient) {
-      const { data } = await sbClient.from('progress').select('key,value').eq('id', user.id);
-      if (data) data.forEach(r => { if (r.value === 'true') pm[r.key] = true; });
-    }
-  } catch(e) {}
-  return pm;
-}
-
-async function sbSaveProgress(key, value) {
-  localStorage.setItem(key, value);
-  try {
-    const savedSession = sessionStorage.getItem('sb-session');
-    const user = savedSession ? JSON.parse(savedSession).user : null;
-    if (user && sbClient) await sbClient.from('progress').upsert({ id: user.id, key, value });
-  } catch(e) { console.error('sbSaveProgress:', e); }
-}
-
-async function markCheckDone(el) {
-  await sbSaveProgress(el.id, el.checked ? 'true' : 'false');
-  // Update visual checked state of the item row
-  const item = el.closest('.resource-item');
-  if (item) item.classList.toggle('is-checked', el.checked);
-  const pm = await loadProgressMap();
-  updateWeekBar(pm);
-}
-
-async function markQuizDone(quizId) {
-  const key = 'quiz_r_w2_' + quizId;
-  await sbSaveProgress(key, 'true');
-  const badge = document.getElementById('quiz-done-' + quizId);
-  if (badge) badge.style.display = 'inline';
-  const pm = await loadProgressMap();
-  updateWeekBar(pm);
-}
-
-function renderCheckboxes(pm) {
-  W2_CHECKS.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.checked = !!pm[id];
-    const item = el.closest('.resource-item');
-    if (item) item.classList.toggle('is-checked', !!pm[id]);
-  });
-}
-
-function renderQuizBadges(pm) {
-  W2_QUIZ_IDS.forEach(id => {
-    if (pm['quiz_r_w2_' + id]) {
-      const badge = document.getElementById('quiz-done-' + id);
-      if (badge) badge.style.display = 'inline';
-    }
-  });
-}
-
-function updateWeekBar(pm) {
-  const total = W2_CHECKS.length + W2_QUIZ_IDS.length;
-  let done = 0;
-  W2_CHECKS.forEach(k => { if (pm && pm[k]) done++; });
-  W2_QUIZ_IDS.forEach(id => { if (pm && pm['quiz_r_w2_' + id]) done++; });
-  const pct = Math.round((done / total) * 100);
-  const bar = document.getElementById('week2-progress-bar');
-  const txt = document.getElementById('week2-progress-text');
-  if (bar) { bar.style.width = pct + '%'; bar.innerText = pct > 8 ? pct + '%' : ''; }
-  if (txt) { txt.innerText = done + ' of ' + total + ' items completed'; }
-}
-
-// ─── Quiz 1: Loading and Exploring ───────────────────────────────────────────
-function checkLoadingQuiz() {
-  var score = 0, total = 3;
-  var l1 = document.querySelector('input[name="l1"]:checked'), l1f = document.getElementById('l1-feedback');
-  if (l1 && l1.id === 'l1b') { l1f.innerHTML = '✅ Correct! dim() always returns (rows, columns) — rows first!'; l1f.style.color = '#1a4d1a'; score++; }
-  else if (l1) { l1f.innerHTML = '❌ Not quite. dim() returns c(rows, cols). 400 patients, 17 variables → c(400, 17).'; l1f.style.color = '#d9534f'; }
-  var l2 = document.querySelector('input[name="l2"]:checked'), l2f = document.getElementById('l2-feedback');
-  if (l2 && l2.id === 'l2b') { l2f.innerHTML = '✅ Exactly! head(dat) shows the first 6 rows. Use head(dat, n) for a custom number.'; l2f.style.color = '#1a4d1a'; score++; }
-  else if (l2) { l2f.innerHTML = '❌ head() shows the beginning of the data — default is 6 rows.'; l2f.style.color = '#d9534f'; }
-  var l3 = document.querySelector('input[name="l3"]:checked'), l3f = document.getElementById('l3-feedback');
-  if (l3 && l3.id === 'l3b') { l3f.innerHTML = '✅ Correct! dat$age is the standard way to access a column by name in R.'; l3f.style.color = '#1a4d1a'; score++; }
-  else if (l3) { l3f.innerHTML = '❌ Try dat$age or dat[, "age"] in RStudio!'; l3f.style.color = '#d9534f'; }
-  var res = document.getElementById('loading-result');
-  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_loading'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
-}
-
-// ─── Quiz 2: Data Cleanup ─────────────────────────────────────────────────────
-function checkCleanupQuiz() {
-  var score = 0, total = 3;
-  var c1 = document.querySelector('input[name="c1"]:checked'), c1f = document.getElementById('c1-feedback');
-  if (c1 && c1.id === 'c1b') { c1f.innerHTML = '✅ Correct! which() returns INDICES — use x[which(x > 5)] to get the actual values.'; c1f.style.color = '#1a4d1a'; score++; }
-  else if (c1) { c1f.innerHTML = '❌ which() returns positions (indices), not values.'; c1f.style.color = '#d9534f'; }
-  var c2 = document.querySelector('input[name="c2"]:checked'), c2f = document.getElementById('c2-feedback');
-  if (c2 && c2.id === 'c2b') { c2f.innerHTML = '✅ Right! The comma separates rows (left) from columns (right). Negative = exclude.'; c2f.style.color = '#1a4d1a'; score++; }
-  else if (c2) { c2f.innerHTML = '❌ Remember: dat[rows, columns]. To select columns use dat[, ...]. Negative index removes.'; c2f.style.color = '#d9534f'; }
-  var c3 = document.querySelector('input[name="c3"]:checked'), c3f = document.getElementById('c3-feedback');
-  if (c3 && c3.id === 'c3b') { c3f.innerHTML = '✅ Exactly! MARGIN=1 means row-wise. Each result value = NA count for one patient.'; c3f.style.color = '#1a4d1a'; score++; }
-  else if (c3) { c3f.innerHTML = '❌ MARGIN=1 applies the function to each row. MARGIN=2 would be column-wise.'; c3f.style.color = '#d9534f'; }
-  var res = document.getElementById('cleanup-result');
-  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_cleanup'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
-}
-
-// ─── Quiz 3: Visualisation ────────────────────────────────────────────────────
-function checkVizQuiz() {
-  var score = 0, total = 3;
-  var v1 = document.querySelector('input[name="v1"]:checked'), v1f = document.getElementById('v1-feedback');
-  if (v1 && v1.id === 'v1b') { v1f.innerHTML = '✅ Correct! More breaks = more (narrower) bins. Fewer breaks = broader view.'; v1f.style.color = '#1a4d1a'; score++; }
-  else if (v1) { v1f.innerHTML = '❌ Try hist(x, breaks=3) vs hist(x, breaks=20) in RStudio and compare!'; v1f.style.color = '#d9534f'; }
-  var v2 = document.querySelector('input[name="v2"]:checked'), v2f = document.getElementById('v2-feedback');
-  if (v2 && v2.id === 'v2b') { v2f.innerHTML = '✅ Right! The box spans Q1–Q3 (middle 50%), the line is the median, whiskers extend to 1.5×IQR.'; v2f.style.color = '#1a4d1a'; score++; }
-  else if (v2) { v2f.innerHTML = '❌ The central line in a boxplot is always the median — not the mean!'; v2f.style.color = '#d9534f'; }
-  var v3 = document.querySelector('input[name="v3"]:checked'), v3f = document.getElementById('v3-feedback');
-  if (v3 && v3.id === 'v3c') { v3f.innerHTML = '✅ Exactly! Points on the diagonal = matches the normal distribution. Curves away = skewed or heavy tails.'; v3f.style.color = '#1a4d1a'; score++; }
-  else if (v3) { v3f.innerHTML = '❌ A Q-Q plot compares your data\'s quantiles to a theoretical distribution (usually normal).'; v3f.style.color = '#d9534f'; }
-  var res = document.getElementById('viz-result');
-  if (score === total) { res.innerHTML = '🎉 All correct!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_viz'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
-}
-
-// ─── Quiz 4: Putting it all together ─────────────────────────────────────────
-function checkExerciseQuiz() {
-  var score = 0, total = 3;
-  var e1 = document.querySelector('input[name="e1"]:checked'), e1f = document.getElementById('e1-feedback');
-  if (e1 && e1.id === 'e1b') { e1f.innerHTML = '✅ Correct! density() estimates the curve, then plot(density(x)) draws it.'; e1f.style.color = '#1a4d1a'; score++; }
-  else if (e1) { e1f.innerHTML = '❌ hist() makes bars. density() makes a smooth curve — pass its result to plot().'; e1f.style.color = '#d9534f'; }
-  var e2 = document.querySelector('input[name="e2"]:checked'), e2f = document.getElementById('e2-feedback');
-  if (e2 && e2.id === 'e2b') { e2f.innerHTML = '✅ Right! Negative row index removes those rows. dat[-i.missing, ] keeps everyone else.'; e2f.style.color = '#1a4d1a'; score++; }
-  else if (e2) { e2f.innerHTML = '❌ dat[i.missing, ] would KEEP those rows. Add a - to REMOVE them: dat[-i.missing, ].'; e2f.style.color = '#d9534f'; }
-  var e3 = document.querySelector('input[name="e3"]:checked'), e3f = document.getElementById('e3-feedback');
-  if (e3 && e3.id === 'e3b') { e3f.innerHTML = '✅ Exactly! c("a","b","c") %in% c("b","d") → c(FALSE,TRUE,FALSE). Useful for finding columns by name.'; e3f.style.color = '#1a4d1a'; score++; }
-  else if (e3) { e3f.innerHTML = '❌ %in% tests membership — TRUE if the element appears anywhere in the right-hand vector.'; e3f.style.color = '#d9534f'; }
-  var res = document.getElementById('exercise-result');
-  if (score === total) { res.innerHTML = '🎉 Week 2 complete — excellent work!'; res.style.color = '#1a4d1a'; markQuizDone('w2_q_exercises'); }
-  else { res.innerHTML = score + ' of ' + total + ' correct. Try again!'; res.style.color = '#d9534f'; }
-}
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

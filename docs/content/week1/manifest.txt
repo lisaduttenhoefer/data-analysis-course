@@ -1,0 +1,24 @@
+title: Week 1: Basic Data Structures
+description: In this week you will learn the fundamental **building blocks** of data analysis: how data is stored, organised, and accessed. Use the language toggle above to switch between R and Python.
+tip: **Tip:** The [Basics in Coding](coding_basics.html) reference page gives you a quick-lookup summary of all syntax covered this week — available for both R and Python.
+topics: Syntax · Variables · Vectors · Matrices · Lists · Dataframes
+slides: WEEK0/week0_lecture_slides.pdf
+slides_label: Week 1 – Basic datatypes & data manipulation (PDF slides)
+
+video: General introduction to RStudio
+url: https://youtu.be/doQYGprZe94
+video: Working with R scripts
+url: https://youtu.be/joM5D3AXXgg
+video: Working with Markdown
+url: https://youtu.be/DVOlDfgY9gU
+
+markdown_r: WEEK0/_00_basic_data_structure.Rmd | Week 1 – Basic Data Structures (R Markdown) | vectors · matrices · lists · dataframes
+markdown_r: WEEK0/_00_basic_data_manipulation.Rmd | Week 1 – Data Manipulation (R Markdown) | apply · sapply · for loops · if statements
+
+markdown_python: WEEK0/_00_basic_data_structure_python.ipynb | Week 1 – Basic Data Structures (Python Notebook) | lists · numpy arrays · dicts · dataframes
+markdown_python: WEEK0/_00_basic_data_manipulation_python.ipynb | Week 1 – Data Manipulation (Python Notebook) | loops · list comprehensions · if statements · index selection
+markdown_python_note: **Required packages:** `numpy`, `pandas`  ·  Install: `pip install numpy pandas`
+
+reference: WEEK0/base-r.pdf | R Base – Cheat Sheet
+reference: WEEK0/rmarkdown-reference.pdf | Markdown Reference
+reference: WEEK0/cheatsheet_Best_Practice_R.pdf | R Best Practice

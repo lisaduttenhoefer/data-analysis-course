@@ -1,0 +1,20 @@
+title: Week 5: Probability Distributions
+description: This week introduces **probability distributions**: random variables, the p/d/q/r function family in R, and the Binomial, Negative Binomial, Poisson, Normal and t-distributions — plus how they relate to each other. Use the language toggle above to switch between R and Python.
+topics: Random Variables · p/d/q/r Functions · Binomial · Poisson · Normal · t-Distribution
+slides: WEEK4/week4_lecture_slides.pdf
+slides_label: Week 5 – Probability Distributions (PDF slides)
+
+video: 5.1 Inference and random variables
+url: https://www.youtube.com/watch?v=rWVnI0OY6_U
+video: 5.2 Distributions
+url: https://www.youtube.com/watch?v=zFpKdFsn9nQ
+video: 5.2 Distributions – RStudio demo
+url: https://www.youtube.com/watch?v=TajZYWmhxuQ
+
+markdown_r: WEEK4/_04_probability_distributions.Rmd | Week 5 – Probability Distributions (R Markdown)
+markdown_python: WEEK4/_04_probability_distributions_python.ipynb | Week 5 – Probability Distributions (Python Notebook)
+dataset_note: **Dataset:** This sheet uses a table of TP53 gene expression measurements in 586 lung cancer patients, loaded directly inside the R Markdown file — no separate download needed.
+bonus_note: **Bonus reference:** a companion script with more distribution examples, and a plenum recap (relationships between distributions, Q-Q plots). Quiz 3 & 5 below draw on this material.
+bonus: WEEK4/_04_distributions.Rmd | Distributions Companion (R Markdown)
+bonus: WEEK4/_04_plenum.Rmd | Plenum Recap (R Markdown)
+bonus: WEEK4/_04_folien_plenum.pdf | Plenum Slides (PDF)
