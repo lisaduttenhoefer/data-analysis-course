@@ -11,6 +11,17 @@ id: vectors
 - [ ] 1
       Count the elements: 9, 3, 7, 2 – that is 4.
 
+## Q: What does `len([9, 3, 7, 2])` return in Python?
+lang: python
+- [ ] 2
+      Count the elements: 9, 3, 7, 2 – that is 4.
+- [x] 4
+      Correct! The list has 4 elements — len() works just like R's length().
+- [ ] 9
+      Count the elements: 9, 3, 7, 2 – that is 4.
+- [ ] 1
+      Count the elements: 9, 3, 7, 2 – that is 4.
+
 ## Q: Why does `sum(c(TRUE, FALSE, TRUE, TRUE))` return `3`?
 - [ ] Because the vector has 3 elements
       Remember: TRUE = 1 and FALSE = 0 in R. sum(c(1,0,1,1)) = 3.
@@ -120,6 +131,7 @@ id: dataframes
 id: intro-bioinfo
 
 ## Q: According to Pauline Hogeweg (1978), what is the definition of bioinformatics?
+lang: both
 - [ ] The hardware architecture designed to process high-throughput genomic data
       Hogeweg defined bioinformatics in 1978 from an information-processing perspective.
 - [x] The study of informatic processes in biotic systems
@@ -128,6 +140,7 @@ id: intro-bioinfo
       Bioinformatics spans broader biotic systems and biological information processing.
 
 ## Q: What is the main goal of a Genome-Wide Association Study (GWAS)?
+lang: both
 - [ ] To assemble de novo sequencing reads without a reference genome
       GWAS is focused on phenotypes, specifically finding links between variants and traits.
 - [x] To link specific DNA variants with traits or diseases across cohorts
@@ -136,6 +149,7 @@ id: intro-bioinfo
       UMAP is a dimensionality reduction method, not the core goal of GWAS.
 
 ## Q: What trend describes the historical development of sequencing costs since 2001?
+lang: both
 - [ ] Sequencing costs decreased at the exact same rate as Moore's Law
       Moore's Law halves roughly every 18 months, but NGS outpaced it significantly.
 - [x] Sequencing costs dropped significantly faster than Moore's Law (especially after ~2007)

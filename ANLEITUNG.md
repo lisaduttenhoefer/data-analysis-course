@@ -208,6 +208,11 @@ Regeln:
   Haken** für dieses Quiz (die ID ist Teil des `localStorage`-Schlüssels). Bei neuen Quizzen kann
   `id:` weggelassen werden (wird dann automatisch aus dem Titel generiert).
 - `## Q: <Frage>` startet eine neue Frage innerhalb der aktuellen Karte.
+- `lang: r` / `lang: python` / `lang: both` — **optionale Zeile direkt nach `## Q:`**, vor den
+  Antworten. Legt fest, für welche Sprache(n) diese Frage angezeigt wird. **Fehlt die Zeile, gilt
+  automatisch `lang: r`** (Altbestand bleibt dadurch unverändert R-only). Damit kann man in
+  **derselben Quiz-Karte** Fragen mischen: manche nur für R, manche nur für Python, manche für
+  beide (z. B. rein konzeptionelle Fragen ohne Code). Siehe Beispiel unten.
 - `- [x] <Text>` = richtige Antwort, `- [ ] <Text>` = falsche Antwort. **Genau eine** Antwort pro
   Frage sollte `[x]` sein.
 - Die **eingerückte Zeile direkt danach** ist der Feedback-Text, der nach dem Beantworten
@@ -217,8 +222,42 @@ Regeln:
 **Eine neue Frage hinzufügen:** einfach einen weiteren `## Q: ...`-Block mit `- [ ]`/`- [x]`-Zeilen
 in die passende Quiz-Karte einfügen. **Eine neue Quiz-Karte hinzufügen:** neuen `# Quiz: ...`-Block
 ans Ende der Datei anhängen — aber **nicht vergessen**, die neue Quiz-`id` auch in `index.qmd` bei
-der jeweiligen Woche in `quizIds` einzutragen (siehe Abschnitt 7.4), sonst zählt sie nicht in den
-Gesamt-Fortschritt auf dem Dashboard.
+der jeweiligen Woche in `quizIds` einzutragen (siehe Abschnitt 6.2/6.4), sonst zählt sie nicht in
+den Gesamt-Fortschritt auf dem Dashboard.
+
+### Python-spezifische Quizfragen hinzufügen
+
+Beispiel (aus `content/week1/quiz.md`) — eine Karte mit R-Frage, Python-Frage und einer
+sprachneutralen Frage gemischt:
+
+```markdown
+# Quiz: Vectors
+id: vectors
+
+## Q: What does `length(c(9, 3, 7, 2))` return?
+- [x] 4
+      Correct! The vector has 4 elements.
+- [ ] 9
+      Count the elements: 9, 3, 7, 2 – that is 4.
+
+## Q: What does `len([9, 3, 7, 2])` return in Python?
+lang: python
+- [x] 4
+      Correct! len() works just like R's length().
+- [ ] 9
+      Count the elements: 9, 3, 7, 2 – that is 4.
+```
+
+- Die erste Frage hat kein `lang:` → gilt automatisch nur für R (zeigt sich nur im R-Tab).
+- Die zweite Frage hat `lang: python` → zeigt sich nur im Python-Tab.
+- Eine dritte Frage mit `lang: both` würde in **beiden** Tabs erscheinen (gut für Fragen ohne
+  Code, z. B. reine Konzeptfragen — siehe die „Introduction to Bioinformatics"-Karte in
+  `content/week1/quiz.md` als Beispiel).
+
+Sobald **irgendeine** Frage einer Woche `lang: python` oder `lang: both` hat, verschwindet für
+diese Woche automatisch der „Coming Soon"-Platzhalter im Python-Tab — Karten ganz ohne
+Python-relevante Fragen werden im Python-Tab einfach übersprungen, ohne dass man dafür etwas
+extra konfigurieren muss.
 
 ---
 
