@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ce1881bf781322721475fff017d72416.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-23be78434246ea8017d72d8785af5da3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -306,7 +306,6 @@ const WEEKS = [
     title: "Week 1: Basic Data Structures",
     topics: "Syntax · Variables · Vectors · Matrices · Lists · Dataframes",
     href: "1_datentypen.html",
-    unlocked: true,
     checkIds: [
       "check_w1_slides",
       "check_w1_vid1",
@@ -331,7 +330,6 @@ const WEEKS = [
     title: "Week 2: Data Cleanup & Visualisation",
     topics: "Loading Data · which · apply · is.na · hist · boxplot · qqnorm",
     href: "2_data_cleanup.html",
-    unlocked: true,
     checkIds: [
       "check_w2_slides",
       "check_w2_vid1",
@@ -355,7 +353,6 @@ const WEEKS = [
     title: "Week 3: Correlation & Clustering",
     topics: "Pearson vs Spearman · Missing Data · Intro to Clustering · K-means",
     href: "3_correlation_clustering.html",
-    unlocked: true,
     checkIds: [
       "check_w3_slides",
       "check_w3_vid1",
@@ -380,7 +377,6 @@ const WEEKS = [
     title: "Week 4: Hierarchical Clustering & PCA",
     topics: "Dendrograms · Linkage Methods · PCA · Scree Plots · Loadings",
     href: "4_unsupervised_learning.html",
-    unlocked: true,
     checkIds: [
       "check_w4_slides",
       "check_w4_vid1",
@@ -402,7 +398,6 @@ const WEEKS = [
     title: "Week 5: Probability Distributions",
     topics: "Random Variables · p/d/q/r Functions · Binomial · Poisson · Normal · t-Distribution",
     href: "5_probability_distributions.html",
-    unlocked: true,
     checkIds: [
       "check_w5_slides",
       "check_w5_vid1",
@@ -425,7 +420,6 @@ const WEEKS = [
     title: "Week 6: CLT & Confidence Intervals",
     topics: "Central Limit Theorem · Standard Error · Confidence Intervals",
     href: "6_clt_confidence_intervals.html",
-    unlocked: true,
     checkIds: [
       "check_w6_slides",
       "check_w6_vid1",
@@ -447,7 +441,6 @@ const WEEKS = [
     title: "Week 7: Hypothesis Testing & t-Tests",
     topics: "H0/H1 · One- vs Two-Sided · t-Test · Normality",
     href: "7_hypothesis_testing.html",
-    unlocked: true,
     checkIds: [
       "check_w7_slides",
       "check_w7_vid1",
@@ -468,7 +461,6 @@ const WEEKS = [
     title: "Week 8: Non-Parametric & Proportion Tests",
     topics: "Wilcoxon Test · Fisher/Chi-Square · Power of a Test",
     href: "8_nonparametric_proportion_tests.html",
-    unlocked: true,
     checkIds: [
       "check_w8_slides",
       "check_w8_vid1",
@@ -489,7 +481,6 @@ const WEEKS = [
     title: "Week 9: Regression Analysis",
     topics: "Linear Regression · Multiple Regression · RMSE · F-Test",
     href: "9_regression_analysis.html",
-    unlocked: true,
     checkIds: [
       "check_w9_slides",
       "check_w9_vid1",
@@ -514,6 +505,32 @@ function getLang() {
   try { return localStorage.getItem('da_course_lang') || 'python'; } catch(e) { return 'python'; }
 }
 
+// A week is locked if its content/weekN/manifest.txt has an "unlock_date:"
+// line with a future date. No unlock_date (or a past/today date) = unlocked.
+// This is the exact same rule week-loader.html applies on the week's own
+// page, so a locked week is consistently locked everywhere, not just here.
+function isDateLocked(dateStr) {
+  if (!dateStr) return false;
+  var target = new Date(dateStr.trim() + 'T00:00:00');
+  if (isNaN(target.getTime())) return false;
+  return new Date() < target;
+}
+
+async function loadUnlockStatus() {
+  await Promise.all(WEEKS.map(async (week) => {
+    try {
+      const resp = await fetch(`content/week${week.n}/manifest.txt`);
+      const text = await resp.text();
+      const m = text.match(/^unlock_date:\s*(.+)$/m);
+      const dateStr = m ? m[1].trim() : '';
+      week.unlocked = !isDateLocked(dateStr);
+      week.unlockDate = dateStr;
+    } catch (e) {
+      week.unlocked = true; // fetch failed - fail open rather than lock everything
+    }
+  }));
+}
+
 function calculateWeekProgress(week) {
   const hasChunks = !!week.chunkCount;
   const hasChecks = !!(week.checkIds?.length);
@@ -528,8 +545,8 @@ function calculateWeekProgress(week) {
   return { done, total, pct: Math.round((done / total) * 100) };
 }
 
-function statusLabel(p, locked) {
-  if (locked) return '🔒 Locked';
+function statusLabel(p, locked, unlockDate) {
+  if (locked) return unlockDate ? `🔒 Unlocks ${unlockDate}` : '🔒 Locked';
   if (!p || p.done === 0) return '⬜ Not started';
   return p.pct === 100 ? '✅ Completed' : `🔄 ${p.done}/${p.total} done`;
 }
@@ -557,7 +574,7 @@ function renderWeekCards() {
     card.innerHTML = `
       <div class="week-card-title">${week.title}</div>
       <div class="week-card-topics">${week.topics}</div>
-      <div class="week-card-status">${statusLabel(p, contentLocked)}</div>
+      <div class="week-card-status">${statusLabel(p, contentLocked, week.unlockDate)}</div>
       ${p ? `<div class="week-card-progress-bar-bg mt-2"><div class="week-card-progress-fill" style="width:${pct}%"></div></div>` : ''}
     `;
     col.appendChild(card);
@@ -577,8 +594,10 @@ function updateGlobalUI() {
   document.getElementById('gp-subtext').innerText = `${completedW} weeks completed`;
 }
 
-renderWeekCards();
-updateGlobalUI();
+loadUnlockStatus().then(() => {
+  renderWeekCards();
+  updateGlobalUI();
+});
 </script>
 
 

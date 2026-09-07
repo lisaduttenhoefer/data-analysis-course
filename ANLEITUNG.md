@@ -178,6 +178,7 @@ Alle möglichen Felder:
 | `bonus_note` | nein | Text über den Bonus-Buttons |
 | `bonus:` | nein, beliebig oft | Zusatzmaterial-Buttons, gleiches `Pfad \| Name \| ...`-Format. PDFs öffnen im neuen Tab, alles andere wird heruntergeladen |
 | `reference:` | nein, beliebig oft | Referenz-PDF-Buttons |
+| `unlock_date` | nein | Sperrt die Woche bis zu diesem Datum (`YYYY-MM-DD`) — siehe Abschnitt 6.4 |
 
 **Mehrzeiliger Code-Block** (`dataset_code_r`/`dataset_code_python`): die erste Zeile nach dem
 Doppelpunkt kann leer sein, alle folgenden **eingerückten** Zeilen gehören dazu, bis eine Leerzeile
@@ -233,7 +234,7 @@ Regeln:
 **Eine neue Frage hinzufügen:** einfach einen weiteren `## Q: ...`-Block mit `- [ ]`/`- [x]`-Zeilen
 in die passende Quiz-Karte einfügen. **Eine neue Quiz-Karte hinzufügen:** neuen `# Quiz: ...`-Block
 ans Ende der Datei anhängen — aber **nicht vergessen**, die neue Quiz-`id` auch in `index.qmd` bei
-der jeweiligen Woche in `quizIds` einzutragen (siehe Abschnitt 6.2/6.4), sonst zählt sie nicht in
+der jeweiligen Woche in `quizIds` einzutragen (siehe Abschnitt 6.2/6.5), sonst zählt sie nicht in
 den Gesamt-Fortschritt auf dem Dashboard.
 
 ### Python-spezifische Quizfragen hinzufügen
@@ -313,7 +314,40 @@ auf `gh-pages` — nach ca. 1–2 Minuten ist die Änderung live.
 3. Fertig — der „Coming Soon“-Platzhalter verschwindet automatisch, sobald die Zeile einen Pfad
    enthält.
 
-### 6.4 Eine ganz neue Woche hinzufügen (technischer, seltener)
+### 6.4 Eine Woche zeitlich freischalten (Sperre bis zu einem Datum)
+
+Jede Woche kann per Datum gesperrt werden — z. B. um den Kurs Woche für Woche freizuschalten,
+statt alles auf einmal freizugeben.
+
+1. `content/weekN/manifest.txt` öffnen.
+2. Eine Zeile hinzufügen:
+   ```
+   unlock_date: 2026-10-15
+   ```
+3. Speichern → committen → pushen.
+
+**Was das macht:** Bis zu diesem Datum (00:00 Uhr, nach dem Kalender des Browsers der/des
+Studierenden) ist die Woche gesperrt — sowohl die Kachel auf dem Dashboard (ausgegraut, zeigt
+„🔒 Unlocks 2026-10-15" statt des Fortschritts) als auch die Wochenseite selbst (wer den Link
+direkt aufruft, sieht nur einen Hinweis „nicht verfügbar" statt der Inhalte). Ab dem Datum ist
+alles automatisch normal zugänglich — **kein weiterer Schritt nötig**, das Datum muss nicht manuell
+„umgeschaltet" werden.
+
+**Sofort/manuell freischalten:** `unlock_date` einfach auf ein Datum in der Vergangenheit setzen
+(z. B. `unlock_date: 2020-01-01`) oder die Zeile ganz löschen — beides schaltet die Woche sofort
+frei.
+
+**Ganzen Kurs im Voraus planen:** Man kann zu Semesterbeginn bei jeder Woche direkt das gewünschte
+Datum eintragen (z. B. Woche 2 → nächster Montag, Woche 3 → übernächster Montag, ...) und muss
+danach nichts mehr anfassen — die Wochen schalten sich automatisch nacheinander frei.
+
+*Technischer Hintergrund:* Das Dashboard (`index.qmd`) liest dafür bei jedem Seitenaufruf kurz aus
+allen 9 `manifest.txt`-Dateien nur diese eine Zeile aus — eine bewusste, kleine Ausnahme von der
+Regel aus Abschnitt 6.5, dass das Dashboard nicht automatisch aus den Manifests generiert wird,
+weil sich `unlock_date` (anders als `checkIds`/`quizIds`) recht spontan ändert und ein einzelnes
+Datum kein Risiko für kaputte IDs birgt.
+
+### 6.5 Eine ganz neue Woche hinzufügen (technischer, seltener)
 
 1. Neue `.qmd`-Datei nach dem Muster der bestehenden anlegen (Abschnitt 3 — nur Frontmatter + `<div
    id="week-app" data-week="10">Loading…</div>`).

@@ -46,7 +46,7 @@
       title: '', description: '', tip: '', topics: '', slides: '', slidesLabel: '',
       videos: [], markdownR: [], markdownPython: [], markdownPythonNote: '',
       datasetNote: '', datasetCodeR: '', datasetNotePython: '', datasetCodePython: '',
-      warningNote: '', bonusNote: '', bonus: [], reference: []
+      warningNote: '', bonusNote: '', bonus: [], reference: [], unlockDate: ''
     };
     var pendingVideo = null;
     // Multi-line code fields (dataset_code_r / dataset_code_python) continue
@@ -88,6 +88,7 @@
         case 'dataset_note': result.datasetNote = value; break;
         case 'dataset_note_python': result.datasetNotePython = value; break;
         case 'warning_note': result.warningNote = value; break;
+        case 'unlock_date': result.unlockDate = value; break;
         case 'dataset_code_r': result.datasetCodeR = value; pendingCodeField = 'datasetCodeR'; break;
         case 'dataset_code_python': result.datasetCodePython = value; pendingCodeField = 'datasetCodePython'; break;
         case 'bonus_note': result.bonusNote = value; break;
@@ -548,6 +549,29 @@
   // ═══════════════════════════════════════════════════════════════════════
   // Bootstrap
   // ═══════════════════════════════════════════════════════════════════════
+  // Same rule as index.qmd's dashboard (kept in sync deliberately, not
+  // shared via import, since the two files aren't loaded on the same page):
+  // no unlock_date, or a past/today date, means unlocked.
+  function isDateLocked(dateStr) {
+    if (!dateStr) return false;
+    var target = new Date(dateStr.trim() + 'T00:00:00');
+    if (isNaN(target.getTime())) return false;
+    return new Date() < target;
+  }
+
+  function renderLocked(container, manifest) {
+    container.innerHTML = '';
+    container.appendChild(h(
+      '<div class="placeholder-card" style="text-align:center;padding:3rem 2rem;">' +
+        '<p style="font-size:2rem;margin-bottom:0.5rem;">🔒</p>' +
+        '<p style="color:#1a4d1a;font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;">' +
+          escapeHtml(manifest.title || 'This week') + ' is not available yet</p>' +
+        '<p style="color:#555;margin-bottom:1.5rem;">It unlocks on <strong>' + escapeHtml(manifest.unlockDate) + '</strong>.</p>' +
+        '<a href="index.html" class="btn btn-outline-danger btn-sm">← Back to dashboard</a>' +
+      '</div>'
+    ));
+  }
+
   function renderError(container, weekNum, err) {
     container.innerHTML = '<div class="placeholder-card" style="border-left-color:#d9534f;">' +
       '<p style="color:#d9534f;font-weight:700;">⚠️ Could not load this week\'s content.</p>' +
@@ -573,6 +597,11 @@
     ]).then(function (results) {
       var manifest = parseManifest(results[0]);
       var quizCards = parseQuiz(results[1]);
+
+      if (isDateLocked(manifest.unlockDate)) {
+        renderLocked(container, manifest);
+        return;
+      }
 
       container.innerHTML = '';
       container.appendChild(renderProgressBar(weekNum, manifest.title));
