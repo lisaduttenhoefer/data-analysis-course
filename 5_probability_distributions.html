@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-23be78434246ea8017d72d8785af5da3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ce1881bf781322721475fff017d72416.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -417,7 +417,10 @@ Loading…
 
   // ═══════════════════════════════════════════════════════════════════════
   // quiz.md parser
-  // Returns [{ title, id, questions: [{ text, answers: [{text, correct, feedback}] }] }]
+  // Returns [{ title, id, questions: [{ text, lang, answers: [{text, correct, feedback}] }] }]
+  // Each question has a `lang`: 'r' (default, if no "lang:" line follows the
+  // "## Q:" line), 'python', or 'both'. This lets one quiz card mix questions
+  // shared across languages with ones specific to R or Python syntax.
   // ═══════════════════════════════════════════════════════════════════════
   function parseQuiz(raw) {
     var lines = normalizeText(raw).split('\n');
@@ -429,6 +432,7 @@ Loading…
     var reCard = /^#\s+Quiz:\s*(.+)$/;
     var reId = /^id:\s*(.+)$/;
     var reQuestion = /^##\s+Q:\s*(.+)$/;
+    var reLang = /^lang:\s*(r|python|both)\s*$/i;
     var reAnswer = /^-\s*\[( |x|X)\]\s*(.+)$/;
 
     for (var i = 0; i < lines.length; i++) {
@@ -453,9 +457,15 @@ Loading…
       var mQuestion = rawLine.match(reQuestion);
       if (mQuestion) {
         if (!currentCard) { console.warn('quiz: "## Q:" outside of a "# Quiz:" card on line ' + (i + 1)); continue; }
-        currentQuestion = { text: mQuestion[1].trim(), answers: [] };
+        currentQuestion = { text: mQuestion[1].trim(), lang: null, answers: [] };
         currentCard.questions.push(currentQuestion);
         currentAnswer = null;
+        continue;
+      }
+
+      var mLang = rawLine.match(reLang);
+      if (mLang && currentQuestion && currentQuestion.answers.length === 0) {
+        currentQuestion.lang = mLang[1].toLowerCase();
         continue;
       }
 
@@ -476,8 +486,24 @@ Loading…
       console.warn('quiz: unrecognized line ' + (i + 1) + ': ' + rawLine);
     }
 
-    cards.forEach(function (c) { if (!c.id) c.id = slugify(c.title); });
+    cards.forEach(function (c) {
+      if (!c.id) c.id = slugify(c.title);
+      c.questions.forEach(function (q) { if (!q.lang) q.lang = 'r'; });
+    });
     return cards;
+  }
+
+  // Returns a copy of `cards` containing only the questions relevant to `lang`
+  // ('r' or 'python') — a question with lang 'both' counts for either; cards
+  // left with zero matching questions are dropped entirely. Since every
+  // existing quiz.md has no "lang:" tags yet, all questions default to 'r',
+  // so this is a no-op for R (identical card list) and yields [] for Python
+  // (falls back to the "Coming Soon" placeholder) until lang tags are added.
+  function filterCardsForLang(cards, lang) {
+    return cards.map(function (card) {
+      var qs = card.questions.filter(function (q) { return q.lang === 'both' || q.lang === lang; });
+      return { title: card.title, id: card.id, questions: qs };
+    }).filter(function (card) { return card.questions.length > 0; });
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -487,7 +513,10 @@ Loading…
   function localSet(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
 
   function quizFullId(weekNum, quizId) { return 'w' + weekNum + '_q_' + quizId; }
-  function quizStorageKey(weekNum, quizId) { return 'quiz_r_w' + weekNum + '_' + quizFullId(weekNum, quizId); }
+  // lang defaults to 'r' so this produces the exact legacy key shape for R
+  // (quiz_r_w{N}_w{N}_q_{id}) — existing students' saved R quiz progress is
+  // unaffected. Python gets its own independent key (quiz_python_w{N}_...).
+  function quizStorageKey(weekNum, quizId, lang) { return 'quiz_' + (lang || 'r') + '_w' + weekNum + '_' + quizFullId(weekNum, quizId); }
 
   // ═══════════════════════════════════════════════════════════════════════
   // DOM helpers
@@ -647,47 +676,57 @@ Loading…
     return wrap;
   }
 
+  // Renders the interactive quiz-card markup for one language's filtered card
+  // list. DOM ids/radio-names get a `_r`/`_python` suffix so the two language
+  // trees (both present in the DOM at once, toggled via CSS) never collide —
+  // this is purely a DOM-uniqueness concern, unrelated to the storage key
+  // (which stays keyed by the unsuffixed quiz id for R, see quizStorageKey).
+  function renderQuizCardsHtml(weekNum, cards, lang) {
+    var html = '';
+    cards.forEach(function (card, cardIdx) {
+      if (cardIdx > 0) html += '<hr>';
+      var domId = quizFullId(weekNum, card.id) + '_' + lang;
+      html += '<div><h3>Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
+        ' <span id="quiz-done-' + domId + '" class="quiz-done-badge">✓ Done</span></h3>' +
+        '<div class="quiz-card" id="quizcard-' + domId + '">';
+      card.questions.forEach(function (q, qIdx) {
+        var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx + '_' + lang;
+        html += '<div class="mb-4"><p><strong>Question ' + (qIdx + 1) + ':</strong> ' + formatInline(q.text) + '</p>';
+        q.answers.forEach(function (a, aIdx) {
+          var radioId = radioName + '_' + aIdx;
+          html += '<div class="form-check"><input class="form-check-input" type="radio" name="' + radioName + '" id="' + radioId + '">' +
+            '<label class="form-check-label" for="' + radioId + '">' + formatInline(a.text) + '</label></div>';
+        });
+        html += '<div id="' + radioName + '-feedback" class="mt-1 fw-bold"></div></div>';
+      });
+      html += '<button class="btn btn-primary w-100 check-quiz-btn" data-quiz-full-id="' + domId + '" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>' +
+        '<div id="' + domId + '-result" class="mt-3 fw-bold text-center"></div></div></div>';
+    });
+    return html;
+  }
+
   function renderStep3(weekNum, quizCards) {
     var wrap = document.createElement('div');
     wrap.appendChild(h('<div class="step-header"><div class="step-badge">3</div><h2>Comprehension Quiz</h2></div>'));
     wrap.appendChild(h('<p style="color:#555;margin-bottom:1.5rem;">Use the language toggle above to select R or Python, then work through the quizzes below.</p>'));
 
-    var rWrap = document.createElement('div');
-    rWrap.className = 'lang-r';
+    var rCards = filterCardsForLang(quizCards, 'r');
+    var rHtml = renderQuizCardsHtml(weekNum, rCards, 'r') ||
+      '<div class="placeholder-card"><p style="color:#555;margin-bottom:0;">No quiz questions yet for this week.</p></div>';
+    wrap.appendChild(h('<div class="lang-r">' + rHtml + '</div>'));
 
-    quizCards.forEach(function (card, cardIdx) {
-      if (cardIdx > 0) rWrap.appendChild(h('<hr>'));
-      var fullId = quizFullId(weekNum, card.id);
-      var cardHtml = '<h3>Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
-        ' <span id="quiz-done-' + fullId + '" class="quiz-done-badge">✓ Done</span></h3>' +
-        '<div class="quiz-card" id="quizcard-' + fullId + '">';
-      card.questions.forEach(function (q, qIdx) {
-        var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx;
-        cardHtml += '<div class="mb-4"><p><strong>Question ' + (qIdx + 1) + ':</strong> ' + formatInline(q.text) + '</p>';
-        q.answers.forEach(function (a, aIdx) {
-          var radioId = radioName + '_' + aIdx;
-          cardHtml += '<div class="form-check"><input class="form-check-input" type="radio" name="' + radioName + '" id="' + radioId + '">' +
-            '<label class="form-check-label" for="' + radioId + '">' + formatInline(a.text) + '</label></div>';
-        });
-        cardHtml += '<div id="' + radioName + '-feedback" class="mt-1 fw-bold"></div></div>';
+    var pyCards = filterCardsForLang(quizCards, 'python');
+    var pyHtml = renderQuizCardsHtml(weekNum, pyCards, 'python');
+    if (!pyHtml) {
+      pyHtml = '<p style="color:#555;margin-bottom:1.5rem;">Python quizzes are in preparation — one per topic.</p>';
+      quizCards.forEach(function (card, cardIdx) {
+        pyHtml += '<h3 style="margin-top:' + (cardIdx === 0 ? '0.5rem' : '1.5rem') + ';">Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
+          ' <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Coming Soon)</span></h3>' +
+          '<div class="placeholder-card"><p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Quiz — Coming Soon</p>' +
+          '<p style="color:#555;margin-bottom:0;">A Python version of this quiz is in preparation.</p></div>';
       });
-      cardHtml += '<button class="btn btn-primary w-100 check-quiz-btn" data-quiz-full-id="' + fullId + '" style="background-color:#1a4d1a;border:none;font-weight:700;">CHECK ANSWERS</button>' +
-        '<div id="' + fullId + '-result" class="mt-3 fw-bold text-center"></div></div>';
-      rWrap.appendChild(h('<div>' + cardHtml + '</div>'));
-    });
-    wrap.appendChild(rWrap);
-
-    var pyWrap = document.createElement('div');
-    pyWrap.className = 'lang-python';
-    var pyHtml = '<p style="color:#555;margin-bottom:1.5rem;">Python quizzes are in preparation — one per topic.</p>';
-    quizCards.forEach(function (card, cardIdx) {
-      pyHtml += '<h3 style="margin-top:' + (cardIdx === 0 ? '0.5rem' : '1.5rem') + ';">Quiz ' + (cardIdx + 1) + ': ' + escapeHtml(card.title) +
-        ' <span style="font-size:0.8rem;color:#7c9cef;font-weight:normal;">(Coming Soon)</span></h3>' +
-        '<div class="placeholder-card"><p style="color:#7c9cef;font-weight:700;margin-bottom:0.5rem;">🐍 Python Quiz — Coming Soon</p>' +
-        '<p style="color:#555;margin-bottom:0;">A Python version of this quiz is in preparation.</p></div>';
-    });
-    pyWrap.innerHTML = pyHtml;
-    wrap.appendChild(pyWrap);
+    }
+    wrap.appendChild(h('<div class="lang-python">' + pyHtml + '</div>'));
 
     return wrap;
   }
@@ -718,20 +757,14 @@ Loading…
     return ids;
   }
 
-  // Quizzes are R-only for now (no quiz_python.md format yet — Python quiz
-  // cards are "Coming Soon" placeholders with nothing to actually complete).
-  function quizCardsForLang(quizCards, lang) {
-    return lang === 'python' ? [] : quizCards;
-  }
-
   function updateWeekBar(weekNum, manifest, quizCards, langOverride) {
     var lang = langOverride || (window.getCurrentLang ? window.getCurrentLang() : 'r');
     var checkIds = checkIdsForLang(weekNum, manifest, lang);
-    var relevantQuizzes = quizCardsForLang(quizCards, lang);
+    var relevantQuizzes = filterCardsForLang(quizCards, lang);
     var total = checkIds.length + relevantQuizzes.length;
     var done = 0;
     checkIds.forEach(function (id) { if (localGet(id) === 'true') done++; });
-    relevantQuizzes.forEach(function (card) { if (localGet(quizStorageKey(weekNum, card.id)) === 'true') done++; });
+    relevantQuizzes.forEach(function (card) { if (localGet(quizStorageKey(weekNum, card.id, lang)) === 'true') done++; });
     var pct = total > 0 ? Math.round((done / total) * 100) : 0;
     var bar = document.getElementById('week' + weekNum + '-progress-bar');
     var txt = document.getElementById('week' + weekNum + '-progress-text');
@@ -755,20 +788,28 @@ Loading…
     });
   }
 
-  function wireQuizzes(weekNum, manifest, quizCards) {
-    quizCards.forEach(function (card) {
-      var fullId = quizFullId(weekNum, card.id);
-      if (localGet(quizStorageKey(weekNum, card.id)) === 'true') {
-        var badge = document.getElementById('quiz-done-' + fullId);
+  // Wires the rendered cards for ONE language. `lang` picks both the DOM ids
+  // to look up (domId = quiz id + '_' + lang, matching renderQuizCardsHtml)
+  // and the storage key (quizStorageKey(..., lang) — unsuffixed quiz id, so R
+  // keeps reading/writing the exact legacy key). Always called once per
+  // language from init(); a no-op when filterCardsForLang returns [] (every
+  // week without Python-tagged questions yet), so existing weeks are
+  // unaffected.
+  function wireQuizzes(weekNum, manifest, quizCards, lang) {
+    var cards = filterCardsForLang(quizCards, lang);
+    cards.forEach(function (card) {
+      var domId = quizFullId(weekNum, card.id) + '_' + lang;
+      if (localGet(quizStorageKey(weekNum, card.id, lang)) === 'true') {
+        var badge = document.getElementById('quiz-done-' + domId);
         if (badge) badge.style.display = 'inline';
       }
-      var btn = document.querySelector('.check-quiz-btn[data-quiz-full-id="' + fullId + '"]');
+      var btn = document.querySelector('.check-quiz-btn[data-quiz-full-id="' + domId + '"]');
       if (!btn) return;
       btn.addEventListener('click', function () {
         var score = 0;
         var total = card.questions.length;
         card.questions.forEach(function (q, qIdx) {
-          var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx;
+          var radioName = 'w' + weekNum + '_' + card.id + '_q' + qIdx + '_' + lang;
           var checked = document.querySelector('input[name="' + radioName + '"]:checked');
           var fb = document.getElementById(radioName + '-feedback');
           if (!checked) { if (fb) fb.innerHTML = ''; return; }
@@ -782,11 +823,11 @@ Loading…
             fb.style.color = '#d9534f';
           }
         });
-        var result = document.getElementById(fullId + '-result');
+        var result = document.getElementById(domId + '-result');
         if (score === total) {
           if (result) { result.innerHTML = '🎉 All correct!'; result.style.color = '#1a4d1a'; }
-          localSet(quizStorageKey(weekNum, card.id), 'true');
-          var badge2 = document.getElementById('quiz-done-' + fullId);
+          localSet(quizStorageKey(weekNum, card.id, lang), 'true');
+          var badge2 = document.getElementById('quiz-done-' + domId);
           if (badge2) badge2.style.display = 'inline';
         } else if (result) {
           result.innerHTML = score + ' of ' + total + ' correct. Try again!';
@@ -843,7 +884,8 @@ Loading…
 
       var checkIds = collectCheckIds(weekNum, manifest);
       wireCheckboxes(weekNum, manifest, checkIds, quizCards);
-      wireQuizzes(weekNum, manifest, quizCards);
+      wireQuizzes(weekNum, manifest, quizCards, 'r');
+      wireQuizzes(weekNum, manifest, quizCards, 'python');
       updateWeekBar(weekNum, manifest, quizCards);
 
       // Re-run the progress bar whenever the R/Python toggle changes, since
