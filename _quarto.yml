@@ -62,5 +62,5 @@ format:
 
 execute:
   enabled: true
-  freeze: auto
+  freeze: false
   cache: false
