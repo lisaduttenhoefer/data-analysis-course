@@ -23,19 +23,27 @@ läuft über zwei Dinge:
 - **`gh-pages`** — das ist der Branch, von dem GitHub Pages die *tatsächlich live sichtbare* Seite
   ausliefert (`https://lisaduttenhoefer.github.io/data-analysis-course`).
 
-**Ein `git push` auf `main` allein aktualisiert die Live-Seite NICHT!** Es gibt keine automatische
-GitHub Action, die das übernimmt. Um die Seite live zu aktualisieren,
-brauchst du **immer** diesen Befehl im Terminal, im Projektordner:
+**Seit 2026-09-07 passiert das automatisch:** eine GitHub Action
+(`.github/workflows/publish.yml`) rendert die Seite neu und veröffentlicht sie auf `gh-pages`,
+**sobald irgendetwas auf `main` gepusht wird** — auch ein Commit, der direkt über den
+GitHub-Webeditor gemacht wurde. Du musst dafür nichts mehr im Terminal ausführen. Fortschritt
+siehst du im Reiter **Actions** oben im GitHub-Repo; ein Durchlauf dauert ca. 1–2 Minuten, danach
+ist die Änderung live (GitHub cached teils kurz — ggf. Browser-Reload mit Cache leeren, Cmd+Shift+R).
+
+**Faustregel:** Änderung in `content/weekN/manifest.txt` oder `quiz.md` machen → committen &
+pushen nach `main` (egal ob über den GitHub-Webeditor oder lokal) → fertig. Die Action übernimmt
+den Rest.
+
+*Falls die Action mal fehlschlägt* (z. B. wegen eines Tippfehlers, der Quarto am Rendern
+hindert — nicht wegen manifest.txt/quiz.md-Inhalten, die werden ja erst im Browser interpretiert):
+im Actions-Tab auf den roten Lauf klicken, Log lesen, Fehler beheben, erneut pushen.
+
+*Nur falls du mal ohne Internet/Action manuell veröffentlichen willst:* der alte Weg funktioniert
+weiterhin als Fallback, lokal im Projektordner:
 
 ```
 quarto publish gh-pages --no-prompt --no-browser
 ```
-
-Das rendert die Seite neu und pusht sie automatisch auf den `gh-pages`-Branch. Nach ein paar
-Minuten ist die Änderung live (GitHub cached teils kurz — ggf. Browser-Reload mit Cache leeren).
-
-**Immer:** Änderung gemacht → lokal testen → committen & pushen nach `main` (Backup /
-Versionierung) → **zusätzlich** `quarto publish gh-pages` ausführen, damit es live sichtbar wird.
 
 ---
 
@@ -220,7 +228,7 @@ Gesamt-Fortschritt auf dem Dashboard.
 
 1. `content/weekN/manifest.txt` öffnen (im GitHub-Webeditor oder lokal).
 2. Die passende `url:`-Zeile unter dem gesuchten `video:`-Titel ändern.
-3. Speichern → committen → pushen → **`quarto publish gh-pages`** ausführen (Abschnitt 1).
+3. Speichern → committen → pushen. Die GitHub Action macht den Rest automatisch live.
 
 ### 6.2 Eine Quizfrage ändern oder hinzufügen
 
@@ -228,13 +236,15 @@ Gesamt-Fortschritt auf dem Dashboard.
 2. Frage/Antworten/Feedback nach obigem Format anpassen bzw. neuen `## Q:`-Block einfügen.
 3. **Nicht** die `id:` einer bestehenden Quiz-Karte ändern (sonst verlieren Studierende ihren
    Fortschritt für die Karte).
-4. Speichern → committen → pushen → `quarto publish gh-pages`.
+4. Bei einer **neuen** Quiz-Karte (`# Quiz: ...`): die volle ID (`w{N}_q_<id>`) zusätzlich in
+   `index.qmd` bei der passenden Woche in `quizIds` eintragen, sonst zählt sie nicht im
+   Dashboard-Fortschritt (zählt aber auf der Wochenseite selbst auch ohne das schon mit).
+5. Speichern → committen → pushen.
 
-Diese beiden Aufgaben (6.1, 6.2) sind reine Textdatei-Änderungen — dafür muss **kein** Quarto/R/
-Python installiert sein. Wer nur github.com im Browser benutzt, kann das direkt dort machen (Datei
-öffnen → Stift-Symbol → Änderung → „Commit changes“). **Aber:** damit es live sichtbar wird, muss
-danach trotzdem jemand mit lokalem Zugriff `quarto publish gh-pages` ausführen — das lässt sich
-über den GitHub-Webeditor allein nicht auslösen.
+Diese Aufgaben (6.1, 6.2) sind reine Textdatei-Änderungen — dafür muss **kein** Quarto/R/Python
+installiert sein. Am einfachsten direkt auf github.com (Datei öffnen → Stift-Symbol → Änderung →
+„Commit changes"). Die GitHub Action übernimmt danach automatisch das Rendern und Veröffentlichen
+auf `gh-pages` — nach ca. 1–2 Minuten ist die Änderung live.
 
 ### 6.3 Ein Python-Notebook für eine Woche hinzufügen (Platzhalter „Coming Soon“ ablösen)
 
@@ -261,7 +271,7 @@ danach trotzdem jemand mit lokalem Zugriff `quarto publish gh-pages` ausführen 
      vorhanden) — bei **mehreren** Dateien pro Sprache zusätzlich durchnummeriert:
      `check_w10_md1_r`, `check_w10_md2_r`, ...
    - `quizIds`: die volle Form `w10_q_<id>` für jede Quiz-Karten-`id` aus `quiz.md`
-5. `quarto render` lokal zum Testen, dann `quarto publish gh-pages`.
+5. `quarto render` lokal zum Testen, dann committen & pushen — der Rest passiert automatisch.
 
 Das Dashboard (`index.qmd`) wird **bewusst nicht automatisch** aus den Manifests generiert — das ist
 eine Absicherung gegen Tippfehler, die die Startseite kaputt machen, und weil sich das Dashboard nur
@@ -301,9 +311,9 @@ Fehlermeldung mit Dateiname. Prüfen, ob `content/weekN/manifest.txt` wirklich e
 Syntax stimmt (siehe Abschnitt 4/5).
 
 **Änderung committed & gepusht, aber auf der Live-Seite nicht sichtbar:**
-`quarto publish gh-pages` vergessen! Ein reiner `git push` auf `main` reicht nicht (siehe
-Abschnitt 1). Danach ein paar Minuten warten und ggf. Browser-Cache leeren (Hard-Reload:
-Cmd+Shift+R).
+Erst 1-2 Minuten warten (die GitHub Action muss noch durchlaufen — Fortschritt im **Actions**-Tab
+des Repos einsehbar) und dann Browser-Cache leeren (Hard-Reload: Cmd+Shift+R). Läuft die Action
+rot/fehlgeschlagen, im Actions-Tab reinklicken und das Fehler-Log lesen.
 
 **Ein/e Studierende/r verliert ihren Fortschritt:**
 Fortschritt liegt nur im `localStorage` des jeweiligen Browsers — kein Backend, kein Cloud-Sync.
