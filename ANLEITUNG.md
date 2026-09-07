@@ -277,7 +277,13 @@ extra konfigurieren muss.
    Fortschritt für die Karte).
 4. Bei einer **neuen** Quiz-Karte (`# Quiz: ...`): die volle ID (`w{N}_q_<id>`) zusätzlich in
    `index.qmd` bei der passenden Woche in `quizIds` eintragen, sonst zählt sie nicht im
-   Dashboard-Fortschritt (zählt aber auf der Wochenseite selbst auch ohne das schon mit).
+   Dashboard-Fortschritt (zählt aber auf der Wochenseite selbst auch ohne das schon mit). Format: w{weekNumber}_q_{card-id} , mit {card-id} als der exacte Name bei "id" in quiz.md. Also: 
+content/week1/quiz.md : 
+id: vectors
+id: matrices
+id: lists)
+-> in index.qmd: quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes","w1_q_intro-bioinfo","w1_q_data-analysis-steps","w1_q_computational-notebooks"]
+
 5. Speichern → committen → pushen.
 
 Diese Aufgaben (6.1, 6.2) sind reine Textdatei-Änderungen — dafür muss **kein** Quarto/R/Python
