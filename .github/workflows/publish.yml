@@ -19,6 +19,16 @@ jobs:
         with:
           version: "1.9.37"
 
+      - name: Remove committed docs/ output before rendering
+        # docs/ is committed to main (so a plain `git clone` still has a working
+        # site without anyone running Quarto). But that means after a fresh CI
+        # checkout, source files (content/weekN/quiz.md) and their already-
+        # committed stale copies (docs/content/weekN/quiz.md) get the SAME
+        # checkout timestamp - Quarto's resource-copy step then has no reliable
+        # "source is newer" signal and silently skips re-copying. Deleting the
+        # old output before rendering removes that ambiguity entirely.
+        run: rm -rf docs
+
       - name: Render and publish to gh-pages
         uses: quarto-dev/quarto-actions/publish@v2
         with:
