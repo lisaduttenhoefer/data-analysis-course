@@ -1,7 +1,7 @@
 title: Week 4: Hierarchical Clustering & PCA
 description: This week concludes unsupervised learning: **hierarchical clustering** (building dendrograms from a distance matrix) and **Principal Component Analysis (PCA)** for dimensionality reduction. Use the language toggle above to switch between R and Python.
 topics: Dendrograms · Linkage Methods · PCA · Scree Plots · Loadings
-slides: WEEK3/week3_lecture_slides.pdf
+slides: materials/week4/week3_lecture_slides.pdf
 slides_label: Week 4 – Hierarchical Clustering & PCA (PDF slides)
 
 video: 4.3 Hierarchical clustering
@@ -11,6 +11,6 @@ url: https://youtu.be/OiQdxG9I0Tk
 video: 4.4.2 PCA (part 2)
 url: https://youtu.be/LrSqVYHi23g
 
-markdown_r: WEEK3/_03_unsupervised_learning.Rmd | Week 4 – Hierarchical Clustering & PCA (R Markdown)
-markdown_python: WEEK3/_03_unsupervised_learning_python.ipynb | Week 4 – Hierarchical Clustering & PCA (Python Notebook)
+markdown_r: materials/week4/_03_unsupervised_learning.Rmd | Week 4 – Hierarchical Clustering & PCA (R Markdown)
+markdown_python: materials/week4/_03_unsupervised_learning_python.ipynb | Week 4 – Hierarchical Clustering & PCA (Python Notebook)
 dataset_note: **Datasets:** This sheet uses a leukemia gene expression dataset (ALL vs. AML) for hierarchical clustering, and the Breast Cancer Wisconsin dataset for PCA. Both are loaded directly inside the R Markdown file — no separate download needed.
