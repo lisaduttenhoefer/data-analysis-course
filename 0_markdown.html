@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-23be78434246ea8017d72d8785af5da3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
 <script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/load-shinylive-sw.js" type="module"></script>
 <script src="site_libs/quarto-contrib/shinylive-0.10.8/shinylive/run-python-blocks.js" type="module"></script>
@@ -77,6 +77,21 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // Shared, reusable: toggles .lang-r / .lang-python visibility for whatever
+  // matching elements currently exist in the DOM. Safe to call at any time,
+  // including after content injected asynchronously by week-loader.html —
+  // that's the whole reason this is a standalone global function rather than
+  // inline in the DOMContentLoaded handler below.
+  window.applyLangVisibility = function(lang) {
+    document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+    document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+    document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: lang } }));
+  };
+
+  window.getCurrentLang = function() {
+    try { return localStorage.getItem('da_course_lang') || 'python'; } catch (e) { return 'python'; }
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
     function applyFinalStyle() {
       // Wir suchen alle Links in der Navbar
@@ -96,22 +111,25 @@ ul.task-list li input[type="checkbox"] {
       const darkGreen = "#1a4d1a";
 
       function updateView(lang) {
-        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
-        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+        // IMPORTANT: persist the new language BEFORE dispatching visibility/langchange —
+        // listeners (e.g. week-loader.html's progress bar) read the current language
+        // back out of localStorage when they react to the event, so it must already
+        // reflect the new value by the time applyLangVisibility() fires it.
+        localStorage.setItem('da_course_lang', lang);
+
+        window.applyLangVisibility(lang);
 
         // Style Python
         pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
 
         // Style R
         rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
-
-        localStorage.setItem('da_course_lang', lang);
       }
 
       pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
       rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
 
-      updateView(localStorage.getItem('da_course_lang') || 'python');
+      updateView(window.getCurrentLang());
     }
     applyFinalStyle();
   });

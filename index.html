@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4fe6bffcf9c91831953d3426aa368a56.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-23be78434246ea8017d72d8785af5da3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,6 +72,21 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // Shared, reusable: toggles .lang-r / .lang-python visibility for whatever
+  // matching elements currently exist in the DOM. Safe to call at any time,
+  // including after content injected asynchronously by week-loader.html —
+  // that's the whole reason this is a standalone global function rather than
+  // inline in the DOMContentLoaded handler below.
+  window.applyLangVisibility = function(lang) {
+    document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
+    document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+    document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: lang } }));
+  };
+
+  window.getCurrentLang = function() {
+    try { return localStorage.getItem('da_course_lang') || 'python'; } catch (e) { return 'python'; }
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
     function applyFinalStyle() {
       // Wir suchen alle Links in der Navbar
@@ -91,22 +106,25 @@ ul.task-list li input[type="checkbox"] {
       const darkGreen = "#1a4d1a";
 
       function updateView(lang) {
-        document.querySelectorAll('.lang-python').forEach(el => el.style.display = (lang === 'python' ? 'block' : 'none'));
-        document.querySelectorAll('.lang-r').forEach(el => el.style.display = (lang === 'r' ? 'block' : 'none'));
+        // IMPORTANT: persist the new language BEFORE dispatching visibility/langchange —
+        // listeners (e.g. week-loader.html's progress bar) read the current language
+        // back out of localStorage when they react to the event, so it must already
+        // reflect the new value by the time applyLangVisibility() fires it.
+        localStorage.setItem('da_course_lang', lang);
+
+        window.applyLangVisibility(lang);
 
         // Style Python
         pyBtn.style.cssText = `background-color: ${lang === 'python' ? darkGreen : 'white'} !important; color: ${lang === 'python' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
 
         // Style R
         rBtn.style.cssText = `background-color: ${lang === 'r' ? darkGreen : 'white'} !important; color: ${lang === 'r' ? 'white' : darkGreen} !important; border: 2px solid ${darkGreen} !important; border-radius: 50px !important; padding: 5px 20px !important; margin: 5px !important; font-weight: 800 !important;`;
-
-        localStorage.setItem('da_course_lang', lang);
       }
 
       pyBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('python'); });
       rBtn.addEventListener('click', (e) => { e.preventDefault(); updateView('r'); });
 
-      updateView(localStorage.getItem('da_course_lang') || 'python');
+      updateView(window.getCurrentLang());
     }
     applyFinalStyle();
   });
@@ -284,8 +302,8 @@ ul.task-list li input[type="checkbox"] {
 
 <script>
 const WEEKS = [
-  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", unlocked:true, checkIds:["check_w1_slides","check_w1_vid1","check_w1_vid2","check_w1_vid3","check_w1_md1","check_w1_md2"], quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"], lang:"r" },
-  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", unlocked:true, checkIds:["check_w2_slides","check_w2_vid1","check_w2_vid2","check_w2_vid3","check_w2_vid4","check_w2_markdown"], quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
+  { n:1, title:"Week 1: Basic Data Structures", topics:"Syntax · Variables · Vectors · Matrices · Lists · Dataframes", href:"1_datentypen.html", unlocked:true, checkIds:["check_w1_slides","check_w1_vid1","check_w1_vid2","check_w1_vid3","check_w1_md1_r","check_w1_md2_r"], quizIds:["w1_q_vectors","w1_q_matrices","w1_q_lists","w1_q_dataframes"], lang:"r" },
+  { n:2, title:"Week 2: Data Cleanup & Visualisation", topics:"Loading Data · which · apply · is.na · hist · boxplot · qqnorm", href:"2_data_cleanup.html", unlocked:true, checkIds:["check_w2_slides","check_w2_vid1","check_w2_vid2","check_w2_vid3","check_w2_vid4","check_w2_md"], quizIds:["w2_q_loading","w2_q_cleanup","w2_q_viz","w2_q_exercises"], lang:"r" },
   { n:3, title:"Week 3: Correlation & Clustering", topics:"Pearson vs Spearman · Missing Data · Intro to Clustering · K-means", href:"3_correlation_clustering.html", unlocked:true, checkIds:["check_w3_slides","check_w3_vid1","check_w3_vid2","check_w3_vid3","check_w3_vid4","check_w3_md"], quizIds:["w3_q_correlation","w3_q_missing","w3_q_clustering","w3_q_kmeans","w3_q_plenum"], lang:"r" },
   { n:4, title:"Week 4: Hierarchical Clustering & PCA", topics:"Dendrograms · Linkage Methods · PCA · Scree Plots · Loadings", href:"4_unsupervised_learning.html", unlocked:true, checkIds:["check_w4_slides","check_w4_vid1","check_w4_vid2","check_w4_vid3","check_w4_md"], quizIds:["w4_q_hclust","w4_q_pca","w4_q_together"], lang:"r" },
   { n:5, title:"Week 5: Probability Distributions", topics:"Random Variables · p/d/q/r Functions · Binomial · Poisson · Normal · t-Distribution", href:"5_probability_distributions.html", unlocked:true, checkIds:["check_w5_slides","check_w5_vid1","check_w5_vid2","check_w5_vid3","check_w5_md"], quizIds:["w5_q_functions","w5_q_binomial","w5_q_poisson","w5_q_normal","w5_q_relationships"], lang:"r" },
