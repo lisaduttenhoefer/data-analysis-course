@@ -1,7 +1,7 @@
 title: Week 9: Regression Analysis
 description: In this final week you will build **regression models** to predict quantitative variables: simple linear regression, multiple regression, and how to properly evaluate a model. Use the language toggle above to switch between R and Python.
 topics: Linear Regression · Multiple Regression · RMSE · F-Test
-slides: WEEK8/week8_lecture_slides.pdf
+slides: materials/week9/week8_lecture_slides.pdf
 slides_label: Week 9 – Regression Analysis (PDF slides)
 
 video: 9.1 Introduction to regression
@@ -15,6 +15,6 @@ url: https://www.youtube.com/watch?v=X3mYHgkWWxo
 video: 9.5 Multiple regression
 url: https://www.youtube.com/watch?v=LF9m43W325c
 
-markdown_r: WEEK8/_08_regression_analysis.Rmd | Week 9 – Regression Analysis (R Markdown)
-markdown_python: WEEK8/_08_regression_analysis_python.ipynb | Week 9 – Regression Analysis (Python Notebook)
+markdown_r: materials/week9/_08_regression_analysis.Rmd | Week 9 – Regression Analysis (R Markdown)
+markdown_python: materials/week9/_08_regression_analysis_python.ipynb | Week 9 – Regression Analysis (Python Notebook)
 dataset_note: **Dataset:** This sheet uses the full diabetes dataset to predict cholesterol level, loaded directly inside the R Markdown file — no separate download needed.

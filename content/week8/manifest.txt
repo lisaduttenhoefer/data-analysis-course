@@ -1,7 +1,7 @@
 title: Week 8: Non-Parametric & Proportion Tests
 description: This week covers **non-parametric tests** (Wilcoxon), **proportion tests** (Fisher / chi-square) for categorical data, and the **power of a test**. Use the language toggle above to switch between R and Python.
 topics: Wilcoxon Test · Fisher/Chi-Square · Power of a Test
-slides: WEEK7/week7_lecture_slides.pdf
+slides: materials/week8/week7_lecture_slides.pdf
 slides_label: Week 8 – Non-Parametric & Proportion Tests (PDF slides)
 
 video: 7.3 Non-parametric tests
@@ -11,8 +11,8 @@ url: https://www.youtube.com/watch?v=CwFh76QrHQo
 video: 8 Power of a test
 url: https://www.youtube.com/watch?v=t0z9tu4J3AU
 
-markdown_r: WEEK7/_07_hypothesis_testing:prop.Rmd | Week 8 – Non-Parametric & Proportion Tests (R Markdown) | | _07_hypothesis_testing_prop.Rmd
-markdown_python: WEEK7/_07_hypothesis_testing_prop_python.ipynb | Week 8 – Non-Parametric & Proportion Tests (Python Notebook)
+markdown_r: materials/week8/_07_hypothesis_testing:prop.Rmd | Week 8 – Non-Parametric & Proportion Tests (R Markdown) | | _07_hypothesis_testing_prop.Rmd
+markdown_python: materials/week8/_07_hypothesis_testing_prop_python.ipynb | Week 8 – Non-Parametric & Proportion Tests (Python Notebook)
 dataset_note: **Datasets:** This sheet uses the ALL/AML leukemia gene expression data and a breast cancer clinical dataset, both loaded directly inside the R Markdown file — no separate download needed.
 bonus_note: **Bonus reference:** a plenum recap computing the Wilcoxon test by hand and exploring false-positive/false-negative rates in depth. Quizzes 1 & 4 below draw on this material.
-bonus: WEEK7/_07_plenum_wilcox_sum.Rmd | Plenum: Wilcoxon & Test Errors (R Markdown)
+bonus: materials/week8/_07_plenum_wilcox_sum.Rmd | Plenum: Wilcoxon & Test Errors (R Markdown)

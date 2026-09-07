@@ -47,43 +47,54 @@ quarto publish gh-pages --no-prompt --no-browser
 
 ---
 
-## 2. Ordnerstruktur
+## 2. Ordnerstruktur — das 3-Ordner-Modell
+
+Es gibt genau **drei Ordner, die man zum Pflegen des Kurses braucht** — der Rest ist Technik, die
+einmal eingerichtet wurde und die man normalerweise nie anfasst:
+
+| Ordner | Wofür | Wie oft ändert man das? |
+|---|---|---|
+| **`content/`** | Titel, Videos, Folien-Links, Download-Links, **Quizfragen** — reine Textdateien | Häufig — das ist der Ordner, in dem du 95 % der Zeit arbeitest |
+| **`materials/`** | Die tatsächlichen Dateien, auf die aus `content/` verlinkt wird: `.Rmd`, `.ipynb`, `.pdf` | Seltener — nur wenn du eine neue Übungsdatei/Folie hinzufügst oder ersetzt |
+| **`pages/`-Dateien im Root** (`index.qmd`, `1_datentypen.qmd`, ...) | Die Grundgerüst-Dateien jeder Seite | So gut wie nie — jede Datei hat oben einen Kommentar „nicht diese Datei bearbeiten" |
 
 ```
 data-analysis-course/
-├── 1_datentypen.qmd ... 9_regression_analysis.qmd   ← eine Datei pro Wochenseite (dünne Hüllen, s.u.)
-├── index.qmd                                        ← Dashboard/Startseite
-├── coding_basics.qmd, 0_markdown.qmd                ← weitere feste Seiten
 │
-├── week-loader.html          ← DAS Herzstück: lädt & rendert den Wocheninhalt zur Laufzeit
-├── language-switch.html      ← R/Python-Umschalter oben auf jeder Seite
-├── custom.scss                ← gemeinsames Design (Farben, Quiz-Karten, etc.)
-├── _quarto.yml                ← Quarto-Konfiguration (Sidebar, welche Ordner mit ausgeliefert werden)
-│
-├── content/
+├── content/                    ← ORDNER A: hier bearbeitest du fast immer
 │   └── week1/ ... week9/
-│       ├── manifest.txt      ← DER Ort für: Titel, Videos, Folien, Download-Links, Datensatz-Hinweise
-│       └── quiz.md           ← DER Ort für: Quizfragen, Antworten, Feedback-Texte
+│       ├── manifest.txt        ← Titel, Videos, Folien, Download-Links, Datensatz-Hinweise
+│       └── quiz.md             ← Quizfragen, Antworten, Feedback-Texte
 │
-├── WEEK0/ ... WEEK8/          ← die tatsächlichen Rohmaterialien: .Rmd, .ipynb, .pdf
-│                                  ACHTUNG: Nummerierung ist versetzt! Siehe Abschnitt 3.
+├── materials/                  ← ORDNER B: die verlinkten Dateien selbst
+│   └── week1/ ... week9/       ← .Rmd, .ipynb, .pdf — Nummerierung entspricht 1:1 der Website!
 │
-└── docs/                      ← von Quarto generierte Ausgabe (die eigentliche Website als HTML).
+├── 1_datentypen.qmd ... 9_regression_analysis.qmd   ← ORDNER C (lose im Root): dünne Hüllen,
+├── index.qmd                                          NICHT bearbeiten (Kommentar oben in jeder
+├── coding_basics.qmd, 0_markdown.qmd                  Datei erinnert daran). Ausnahme: index.qmd
+│                                                       braucht manchmal einen neuen quizIds-Eintrag
+│                                                       (Abschnitt 6.2).
+│
+├── engine/                     ← Gemeinsamer Code/Design, nicht anfassen:
+│   ├── week-loader.html        ← DAS Herzstück: lädt & rendert den Wocheninhalt zur Laufzeit
+│   ├── language-switch.html    ← R/Python-Umschalter oben auf jeder Seite
+│   └── custom.scss             ← gemeinsames Design (Farben, Quiz-Karten, etc.)
+│
+├── _quarto.yml                 ← Quarto-Konfiguration (Sidebar, welche Ordner mit ausgeliefert werden)
+├── ANLEITUNG.md                ← diese Datei
+├── .github/workflows/          ← die Automatisierung, die alles live schaltet (Abschnitt 1)
+│
+└── docs/                       ← von Quarto generierte Ausgabe (die eigentliche Website als HTML).
                                    Wird bei jedem Render komplett neu geschrieben — nie von Hand bearbeiten!
 ```
 
-### Die Wochen-Nummerierung ist absichtlich versetzt
+### Die Wochen-Nummerierung ist überall konsistent
 
-Die Roh-Materialordner heißen `WEEK0`, `WEEK1`, ... `WEEK8` — aber die Website zeigt **„Week 1“ bis
-„Week 9“**. Der Grund: „Week 0“ auf der Website ist die Einführungsseite (`0_markdown.qmd`), die
-kein eigenes `WEEKN`-Material hat. So matched es auch mit den ursprünglichen Inhalten der Moodle Seite. Deshalb gilt durchgängig:
-
-> **Roh-Ordner `WEEK{N}` entspricht Website „Week {N+1}“.**
-
-Beispiel: `WEEK3/_03_unsupervised_learning.Rmd` gehört zu **Website Week 4** (Hierarchical
-Clustering & PCA), referenziert in `content/week4/manifest.txt`. Das ist die Nummer-1-Fehlerquelle
-beim Verwechseln — im Zweifel: in `content/weekN/manifest.txt` nachsehen, welcher `WEEK{N-1}`-Pfad
-tatsächlich referenziert wird.
+`materials/week1/` bis `materials/week9/` entsprechen **exakt** „Week 1" bis „Week 9" auf der
+Website — `content/week3/manifest.txt` verlinkt ausschließlich auf Dateien in `materials/week3/`.
+Keine Verschiebung, kein Umrechnen mehr nötig (früher hießen diese Ordner `WEEK0`–`WEEK8`, versetzt
+um eins zur Website-Nummerierung — das wurde bewusst aufgeräumt, weil es die Nummer-1-Fehlerquelle
+beim Verwechseln war).
 
 ---
 
@@ -97,9 +108,9 @@ title: "Week 3: Correlation & Clustering"
 format:
   html:
     include-in-header:
-      - language-switch.html
+      - engine/language-switch.html
     include-after-body:
-      - week-loader.html
+      - engine/week-loader.html
 ---
 
 <div id="week-app" data-week="3">Loading…</div>
@@ -131,7 +142,7 @@ Einfaches `schlüssel: wert`-Format, eine Zeile pro Eintrag. Reihenfolge der Zei
 title: Week 3: Correlation & Clustering
 description: This week you will measure **associations between variables**...
 topics: Pearson vs Spearman · Missing Data · Intro to Clustering · K-means
-slides: WEEK2/week2_lecture_slides.pdf
+slides: materials/week3/week2_lecture_slides.pdf
 slides_label: Week 3 – Correlation & Clustering (PDF slides)
 
 video: 2.3 Correlations
@@ -139,12 +150,12 @@ url: https://youtu.be/l4spkWoXclw
 video: 3. Dealing with missing data points
 url: https://youtu.be/zJmp2SYoMts
 
-markdown_r: WEEK2/_02_correlation_clustering.Rmd | Week 3 – Correlation & Clustering (R Markdown)
-markdown_python: WEEK2/_02_correlation_clustering_python.ipynb | Week 3 – Correlation & Clustering (Python Notebook)
+markdown_r: materials/week3/_02_correlation_clustering.Rmd | Week 3 – Correlation & Clustering (R Markdown)
+markdown_python: materials/week3/_02_correlation_clustering_python.ipynb | Week 3 – Correlation & Clustering (Python Notebook)
 
 dataset_note: **Datasets:** This sheet reuses ...
 bonus_note: **Bonus reference:** a plenum recap ...
-bonus: WEEK2/_02_plenum.Rmd | Plenum Recap (R Markdown)
+bonus: materials/week3/_02_plenum.Rmd | Plenum Recap (R Markdown)
 ```
 
 Alle möglichen Felder:
@@ -293,11 +304,11 @@ auf `gh-pages` — nach ca. 1–2 Minuten ist die Änderung live.
 
 ### 6.3 Ein Python-Notebook für eine Woche hinzufügen (Platzhalter „Coming Soon“ ablösen)
 
-1. Das `.ipynb` im passenden `WEEK{N-1}/`-Ordner ablegen (Namenskonvention:
+1. Das `.ipynb` im passenden `materials/weekN/`-Ordner ablegen (Namenskonvention:
    `_0X_thema_python.ipynb`, siehe bestehende Beispiele).
 2. In `content/weekN/manifest.txt` eine `markdown_python:`-Zeile hinzufügen bzw. befüllen:
    ```
-   markdown_python: WEEK2/_02_thema_python.ipynb | Week 3 – Thema (Python Notebook)
+   markdown_python: materials/week3/_02_thema_python.ipynb | Week 3 – Thema (Python Notebook)
    ```
 3. Fertig — der „Coming Soon“-Platzhalter verschwindet automatisch, sobald die Zeile einen Pfad
    enthält.

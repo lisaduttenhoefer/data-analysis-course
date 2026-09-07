@@ -3,9 +3,9 @@ title: "Week 7: Hypothesis Testing & t-Tests"
 format:
   html:
     include-in-header:
-      - language-switch.html
+      - engine/language-switch.html
     include-after-body:
-      - week-loader.html
+      - engine/week-loader.html
 ---
 
 <!-- Content for this page is loaded at runtime from content/week7/manifest.txt and

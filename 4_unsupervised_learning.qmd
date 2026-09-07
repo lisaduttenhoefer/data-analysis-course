@@ -3,9 +3,9 @@ title: "Week 4: Hierarchical Clustering & PCA"
 format:
   html:
     include-in-header:
-      - language-switch.html
+      - engine/language-switch.html
     include-after-body:
-      - week-loader.html
+      - engine/week-loader.html
 ---
 
 <!-- Content for this page is loaded at runtime from content/week4/manifest.txt and

@@ -1,7 +1,7 @@
 title: Week 2: Data Cleanup & Visualisation
 description: In this week you will work with a real diabetes dataset and learn how to **prepare raw data for analysis** and **visualise distributions**. Use the language toggle above to switch between R and Python.
 topics: Loading Data · which · apply · is.na · hist · boxplot · qqnorm
-slides: WEEK1/week1_lecture_slides.pdf
+slides: materials/week2/week1_lecture_slides.pdf
 slides_label: Week 2 – Describing & Visualizing data (PDF slides)
 
 video: Which data?
@@ -13,12 +13,12 @@ url: https://youtu.be/DU3IEnVr2kA
 video: Describing data 2
 url: https://youtu.be/jFt72U7xiHk
 
-markdown_r: WEEK1/_01_data_cleanup.Rmd | Week 2 – Data Cleanup (R Markdown)
+markdown_r: materials/week2/_01_data_cleanup.Rmd | Week 2 – Data Cleanup (R Markdown)
 dataset_note: **Course dataset:** Load the diabetes data in RStudio with:
 dataset_code_r:
     dat <- read.delim('https://www.dropbox.com/scl/fi/zqjdoi7naolmruyxrraxq/diabetes_2025.tsv?rlkey=txnps3ccr0vj47yvjmpecbeom&dl=1')
 
-markdown_python: WEEK1/_01_data_cleanup_python.ipynb | Week 2 – Data Cleanup (Python Notebook)
+markdown_python: materials/week2/_01_data_cleanup_python.ipynb | Week 2 – Data Cleanup (Python Notebook)
 dataset_note_python: **Course dataset:** Load the diabetes data in Python with:
 dataset_code_python:
     import pandas as pd
