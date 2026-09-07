@@ -1,7 +1,8 @@
 # Quiz: Hierarchical Clustering
 id: hclust
 
-## Q: What is the key difference between k-means and hierarchical clustering?
+## Q: What is the key difference between k-means and hierarchical clustering test1test1 
+?
 lang: both
 - [ ] They are mathematically identical, just different function names
       K-means needs the number of clusters upfront. Hierarchical clustering builds a full dendrogram instead.
