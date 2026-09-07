@@ -1,4 +1,5 @@
 title: Week 8: Non-Parametric & Proportion Tests
+unlock_date: 2026-01-01
 description: This week covers **non-parametric tests** (Wilcoxon), **proportion tests** (Fisher / chi-square) for categorical data, and the **power of a test**. Use the language toggle above to switch between R and Python.
 topics: Wilcoxon Test · Fisher/Chi-Square · Power of a Test
 slides: materials/week8/week7_lecture_slides.pdf

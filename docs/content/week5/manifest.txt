@@ -1,4 +1,5 @@
 title: Week 5: Probability Distributions
+unlock_date: 2026-01-01
 description: This week introduces **probability distributions**: random variables, the p/d/q/r function family in R, and the Binomial, Negative Binomial, Poisson, Normal and t-distributions — plus how they relate to each other. Use the language toggle above to switch between R and Python.
 topics: Random Variables · p/d/q/r Functions · Binomial · Poisson · Normal · t-Distribution
 slides: materials/week5/week4_lecture_slides.pdf

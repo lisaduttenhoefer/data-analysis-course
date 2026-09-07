@@ -1,4 +1,5 @@
 title: Week 2: Data Cleanup & Visualisation
+unlock_date: 2026-01-01
 description: In this week you will work with a real diabetes dataset and learn how to **prepare raw data for analysis** and **visualise distributions**. Use the language toggle above to switch between R and Python.
 topics: Loading Data · which · apply · is.na · hist · boxplot · qqnorm
 slides: materials/week2/week1_lecture_slides.pdf
