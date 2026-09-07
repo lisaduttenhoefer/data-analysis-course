@@ -1,4 +1,5 @@
 title: Week 1: Basic Data Structures
+unlock_date: 2026-10-15
 description: In this week you will learn the fundamental **building blocks** of data analysis: how data is stored, organised, and accessed. Use the language toggle above to switch between R and Python.
 tip: **Tip:** The [Basics in Coding](coding_basics.html) reference page gives you a quick-lookup summary of all syntax covered this week — available for both R and Python.
 topics: Syntax · Variables · Vectors · Matrices · Lists · Dataframes
