@@ -18,9 +18,6 @@ project:
     - "!test_qmds/"
     - "!**/*.md"
 
-filters:
-  - shinylive
-
 website:
   title: "METHODS IN DATA ANALYSIS"
   site-url: "https://lisaduttenhoefer.github.io/data-analysis-course"
