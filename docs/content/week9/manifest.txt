@@ -1,5 +1,5 @@
 title: Week 9: Regression Analysis
-unlock_date: 2027-01-01
+unlock_date: 2026-01-01
 description: In this final week you will build **regression models** to predict quantitative variables: simple linear regression, multiple regression, and how to properly evaluate a model. Use the language toggle above to switch between R and Python.
 topics: Linear Regression · Multiple Regression · RMSE · F-Test
 slides: materials/week9/week8_lecture_slides.pdf
